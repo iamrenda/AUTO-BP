@@ -8,6 +8,7 @@ import { lobbyMenu } from "../script/forms.js";
 //     facingLocation: locationData.lobby.facing,
 //   })
 // );
+
 world.beforeEvents.playerLeave.subscribe(() => setGameId === "lobby");
 
 world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
