@@ -55,12 +55,12 @@ const showMessage = function (wasPB) {
       );
 };
 
-const updateFloatingText = function () {
+export const updateFloatingText = function () {
   const floatingEntity = world
     .getDimension("overworld")
     .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
   const data = {
-    pb: tickToSec(getPB("straight25b")),
+    pb: getPB("straight25b") === -1 ? "--.--" : tickToSec(getPB("straight25b")),
     attempts: getAttempts("straight25b"),
     successAttempts: getSuccessAttempts("straight25b"),
   };

@@ -18,35 +18,18 @@ export const getGameId = function () {
 };
 
 export const setGameId = function (gameId) {
-  const gameIds = ["lobby", "bridger", "clutcher"]; // CHECK incline?
+  const gameIds = ["lobby", "bridger", "clutcher"];
 
   if (gameIds.includes(gameId)) world.setDynamicProperty("auto:gameId", gameId);
   else return console.warn("[ERROR] Improper game id detected");
 };
 
 ///////////////////////////////////////////////////////////////
-// export const getBridgerAttempts = function () {
-//   return world.getDynamicProperty("auto:bridgerAttempts");
-// };
-
-// export const addBridgerAttempts = function () {
-//   const num = getBridgerAttempts();
-//   world.setDynamicProperty("auto:bridgerAttempts", num++);
-// };
-
-// export const getSuccessfulBridgerAttempts = function () {
-//   return world.getDynamicProperty("auto:");
-// };
-
-// games; bridgerStraight(16b, 25b, 50b), bridgerIncline(16b, 25b, 50b)
-// store: pb, attempt, successful
-
 /**
  * storing data for bridger: pb, bridingAttempts, successfulAttempts
  *
  * (straight 16b | straight 25b | straight 50b | incline 16b | incline 25b | incline 50b)
  */
-
 const games = [
   "straight16b",
   "straight25b",
@@ -55,14 +38,6 @@ const games = [
   "incline25b",
   "incline50b",
 ];
-
-// defaulting stats CHECK
-world.getDynamicProperty("auto:pb") ??
-  world.setDynamicProperty("auto:pb", "-1|-1|-1|-1|-1|-1");
-world.getDynamicProperty("auto:atmps") ??
-  world.setDynamicProperty("auto:atmps", "0|0|0|0|0|0");
-world.getDynamicProperty("auto:successAtmps") ??
-  world.setDynamicProperty("auto:successAtmps", "0|0|0|0|0|0");
 
 /**
  * getPB: gets the personal best score
@@ -90,6 +65,22 @@ export const setPB = function (game, ticks) {
   const gameIndex = games.indexOf(game);
 
   rawDataArr[gameIndex] = String(ticks);
+
+  const newRawData = rawDataArr.join("|");
+  world.setDynamicProperty("auto:pb", newRawData);
+};
+
+/**
+ * resetPB: resets the personal best score
+ *
+ * @param {String} game - must chosen from here ["straight16b", "straight25b", "straight50b", "incline16b", "incline25b", "incline50b"];
+ */
+export const resetPB = function (game) {
+  if (!games.includes(game)) console.warn("[ERROR] Unknown game detected");
+  const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
+  const gameIndex = games.indexOf(game);
+
+  rawDataArr[gameIndex] = -1;
 
   const newRawData = rawDataArr.join("|");
   world.setDynamicProperty("auto:pb", newRawData);
