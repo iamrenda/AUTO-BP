@@ -1,0 +1,30 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "AUTO BP",
+    "description": "AUTO World Behavior Pack",
+    "uuid": "7cfd5013-98ec-4ba5-9e1f-00fb6580c3fd",
+    "version": [1, 0, 0],
+    "min_engine_version": [1, 20, 0]
+  },
+  "modules": [
+    {
+      "type": "script",
+      "language": "javascript",
+      "uuid": "16ffa991-7264-48a3-b609-3df948cf0eaf",
+      "entry": "scripts/main.js",
+      "version": [1, 0, 0]
+    }
+  ],
+  "capabilities": ["script_eval"],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "1.17.0-beta"
+    },
+    {
+      "module_name": "@minecraft/server-ui",
+      "version": "1.3.0"
+    }
+  ]
+}
