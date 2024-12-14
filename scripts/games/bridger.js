@@ -55,6 +55,21 @@ const showMessage = function (wasPB) {
       );
 };
 
+const updateFloatingText = function () {
+  const floatingEntity = world
+    .getDimension("overworld")
+    .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
+  const data = {
+    pb: tickToSec(getPB("straight25b")),
+    attempts: getAttempts("straight25b"),
+    successAttempts: getSuccessAttempts("straight25b"),
+  };
+  const successFailRatio = (data.successAttempts / data.attempts).toFixed(2);
+  const displayText = `§7---§r §b${bridger.player.nameTag}'s Stats§r §7---§r\n§6Personal Best:§r §f${data.pb}§r\n§6Bridging Attempts:§r §f${data.attempts}§r\n§6Successful Attempts:§r §f${data.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
+
+  floatingEntity.nameTag = displayText;
+};
+
 /**
  * resetMap: resets the map (clearing temp data, blocks, and teleporting)
  *
@@ -71,6 +86,9 @@ export const resetMap = function (wasAttempt = true) {
   // reset blocks and ticks
   bridger.blocks = 0;
   bridger.ticks = 0;
+
+  // update floating text
+  updateFloatingText();
 
   // teleport player
   wasAttempt
