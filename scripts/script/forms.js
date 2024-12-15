@@ -56,11 +56,18 @@ const confirmationForm = async function (player) {
 };
 
 const bridgerForm = async function (player) {
-  const form = new ChestFormData("9").title("Settings").pattern(["_b___r_o_"], {
+  const form = new ChestFormData("9").title("Settings").pattern(["_b_s_r_o_"], {
     b: {
       itemName: "§2Blocks",
       itemDesc: [],
       texture: tempData.block,
+      stackSize: 1,
+      enchanted: false,
+    },
+    s: {
+      itemName: "§3Height",
+      itemDesc: [`Current: ${tempData.stairCased ? "StairCased" : "Flat"}`],
+      texture: "minecraft:sandstone_stairs",
       stackSize: 1,
       enchanted: false,
     },

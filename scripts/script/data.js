@@ -13,6 +13,10 @@ const locationData = {
   },
 };
 
+/**
+ * blockName: block's name to display
+ * texture: block's texture's name
+ */
 const blocks = [
   { blockName: "Sandstone", texture: "minecraft:sandstone" },
   { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
@@ -25,12 +29,39 @@ const blocks = [
   { blockName: "Barrier", texture: "minecraft:barrier" },
 ];
 
-// this data is contained based on the texture's name, not the name itself!
+/**
+ * name: name of the structure to display
+ * file: file name to load
+ * location: [0] - location to load the file
+ *           [0] & [1] - locations to fill air
+ */
+const structure = [
+  {
+    name: "default",
+    file: "mystructure:default",
+    location: {
+      flat: [
+        { x: 9993, y: 93, z: 10024 },
+        { x: 10005, y: 106, z: 10033 },
+      ],
+      stairCased: [
+        { x: 9993, y: 95, z: 10024 },
+        { x: 10005, y: 108, z: 10033 },
+      ],
+    },
+  },
+];
+
+/**
+ * block: minecraft block name to bridge with
+ * stairCased: whether difference in y-axis is neccessary or not
+ * pickaxe: minecraft item name to use as a pickaxe
+ */
 const tempData = {
   block: "minecraft:sandstone",
-  stairCased: true,
+  structureIndex: 0, // CHECK hard coded
+  stairCased: false,
   pickaxe: "minecraft:wooden_pickaxe",
-  goalSound: "default",
 };
 
-export { games, locationData, tempData, blocks };
+export { games, locationData, tempData, structure, blocks };

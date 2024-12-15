@@ -123,9 +123,44 @@ export const bridgerFormHandler = function (player) {
   form.bridgerForm(player).then((res) => {
     switch (res.selection) {
       case 1: // change block
-        form.bridgerBlockForm(player).then((res) => {
-          data.tempData.block = data.blocks[res.selection].texture;
-        });
+        form.bridgerBlockForm(player).then((res) => (data.tempData.block = data.blocks[res.selection].texture));
+        break;
+
+      case 3: // height
+        data.tempData.stairCased = !data.tempData.stairCased;
+        if (!data.tempData.stairCased) {
+          // CHECK optimize this shit  cuz my brain is fried
+          // turning into flat
+          mc.world
+            .getDimension("overworld")
+            .fillBlocks(
+              new mc.BlockVolume(
+                data.structure[data.tempData.structureIndex].location.stairCased[0],
+                data.structure[data.tempData.structureIndex].location.stairCased[1]
+              ),
+              "minecraft:air"
+            );
+          mc.world.structureManager.place(
+            data.structure[data.tempData.structureIndex].file,
+            mc.world.getDimension("overworld"),
+            data.structure[data.tempData.structureIndex].location.flat[0]
+          );
+        } else {
+          mc.world
+            .getDimension("overworld")
+            .fillBlocks(
+              new mc.BlockVolume(
+                data.structure[data.tempData.structureIndex].location.flat[0],
+                data.structure[data.tempData.structureIndex].location.flat[1]
+              ),
+              "minecraft:air"
+            );
+          mc.world.structureManager.place(
+            data.structure[data.tempData.structureIndex].file,
+            mc.world.getDimension("overworld"),
+            data.structure[data.tempData.structureIndex].location.stairCased[0]
+          );
+        }
         break;
 
       case 5: // reset pb

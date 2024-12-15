@@ -1,3 +1,4 @@
+import * as mc from "@minecraft/server";
 import { lobbyForm } from "../script/forms.js";
 import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";

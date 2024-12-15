@@ -51,8 +51,8 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 // player leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => exp.setGameId("lobby"));
 
-// player breaking a block
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// player breaking a block // CHECK
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
