@@ -6,21 +6,17 @@ import * as lobby from "../games/lobby.js";
 import * as bridger from "../games/bridger.js";
 
 // player right-click an item
-mc.world.afterEvents.itemUse.subscribe(
-  ({ itemStack: item, source: player }) => {
-    switch (exp.getGameId()) {
-      case "lobby":
-        if (item.typeId === "minecraft:compass")
-          lobby.nagivatorFormHandler(player);
-        break;
+mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
+  switch (exp.getGameId()) {
+    case "lobby":
+      if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
+      break;
 
-      case "bridger":
-        if (item.typeId === "minecraft:book")
-          bridger.bridgerFormHandler(player);
-        break;
-    }
+    case "bridger":
+      if (item.typeId === "minecraft:book") bridger.bridgerFormHandler(player);
+      break;
   }
-);
+});
 
 // player placing a block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
