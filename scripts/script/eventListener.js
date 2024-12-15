@@ -57,7 +57,7 @@ mc.world.beforeEvents.playerLeave.subscribe(() => exp.setGameId("lobby"));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
-const listener = mc.system.runInterval(() => {
+mc.system.runInterval(() => {
   switch (exp.getGameId()) {
     case "lobby":
       break;
