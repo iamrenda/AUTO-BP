@@ -6,6 +6,7 @@ import {
   locationData,
   giveItems,
   resetPB,
+  teleportation,
 } from "../script/export.js";
 
 export const lobbyMenu = function (player) {
@@ -57,9 +58,7 @@ export const lobbyMenu = function (player) {
           ]);
 
           setGameId("bridger");
-          player.teleport(locationData.bridger.straight.position, {
-            facingLocation: locationData.bridger.straight.facing,
-          });
+          teleportation(player, locationData.bridger.straight);
 
           break;
         case 3: // clutcher
@@ -68,9 +67,7 @@ export const lobbyMenu = function (player) {
           break;
 
         case 7: // back to lobby
-          player.teleport(locationData.lobby.position, {
-            facingLocation: locationData.lobby.facing,
-          });
+          teleportation(player, locationData.lobby);
           break;
       }
     });

@@ -1,6 +1,6 @@
 import { world, system, ItemStack } from "@minecraft/server"; // CHECK why the fuck am i doing like this
 
-import { getGameId, setGameId } from "../script/export.js";
+import { getGameId, teleportation } from "../script/export.js";
 import { bridgerForm } from "../script/forms.js";
 import {
   locationData,
@@ -92,12 +92,8 @@ export const resetMap = function (wasAttempt = true) {
 
   // teleport player
   wasAttempt
-    ? bridger.player.teleport(locationData.bridger.straight.position, {
-        facingLocation: locationData.bridger.straight.facing,
-      })
-    : bridger.player.tryTeleport(locationData.lobby.position, {
-        facingLocation: locationData.lobby.facing,
-      });
+    ? teleportation(bridger.player, locationData.bridger.straight)
+    : teleportation(bridger.player, locationData.lobby);
 
   // give items to player
   const items = wasAttempt

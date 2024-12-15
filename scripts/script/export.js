@@ -164,3 +164,13 @@ export const giveItems = function (player, itemArr) {
     slot ? container.setItem(slot, i) : container.addItem(i);
   }
 };
+
+/**
+ * teleportation: teleport player
+ *
+ * @param {Player} player - player object
+ * @param {Object} obj - an object contain location to teleport (must have key of position and facing)
+ */
+export const teleportation = function (player, obj) {
+  player.teleport(obj.position, { facingLocation: obj.facing });
+};
