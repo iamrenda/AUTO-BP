@@ -10,17 +10,24 @@ const gameData = {
     "incline50b",
   ],
 
-  getPB(game) {
-    if (!this.games.includes(game))
+  // checking arg game name is vaild
+  checkGameName(game) {
+    if (!this.games.includes(game)) {
       console.warn("[ERROR] Unknown game detected");
+      return false;
+    }
+    return true;
+  },
+
+  getPB(game) {
+    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
   },
 
   setPB(game, ticks) {
-    if (!this.games.includes(game))
-      console.warn("[ERROR] Unknown game detected");
+    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = String(ticks);
@@ -29,20 +36,19 @@ const gameData = {
   },
 
   resetPB(game) {
+    if (!this.checkGameName) return;
     this.setPB(game, -1);
   },
 
   getAttempts(game) {
-    if (!this.games.includes(game))
-      console.warn("[ERROR] Unknown game detected");
+    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:atmps").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
   },
 
   addAttempts(game) {
-    if (!this.games.includes(game))
-      console.warn("[ERROR] Unknown game detected");
+    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:atmps").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = +rawDataArr[gameIndex] + 1;
@@ -51,16 +57,14 @@ const gameData = {
   },
 
   getSuccessAttempts(game) {
-    if (!this.games.includes(game))
-      console.warn("[ERROR] Unknown game detected");
+    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:successAtmps").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
   },
 
   addSuccessAttempts(game) {
-    if (!this.games.includes(game))
-      console.warn("[ERROR] Unknown game detected");
+    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:successAtmps").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = +rawDataArr[gameIndex] + 1;
