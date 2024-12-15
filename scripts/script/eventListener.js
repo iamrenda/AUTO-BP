@@ -1,5 +1,5 @@
 import * as mc from "@minecraft/server";
-import * as exp from "./exportFns.js";
+import * as exp from "./functions.js";
 import * as data from "./data.js";
 
 import * as lobby from "../games/lobby.js";
@@ -47,9 +47,9 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
-  exp.setPlayer(player);
   bridger.defineVariable(player);
   exp.teleportation(player, data.locationData.lobby);
+  exp.giveItems(player, [{ item: "minecraft:compass", quantity: 1, slot: 4 }]);
 });
 
 // player leaving the world

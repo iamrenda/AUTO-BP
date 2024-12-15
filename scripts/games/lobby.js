@@ -1,5 +1,5 @@
 import { lobbyForm } from "../script/forms.js";
-import * as exp from "../script/exportFns.js";
+import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
 
 export const nagivatorFormHandler = function (player) {

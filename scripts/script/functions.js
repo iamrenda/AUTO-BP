@@ -153,12 +153,3 @@ export const giveItems = function (player, itemArr) {
 export const teleportation = function (player, obj) {
   player.teleport(obj.position, { facingLocation: obj.facing });
 };
-
-let player = null;
-export const setPlayer = function (newPlayer) {
-  player = newPlayer;
-};
-
-export const getPlayer = function () {
-  return player;
-};

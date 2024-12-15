@@ -1,5 +1,5 @@
-import * as mc from "@minecraft/server"; // CHECK why the fuck am i doing like this
-import * as exp from "../script/exportFns.js";
+import * as mc from "@minecraft/server";
+import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
 import * as form from "../script/forms.js";
 
@@ -9,7 +9,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(
 ).padStart(2, "0")}/${String(date.getFullYear()).slice(-2)}`;
 
 const bridger = {
-  player: exp.getPlayer(),
+  player: null,
   storedLocations: [],
   blocks: 0,
   ticks: 0,
@@ -58,16 +58,14 @@ const updateFloatingText = function () {
   const floatingEntity = mc.world
     .getDimension("overworld")
     .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
-  const data = {
-    pb:
-      exp.getPB("straight25b") === -1
-        ? "--.--"
-        : tickToSec(exp.getPB("straight25b")),
+  const pbData = exp.getPB("straight25b");
+  const info = {
+    pb: pbData === -1 ? "--.--" : tickToSec(pbData),
     attempts: exp.getAttempts("straight25b"),
     successAttempts: exp.getSuccessAttempts("straight25b"),
   };
-  const successFailRatio = (data.successAttempts / data.attempts).toFixed(2);
-  const displayText = `§7---§r §b${bridger.player.nameTag}'s Stats§r §7---§r\n§6Personal Best:§r §f${data.pb}§r\n§6Bridging Attempts:§r §f${data.attempts}§r\n§6Successful Attempts:§r §f${data.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
+  const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
+  const displayText = `§7---§r §b${bridger.player.nameTag}'s Stats§r §7---§r\n§6Personal Best:§r §f${info.pb}§r\n§6Bridging Attempts:§r §f${info.attempts}§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
 
   floatingEntity.nameTag = displayText;
 };
@@ -155,8 +153,7 @@ export const bridgerFormHandler = function (player) {
 export const placingBlockEvt = function (block) {
   if (!bridger.blocks) {
     bridger.timer = mc.system.runInterval(
-      () => bridger.timer && bridger.ticks++,
-      1
+      () => bridger.timer && bridger.ticks++
     );
   }
 
@@ -167,6 +164,7 @@ export const placingBlockEvt = function (block) {
 export const pressurePlatePushEvt = function () {
   if (bridger.plateDisabled) return;
 
+  // stop the timer, disable plate, and start auto-req
   if (bridger.timer) mc.system.clearRun(bridger.timer);
   bridger.plateDisabled = true;
   bridger.autoReq = mc.system.runTimeout(enablePlate, 80);
@@ -204,8 +202,8 @@ export const listener = function () {
         mc.system.clearRun(bridger.timer);
         bridger.timer = null; // disabling temp
       }
-      resetMap();
       exp.addAttempts("straight25b");
+      resetMap();
     }
   }
 
@@ -221,3 +219,13 @@ export const listener = function () {
     }\n§7-------------------§r\n §8§oVersion 4 | ${today}`
   );
 };
+
+// CHECK DEBUGGING PURPOSES
+mc.world.beforeEvents.chatSend.subscribe((e) => {
+  e.cancel = true;
+  const player = e.sender;
+  //////////////////////////////////////////////////
+  bridger.player = player;
+
+  mc.world.sendMessage(floatingEntity.nameTag);
+});
