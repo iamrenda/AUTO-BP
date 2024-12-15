@@ -7,8 +7,8 @@ export const nagivatorFormHandler = function (player) {
     switch (res.selection) {
       case 1: // bridger
         exp.giveItems(player, [
-          { item: "minecraft:sandstone", quantity: 64 },
-          { item: "minecraft:sandstone", quantity: 64 },
+          { item: data.tempData.block, quantity: 64 },
+          { item: data.tempData.block, quantity: 64 },
           { item: "minecraft:wooden_pickaxe", quantity: 1 },
           { item: "minecraft:book", quantity: 1, slot: 8 },
         ]);

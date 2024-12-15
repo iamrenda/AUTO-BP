@@ -11,6 +11,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
 
 const bridger = {
   player: null,
+
   storedLocations: [],
   blocks: 0,
   ticks: 0,
@@ -93,8 +94,8 @@ const resetMap = function (wasAttempt = true) {
   // give items to player
   const items = wasAttempt
     ? [
-        { item: "minecraft:sandstone", quantity: 64 },
-        { item: "minecraft:sandstone", quantity: 64 },
+        { item: data.tempData.block, quantity: 64 },
+        { item: data.tempData.block, quantity: 64 },
         { item: "minecraft:wooden_pickaxe", quantity: 1 },
         { item: "minecraft:book", quantity: 1, slot: 8 },
       ]
@@ -121,7 +122,13 @@ export const defineVariable = function (pl) {
 export const bridgerFormHandler = function (player) {
   form.bridgerForm(player).then((res) => {
     switch (res.selection) {
-      case 1: // reset pb
+      case 1: // change block
+        form.bridgerBlockForm(player).then((res) => {
+          data.tempData.block = data.blocks[res.selection].texture;
+        });
+        break;
+
+      case 5: // reset pb
         form.confirmationForm(player).then((res) => {
           if (res.selection !== 6) return;
 
@@ -208,6 +215,7 @@ export const listener = function () {
 mc.world.beforeEvents.chatSend.subscribe((e) => {
   e.cancel = true;
   const player = e.sender;
-  //////////////////////////////////////////////////
   bridger.player = player;
+  //////////////////////////////////////////////////
+  // debug from here
 });

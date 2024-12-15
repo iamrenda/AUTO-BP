@@ -1,16 +1,4 @@
-/**
- * storing data for bridger: pb, bridingAttempts, successfulAttempts
- *
- * (straight 16b | straight 25b | straight 50b | incline 16b | incline 25b | incline 50b)
- */
-const games = [
-  "straight16b",
-  "straight25b",
-  "straight50b",
-  "incline16b",
-  "incline25b",
-  "incline50b",
-];
+const games = ["straight16b", "straight25b", "straight50b", "incline16b", "incline25b", "incline50b"];
 
 const locationData = {
   lobby: {
@@ -25,4 +13,24 @@ const locationData = {
   },
 };
 
-export { games, locationData };
+const blocks = [
+  { blockName: "Sandstone", texture: "minecraft:sandstone" },
+  { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
+  { blockName: "Bamboo Planks", texture: "minecraft:bamboo_planks" },
+  { blockName: "White Stained Glass", texture: "minecraft:white_stained_glass" },
+  { blockName: "Cobblestone", texture: "minecraft:cobblestone" },
+  { blockName: "Amethyst Block", texture: "minecraft:amethyst_block" },
+  { blockName: "White Wool", texture: "minecraft:white_wool" },
+  { blockName: "Crying Obsidian", texture: "minecraft:crying_obsidian" },
+  { blockName: "Barrier", texture: "minecraft:barrier" },
+];
+
+// this data is contained based on the texture's name, not the name itself!
+const tempData = {
+  block: "minecraft:sandstone",
+  stairCased: true,
+  pickaxe: "minecraft:wooden_pickaxe",
+  goalSound: "default",
+};
+
+export { games, locationData, tempData, blocks };
