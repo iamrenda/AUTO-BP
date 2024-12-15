@@ -1,2 +1,2 @@
-import "./lobby/lobby.js";
-import "./games/bridger.js";
+import "./script/eventListener.js";
+import "./script/debugging.js";
