@@ -43,7 +43,7 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
-  bridger.defineVariable(player);
+  bridger.defineBridger(player);
   exp.teleportation(player, data.locationData.lobby);
   exp.giveItems(player, [{ item: "minecraft:compass", quantity: 1, slot: 4 }]);
 });
@@ -52,7 +52,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 mc.world.beforeEvents.playerLeave.subscribe(() => exp.setGameId("lobby"));
 
 // player breaking a block // CHECK
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

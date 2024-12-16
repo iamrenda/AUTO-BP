@@ -114,73 +114,61 @@ const enablePlate = function (cancelTimer = false) {
   resetMap();
 };
 
+/**
+ * fillAndPlace: clear previous island and place new island at new location
+ *
+ * @param {Object} structure - object that contains name, file, and location
+ * @param {Vector3[]} clearLocation - contains location to fill with air
+ * @param {Vector3} placeLocation - contains the location to place structure
+ */
+const fillAndPlace = function (structure, clearLocation, placeLocation) {
+  const dimension = mc.world.getDimension("overworld");
+
+  dimension.fillBlocks(new mc.BlockVolume(clearLocation[0], clearLocation[1]), "minecraft:air");
+  mc.world.structureManager.place(structure.file, dimension, placeLocation[0]);
+};
+
 /////////////////////////////////////////////////////////
-export const defineVariable = function (pl) {
+export const defineBridger = function (pl) {
   bridger.player = pl;
 };
 
 export const bridgerFormHandler = function (player) {
-  form.bridgerForm(player).then((res) => {
-    switch (res.selection) {
-      case 1: // change block
-        form.bridgerBlockForm(player).then((res) => (data.tempData.block = data.blocks[res.selection].texture));
-        break;
+  form.bridgerForm(player).then(({ selection }) => {
+    // block selection
+    if (selection === 1)
+      form.bridgerBlockForm(player).then((res) => (data.tempData.block = data.blocks[res.selection].texture));
 
-      case 3: // height
-        data.tempData.stairCased = !data.tempData.stairCased;
-        if (!data.tempData.stairCased) {
-          // CHECK optimize this shit  cuz my brain is fried
-          // turning into flat
-          mc.world
-            .getDimension("overworld")
-            .fillBlocks(
-              new mc.BlockVolume(
-                data.structure[data.tempData.structureIndex].location.stairCased[0],
-                data.structure[data.tempData.structureIndex].location.stairCased[1]
-              ),
-              "minecraft:air"
-            );
-          mc.world.structureManager.place(
-            data.structure[data.tempData.structureIndex].file,
-            mc.world.getDimension("overworld"),
-            data.structure[data.tempData.structureIndex].location.flat[0]
-          );
-        } else {
-          mc.world
-            .getDimension("overworld")
-            .fillBlocks(
-              new mc.BlockVolume(
-                data.structure[data.tempData.structureIndex].location.flat[0],
-                data.structure[data.tempData.structureIndex].location.flat[1]
-              ),
-              "minecraft:air"
-            );
-          mc.world.structureManager.place(
-            data.structure[data.tempData.structureIndex].file,
-            mc.world.getDimension("overworld"),
-            data.structure[data.tempData.structureIndex].location.stairCased[0]
-          );
+    // height selection
+    if (selection === 3) {
+      data.tempData.stairCased = !data.tempData.stairCased;
+
+      const structure = data.structure[data.tempData.structureIndex];
+      const { stairCased, flat } = structure.location;
+      !data.tempData.stairCased
+        ? fillAndPlace(structure, stairCased, flat) // flat mode
+        : fillAndPlace(structure, flat, stairCased); // stairCased mode
+    }
+
+    // reset pb
+    if (selection === 5) {
+      form.confirmationForm(player).then((res) => {
+        if (res.selection !== 6) return;
+
+        try {
+          gameData.resetPB("straight25b");
+          player.sendMessage("§aSuccess! Your personal best score has been reset!");
+        } catch (err) {
+          player.sendMessage(`§4Error, please try again. (error: ${err})`);
         }
-        break;
+        updateFloatingText();
+      });
+    }
 
-      case 5: // reset pb
-        form.confirmationForm(player).then((res) => {
-          if (res.selection !== 6) return;
-
-          try {
-            gameData.resetPB("straight25b");
-            player.sendMessage("§aSuccess! Your personal best score has been reset!");
-          } catch (err) {
-            player.sendMessage(`§4Error, please try again. (error: ${err})`);
-          }
-          updateFloatingText();
-        });
-        break;
-
-      case 7: // quit
-        exp.setGameId("lobby");
-        resetMap(false);
-        break;
+    // quit bridger
+    if (selection === 7) {
+      exp.setGameId("lobby");
+      resetMap(false);
     }
   });
 };
@@ -247,10 +235,15 @@ export const listener = function () {
 };
 
 // CHECK DEBUGGING PURPOSES
-mc.world.beforeEvents.chatSend.subscribe((e) => {
+mc.world.afterEvents.chatSend.subscribe((e) => {
   e.cancel = true;
   const player = e.sender;
   bridger.player = player;
   //////////////////////////////////////////////////
   // debug from here
+  mc.world.sendMessage("bridger player now defined");
+
+  for (const structure of mc.world.structureManager.getWorldStructureIds()) {
+    console.warn(structure);
+  }
 });
