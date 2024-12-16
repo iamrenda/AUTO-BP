@@ -1,5 +1,6 @@
 import { ChestFormData } from "../extensions/forms.js";
 import { tempData, blocks } from "./data.js";
+import dynamicProperty from "./dynamicProperty.js";
 
 const lobbyForm = async function (player) {
   const form = new ChestFormData("9").title("Lobby Selector").pattern(["_a_b___s_"], {
@@ -66,7 +67,7 @@ const bridgerForm = async function (player) {
     },
     s: {
       itemName: "§3Height",
-      itemDesc: [`Current: ${tempData.stairCased ? "StairCased" : "Flat"}`],
+      itemDesc: [`Current: ${dynamicProperty.getBoolean("straightHeight") ? "StairCased" : "Flat"}`],
       texture: "minecraft:sandstone_stairs",
       stackSize: 1,
       enchanted: false,

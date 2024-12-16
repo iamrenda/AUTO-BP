@@ -16,20 +16,6 @@ export const nagivatorFormHandler = function (player) {
 
       exp.setGameId("bridger");
       exp.teleportation(player, data.locationData.bridger.straight);
-
-      try {
-        console.warn("running"); // CHECK
-        const dimension = world.getDimension("overworld");
-        const structureLocations = data.structure[0].location;
-
-        dimension.fillBlocks(
-          new BlockVolume(structureLocations.stairCased[0], structureLocations.stairCased[1]),
-          "minecraft:air"
-        );
-        world.structureManager.place(structure.file, world.getDimension("overworld"), structureLocations.flat[0]);
-      } catch (err) {
-        console.warn(`ERROR ${err}`);
-      }
     }
 
     // clutcher

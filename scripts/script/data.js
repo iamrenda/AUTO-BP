@@ -1,3 +1,5 @@
+import dynamicProperty from "./dynamicProperty";
+
 const games = ["straight16b", "straight25b", "straight50b", "incline16b", "incline25b", "incline50b"];
 
 const locationData = {
@@ -60,7 +62,7 @@ const structure = [
 const tempData = {
   block: "minecraft:sandstone",
   structureIndex: 0, // CHECK hard coded
-  stairCased: false,
+  stairCased: dynamicProperty.getBoolean("straightHeight"),
   pickaxe: "minecraft:wooden_pickaxe",
 };
 

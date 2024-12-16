@@ -2,7 +2,7 @@ import * as mc from "@minecraft/server";
 import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
 import * as form from "../script/forms.js";
-import gameData from "../script/gameData.js";
+import dynamicProperty from "../script/dynamicProperty.js";
 
 const date = new Date();
 const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(
@@ -35,14 +35,14 @@ const showMessage = function (wasPB) {
   wasPB
     ? bridger.player.sendMessage(
         `§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Your Personal Best:§r §f${
-          gameData.getPB("straight25b") === -1 ? "--.--" : tickToSec(gameData.getPB("straight25b"))
+          dynamicProperty.getPB("straight25b") === -1 ? "--.--" : tickToSec(dynamicProperty.getPB("straight25b"))
         }§f\n   §6Time Recorded:§r §f${tickToSec(
           bridger.ticks
         )}§r\n\n   §d§lNEW PERSONAL BEST!!§r\n§7----------------------------`
       )
     : bridger.player.sendMessage(
         `§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Your Personal Best:§r §f${
-          gameData.getPB("straight25b") === -1 ? "--.--" : tickToSec(gameData.getPB("straight25b"))
+          dynamicProperty.getPB("straight25b") === -1 ? "--.--" : tickToSec(dynamicProperty.getPB("straight25b"))
         }§f\n   §6Time Recorded:§r §f${tickToSec(bridger.ticks)}§r\n§7----------------------------`
       );
 };
@@ -54,11 +54,11 @@ const updateFloatingText = function () {
   const floatingEntity = mc.world
     .getDimension("overworld")
     .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
-  const pbData = gameData.getPB("straight25b");
+  const pbData = dynamicProperty.getPB("straight25b");
   const info = {
     pb: pbData === -1 ? "--.--" : tickToSec(pbData),
-    attempts: gameData.getAttempts("straight25b"),
-    successAttempts: gameData.getSuccessAttempts("straight25b"),
+    attempts: dynamicProperty.getAttempts("straight25b"),
+    successAttempts: dynamicProperty.getSuccessAttempts("straight25b"),
   };
   const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
   const displayText = `§7---§r §b${bridger.player.nameTag}'s Stats§r §7---§r\n§6Personal Best:§r §f${info.pb}§r\n§6Bridging Attempts:§r §f${info.attempts}§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
@@ -148,6 +148,8 @@ export const bridgerFormHandler = function (player) {
       !data.tempData.stairCased
         ? fillAndPlace(structure, stairCased, flat) // flat mode
         : fillAndPlace(structure, flat, stairCased); // stairCased mode
+
+      dynamicProperty.switchBoolean("straightHeight");
     }
 
     // reset pb
@@ -156,7 +158,7 @@ export const bridgerFormHandler = function (player) {
         if (res.selection !== 6) return;
 
         try {
-          gameData.resetPB("straight25b");
+          dynamicProperty.resetPB("straight25b");
           player.sendMessage("§aSuccess! Your personal best score has been reset!");
         } catch (err) {
           player.sendMessage(`§4Error, please try again. (error: ${err})`);
@@ -191,13 +193,13 @@ export const pressurePlatePushEvt = function () {
   bridger.autoReq = mc.system.runTimeout(enablePlate, 80);
 
   // checking whether personal best
-  if (gameData.getPB("straight25b") === -1 || bridger.ticks < gameData.getPB("straight25b")) {
+  if (dynamicProperty.getPB("straight25b") === -1 || bridger.ticks < dynamicProperty.getPB("straight25b")) {
     // new personal best
-    gameData.setPB("straight25b", bridger.ticks);
+    dynamicProperty.setPB("straight25b", bridger.ticks);
     showMessage(true);
   } else showMessage(false);
-  gameData.addAttempts("straight25b");
-  gameData.addSuccessAttempts("straight25b");
+  dynamicProperty.addAttempts("straight25b");
+  dynamicProperty.addSuccessAttempts("straight25b");
 
   const dimension = mc.world.getDimension("overworld");
   dimension.spawnEntity("minecraft:fireworks_rocket", {
@@ -220,14 +222,14 @@ export const listener = function () {
         mc.system.clearRun(bridger.timer);
         bridger.timer = null; // disabling temp
       }
-      gameData.addAttempts("straight25b");
+      dynamicProperty.addAttempts("straight25b");
       resetMap();
     }
   }
 
   bridger.player.onScreenDisplay.setTitle(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
-      gameData.getPB("straight25b") === -1 ? "--.--" : tickToSec(gameData.getPB("straight25b"))
+      dynamicProperty.getPB("straight25b") === -1 ? "--.--" : tickToSec(dynamicProperty.getPB("straight25b"))
     }\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${
       bridger.blocks
     }\n§7-------------------§r\n §8§oVersion 4 | ${today}`
@@ -239,7 +241,7 @@ mc.world.afterEvents.chatSend.subscribe((e) => {
   e.cancel = true;
   const player = e.sender;
   bridger.player = player;
+  mc.world.sendMessage("bridger player now defined");
   //////////////////////////////////////////////////
   // debug from here
-  mc.world.sendMessage("bridger player now defined");
 });
