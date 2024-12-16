@@ -242,8 +242,4 @@ mc.world.afterEvents.chatSend.subscribe((e) => {
   //////////////////////////////////////////////////
   // debug from here
   mc.world.sendMessage("bridger player now defined");
-
-  for (const structure of mc.world.structureManager.getWorldStructureIds()) {
-    console.warn(structure);
-  }
 });
