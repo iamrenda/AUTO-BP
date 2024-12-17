@@ -57,7 +57,7 @@ const confirmationForm = async function (player) {
 };
 
 const bridgerForm = async function (player) {
-  const form = new ChestFormData("9").title("Settings").pattern(["_b_s_r_o_"], {
+  const form = new ChestFormData("9").title("Settings").pattern(["_b_i_r_o_"], {
     b: {
       itemName: "§2Blocks",
       itemDesc: [],
@@ -65,8 +65,8 @@ const bridgerForm = async function (player) {
       stackSize: 1,
       enchanted: false,
     },
-    s: {
-      itemName: "§3Height",
+    i: {
+      itemName: "§3Island",
       itemDesc: [`Current: ${dynamicProperty.getBoolean("straightHeight") ? "StairCased" : "Flat"}`],
       texture: "minecraft:sandstone_stairs",
       stackSize: 1,
@@ -88,6 +88,34 @@ const bridgerForm = async function (player) {
     },
   });
   return await form.show(player);
+};
+
+const islandForm = async function (player) {
+  const form = new ChestFormData("27")
+    .title("Island Customization")
+    .pattern(["_s_______"], ["_m_______"], ["_l_______"], {
+      s: {
+        itemName: "§c16 Blocks", //CHECK
+        itemDesc: [],
+        texture: "minecraft:sandstone_stairs",
+        stackSize: 16,
+        enchanted: false,
+      },
+      m: {
+        itemName: "§c25 Blocks",
+        itemDesc: [],
+        texture: "minecraft:sandstone_stairs",
+        stackSize: 21,
+        enchanted: false,
+      },
+      l: {
+        itemName: "§c50 Blocks",
+        itemDesc: [],
+        texture: "minecraft:sandstone_stairs",
+        stackSize: 50,
+        enchanted: false,
+      },
+    });
 };
 
 const bridgerBlockForm = async function (player) {

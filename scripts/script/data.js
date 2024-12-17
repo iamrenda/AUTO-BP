@@ -1,7 +1,5 @@
 import dynamicProperty from "./dynamicProperty";
 
-const games = ["straight16b", "straight25b", "straight50b", "incline16b", "incline25b", "incline50b"];
-
 const locationData = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
@@ -66,4 +64,4 @@ const tempData = {
   pickaxe: "minecraft:wooden_pickaxe",
 };
 
-export { games, locationData, tempData, structure, blocks };
+export { locationData, tempData, structure, blocks };

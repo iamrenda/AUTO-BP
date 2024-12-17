@@ -6,7 +6,7 @@ import { world } from "@minecraft/server";
  */
 
 const dynamicProperty = {
-  games: ["straight16b", "straight25b", "straight50b", "incline16b", "incline25b", "incline50b"],
+  games: ["straight16b", "straight21b", "straight50b", "incline16b", "incline25b", "incline50b"],
   booleanDatas: ["straightHeight"],
 
   // checking arg game name is vaild
