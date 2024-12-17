@@ -133,79 +133,63 @@ export const defineBridger = function (pl) {
   bridger.player = pl;
 };
 
-export const bridgerFormHandler = function (player) {
-  form.bridgerForm(player).then(({ selection }) => {
-    // General
-    if (selection === 1)
-      form.bridgerGeneralForm.then(({ selection }) => {
-        if (selection === 11)
-          form
-            .bridgerBlockForm(player)
-            .then((res) => {
-              const block = data.blocks[res.selection];
-              data.tempData.block = block.texture;
-              exp.confirmMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`, "random.orb");
-            })
-            .catch(() => null);
-      });
+export const bridgerFormHandler = async function (player) {
+  const { selection: bridgerSelection } = await form.bridgerForm(player);
 
-    // Island
-    if (selection === 3) {
-      form.bridgerIslandForm.then(({ selection }) => {
-        // flat CHECK unsure
-        if (selection === 21) {
-          data.tempData.stairCased = !data.tempData.stairCased;
+  // bridgerForm: general
+  if (bridgerSelection === 1) {
+    const { selection: generalSelection } = await form.bridgerGeneralForm();
+    const structure = data.structure[data.tempData.structureIndex];
+    const { stairCased, flat } = structure.location;
 
-          const structure = data.structure[data.tempData.structureIndex];
-          const { stairCased, flat } = structure.location;
-          !data.tempData.stairCased
-            ? fillAndPlace(structure, stairCased, flat) // flat mode
-            : fillAndPlace(structure, flat, stairCased); // stairCased mode
-
-          dynamicProperty.switchBoolean("straightHeight");
-
-          const heightText = !data.tempData.stairCased ? "Flat" : "StairCased";
-          exp.confirmMessage(player, `§aThe height is now§r §6${heightText}§r§a!`, "random.orb");
+    switch (generalSelection) {
+      case 11:
+        const res = await form.bridgerBlockForm(player);
+        const block = data.blocks[res.selection];
+        data.tempData.block = block.texture;
+        sendConfirmationMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`);
+        break;
+      case 21:
+        if (!data.tempData.stairCased) {
+          sendConfirmationMessage(player, "The height is already flat!", "random.anvil.land");
+          return;
         }
-        if (selection === 28) {
-          data.tempData.stairCased = !data.tempData.stairCased;
-
-          const structure = data.structure[data.tempData.structureIndex];
-          const { stairCased, flat } = structure.location;
-          !data.tempData.stairCased
-            ? fillAndPlace(structure, stairCased, flat) // flat mode
-            : fillAndPlace(structure, flat, stairCased); // stairCased mode
-
-          dynamicProperty.switchBoolean("straightHeight");
-
-          const heightText = !data.tempData.stairCased ? "Flat" : "StairCased";
-          exp.confirmMessage(player, `§aThe height is now§r §6${heightText}§r§a!`, "random.orb");
+        data.tempData.stairCased = false;
+        fillAndPlace(structure, stairCased, flat);
+        dynamicProperty.switchBoolean("straightHeight");
+        sendConfirmationMessage(player, `§aThe height is now§r §6Flat§r§a!`);
+        break;
+      case 28:
+        if (data.tempData.stairCased) {
+          sendConfirmationMessage(player, "The height is already staircased!", "random.anvil.land");
+          return;
         }
-      });
+        fillAndPlace(structure, stairCased, flat); // flat mode
+        dynamicProperty.switchBoolean("straightHeight");
+        sendConfirmationMessage(player, `§aThe height is now§r §6StairCased§r§a!`);
+        break;
     }
+  }
 
-    // reset pb
-    if (selection === 5) {
-      form.confirmationForm(player).then((res) => {
-        if (res.selection !== 6) return;
-
-        try {
-          dynamicProperty.resetPB("straight21b");
-          exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
-        } catch (err) {
-          player.sendMessage(`§4Error, please try again. (error: ${err})`);
-        }
-        updateFloatingText();
-      });
+  // bridgerForm: reset pb
+  if (bridgerSelection === 5) {
+    try {
+      const { selection: confirmSelection } = await form.confirmationForm(player);
+      if (confirmSelection !== 6) return;
+      dynamicProperty.resetPB("straight21b");
+      exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
+      updateFloatingText();
+    } catch (err) {
+      player.sendMessage(`§4Error, please try again. (error: ${err})`);
     }
+  }
 
-    // quit bridger
-    if (selection === 7) {
-      exp.setGameId("lobby");
-      resetMap(false);
-      exp.confirmMessage(player, "§7Teleporting back to lobby...");
-    }
-  });
+  // bridgerForm: quit bridger
+  if (bridgerSelection === 7) {
+    exp.setGameId("lobby");
+    resetMap(false);
+    exp.confirmMessage(player, "§7Teleporting back to lobby...");
+  }
 };
 
 export const placingBlockEvt = function (block) {
