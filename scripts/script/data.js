@@ -60,7 +60,6 @@ const structure = [
 const tempData = {
   block: "minecraft:sandstone",
   structureIndex: 0, // CHECK hard coded
-  stairCased: dynamicProperty.getBoolean("straightHeight"),
   pickaxe: "minecraft:wooden_pickaxe",
 };
 

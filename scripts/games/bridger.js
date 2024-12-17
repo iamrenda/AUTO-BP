@@ -144,16 +144,16 @@ export const bridgerFormHandler = async function (player) {
         const { selection: blockSelection } = await form.bridgerBlockForm(player);
         const block = data.blocks[blockSelection];
         data.tempData.block = block.texture;
-        sendConfirmationMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`);
+        exp.confirmMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`, "random.orb");
         break;
     }
   }
 
   // bridgerForm: island
-  if (selection === 3) {
+  if (bridgerSelection === 3) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
-    const { stairCased, flat } = structure.location;
     const structure = data.structure[data.tempData.structureIndex];
+    const { stairCased, flat } = structure.location;
 
     // CHECK selection for distance
     switch (islandSelection) {
@@ -164,19 +164,18 @@ export const bridgerFormHandler = async function (player) {
       case 28: // 50b
         break;
       case 12: // staircased
-        if (data.tempData.stairCased)
-          return sendConfirmationMessage(player, "The height is already staircased!", "random.anvil.land");
-        fillAndPlace(structure, flat, stairCased);
+        if (dynamicProperty.getBoolean("straightHeight"))
+          return exp.confirmMessage(player, "§4The height is already staircased!", "random.anvil_land");
         dynamicProperty.switchBoolean("straightHeight");
-        sendConfirmationMessage(player, `§aThe height is now§r §6StairCased§r§a!`);
+        fillAndPlace(structure, flat, stairCased);
+        exp.confirmMessage(player, `§aThe height is now§r §6StairCased§r§a!`, "random.orb");
         break;
       case 21: // flat
-        if (!data.tempData.stairCased)
-          return sendConfirmationMessage(player, "The height is already flat!", "random.anvil.land");
-        data.tempData.stairCased = false;
-        fillAndPlace(structure, stairCased, flat);
+        if (!dynamicProperty.getBoolean("straightHeight"))
+          return exp.confirmMessage(player, "§4The height is already flat!", "random.anvil_land");
         dynamicProperty.switchBoolean("straightHeight");
-        sendConfirmationMessage(player, `§aThe height is now§r §6Flat§r§a!`);
+        fillAndPlace(structure, stairCased, flat);
+        exp.confirmMessage(player, `§aThe height is now§r §6Flat§r§a!`, "random.orb");
         break;
     }
   }
@@ -271,4 +270,5 @@ mc.world.afterEvents.chatSend.subscribe((e) => {
   mc.world.sendMessage("bridger player now defined");
   //////////////////////////////////////////////////
   // debug from here
+  mc.world.sendMessage(String(dynamicProperty.getBoolean("straightHeight")));
 });
