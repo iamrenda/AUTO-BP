@@ -2,12 +2,13 @@ import { world } from "@minecraft/server";
 
 /**
  * booleanDatas:
- *   straightHeight: T - StairCased | F - Flat
+ *   straightHeight: S - StairCased | F - Flat
+ *   straightDistance: 1 - 16blocks | 2 - 21blocks | 3 - 50blocks
  */
 
 const dynamicProperty = {
   games: ["straight16b", "straight21b", "straight50b", "incline16b", "incline25b", "incline50b"],
-  booleanDatas: ["straightHeight"],
+  gameDatas: ["straightHeight", "straightDistance"],
 
   // checking arg game name is vaild
   checkGameName(game) {
@@ -18,8 +19,8 @@ const dynamicProperty = {
     return true;
   },
 
-  checkBooleanData(boolean) {
-    if (!this.booleanDatas.includes(boolean)) {
+  checkGameData(data) {
+    if (!this.gameDatas.includes(data)) {
       console.warn("[ERROR] Unknown boolean data detected");
       return false;
     }
@@ -79,22 +80,30 @@ const dynamicProperty = {
     world.setDynamicProperty("auto:successAtmps", newRawData);
   },
 
-  // booleanData must be an element from booleanDatas
-  getBoolean(booleanData) {
-    if (!this.checkBooleanData) return;
-    const rawDataArr = world.getDynamicProperty("auto:booleanDatas").split("|");
-    const dataIndex = this.booleanDatas.indexOf(booleanData);
-    return rawDataArr[dataIndex] === "T" ? true : false;
+  // booleanData must be an element from gameDatas
+  // always return in string
+  getGameData(gameData) {
+    if (!this.checkGameData) return;
+    const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
+    const dataIndex = this.gameDatas.indexOf(gameData);
+    return rawDataArr[dataIndex];
   },
 
-  // booleanData must be an element from booleanDatas
-  switchBoolean(booleanData) {
-    if (!this.checkBooleanData) return;
-    const rawDataArr = world.getDynamicProperty("auto:booleanDatas").split("|");
-    const dataIndex = this.booleanDatas.indexOf(booleanData);
-    rawDataArr[dataIndex] = rawDataArr[dataIndex] === "T" ? "F" : "T";
+  // booleanData must be an element from gameDatas
+  setGameData(gameData, data) {
+    if (!this.checkGameData) return;
+    const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
+    const dataIndex = this.gameDatas.indexOf(gameData);
+    rawDataArr[dataIndex] = data;
     const newRawData = rawDataArr.join("|");
-    world.setDynamicProperty("auto:booleanDatas", newRawData);
+    world.setDynamicProperty("auto:gameDatas", newRawData);
+  },
+
+  resetdynamicProperties() {
+    world.setDynamicProperty("auto:pb", "-1|-1|-1|-1|-1|-1");
+    world.setDynamicProperty("auto:atmps", "-1|-1|-1|-1|-1|-1");
+    world.setDynamicProperty("auto:successAtmps", "-1|-1|-1|-1|-1|-1");
+    world.setDynamicProperty("auto:gameDatas", "S|2");
   },
 };
 

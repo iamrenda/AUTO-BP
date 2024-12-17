@@ -1,5 +1,3 @@
-import dynamicProperty from "./dynamicProperty";
-
 const locationData = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
@@ -35,20 +33,10 @@ const blocks = [
  * location: [0] - location to load the file
  *           [0] & [1] - locations to fill air
  */
-const structure = [
+const structures = [
   {
     name: "default",
     file: "mystructure:default",
-    location: {
-      flat: [
-        { x: 9993, y: 93, z: 10024 },
-        { x: 10005, y: 106, z: 10033 },
-      ],
-      stairCased: [
-        { x: 9993, y: 95, z: 10024 },
-        { x: 10005, y: 108, z: 10033 },
-      ],
-    },
   },
 ];
 
@@ -63,4 +51,4 @@ const tempData = {
   pickaxe: "minecraft:wooden_pickaxe",
 };
 
-export { locationData, tempData, structure, blocks };
+export { locationData, tempData, structures, blocks };

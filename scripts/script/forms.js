@@ -110,39 +110,39 @@ const bridgerIslandForm = async function (player) {
     .title("Island Customization")
     .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {
       s: {
-        itemName: "§616 Blocks", //CHECK
+        itemName: "§616 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 16,
-        enchanted: false,
+        enchanted: dynamicProperty.getGameData("straightDistance") === "1",
       },
       m: {
         itemName: "§621 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 21,
-        enchanted: false,
+        enchanted: dynamicProperty.getGameData("straightDistance") === "2",
       },
       l: {
         itemName: "§650 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 50,
-        enchanted: false,
+        enchanted: dynamicProperty.getGameData("straightDistance") === "3",
       },
       c: {
         itemName: "§6StairCased",
         itemDesc: [],
         texture: "minecraft:sandstone_stairs",
         stackAmount: 1,
-        enchanted: dynamicProperty.getBoolean("straightHeight"),
+        enchanted: dynamicProperty.getGameData("straightHeight") === "S",
       },
       f: {
         itemName: "§6Flat",
         itemDesc: [],
         texture: "minecraft:sandstone_slab",
         stackAmount: 1,
-        enchanted: !dynamicProperty.getBoolean("straightHeight"),
+        enchanted: dynamicProperty.getGameData("straightHeight") === "F",
       },
     });
   return await form.show(player);

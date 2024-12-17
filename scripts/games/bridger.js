@@ -121,11 +121,66 @@ const enablePlate = function (cancelTimer = false) {
  * @param {Vector3[]} clearLocation - contains location to fill with air
  * @param {Vector3} placeLocation - contains the location to place structure
  */
-const fillAndPlace = function (structure, clearLocation, placeLocation) {
+const fillAndPlaceOld = function (structure, clearLocation, placeLocation) {
   const dimension = mc.world.getDimension("overworld");
 
   dimension.fillBlocks(new mc.BlockVolume(clearLocation[0], clearLocation[1]), "minecraft:air");
   mc.world.structureManager.place(structure.file, dimension, placeLocation[0]);
+};
+
+/**
+ * fillAndPlace: clear previous island and place new island at new location
+ *
+ * @param {Object} structure - an object from data.structures
+ * @param {Object} {distance1:"1"|"2"|"3", isStairCased1:Boolean} - info which filled with air
+ * @param {Object} {distance2:"1"|"2"|"3", isStairCased2:Boolean} - info which new structure will be built
+ */
+const fillAndPlace = function (
+  structure,
+  { distance: distance1, isStairCased: isStairCased1 },
+  { distance: distance2, isStairCased: isStairCased2 }
+) {
+  // CHECK check is distance1 and distance2 is vaild input
+  const dimension = mc.world.getDimension("overworld");
+  const fillAirLocation = {
+    start: { x: 9993, y: null, z: null },
+    end: { x: 10005, y: null, z: null },
+  };
+  const structurePlaceLocation = { x: 9993, y: null, z: null };
+
+  // fillAirLocation
+  if (distance1 === "1") {
+    fillAirLocation.start.y = !isStairCased1 ? 93 : 94;
+    fillAirLocation.start.z = 10019;
+  }
+  if (distance1 === "2") {
+    fillAirLocation.start.y = !isStairCased1 ? 93 : 95;
+    fillAirLocation.start.z = 10024;
+  }
+  if (distance1 === "3") {
+    fillAirLocation.start.y = !isStairCased1 ? 93 : 98;
+    fillAirLocation.start.z = 10053;
+  }
+  fillAirLocation.end.y = fillAirLocation.start.y + 13;
+  fillAirLocation.end.z = fillAirLocation.start.z + 9;
+
+  // structure place location
+  if (distance2 === "1") {
+    structurePlaceLocation.y = !isStairCased2 ? 93 : 94;
+    structurePlaceLocation.z = 10019;
+  }
+  if (distance2 === "2") {
+    structurePlaceLocation.y = !isStairCased2 ? 93 : 95;
+    structurePlaceLocation.z = 10024;
+  }
+  if (distance2 === "3") {
+    structurePlaceLocation.y = !isStairCased2 ? 93 : 98;
+    structurePlaceLocation.z = 10053;
+  }
+
+  // filling with air
+  dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
+  mc.world.structureManager.place(structure.file, dimension, structurePlaceLocation);
 };
 
 /////////////////////////////////////////////////////////
@@ -152,29 +207,55 @@ export const bridgerFormHandler = async function (player) {
   // bridgerForm: island
   if (bridgerSelection === 12) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
-    const structure = data.structure[data.tempData.structureIndex];
-    const { stairCased, flat } = structure.location;
 
     // CHECK selection for distance
     switch (islandSelection) {
       case 10: // 16b
+        if (dynamicProperty.getGameData("straightDistance") === "1")
+          return exp.confirmMessage(player, "§4The distance is already 16 blocks!", "random.anvil_land");
+        dynamicProperty.setGameData("straightDistance", "1");
+        // CHECK fillAndPlace()
+        exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
         break;
+
       case 19: // 25b
+        if (dynamicProperty.getGameData("straightDistance") === "1")
+          return exp.confirmMessage(player, "§4The distance is already 25 blocks!", "random.anvil_land");
+        dynamicProperty.setGameData("straightDistance", "2");
+        // CHECK fillAndPlace()
+        exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
         break;
+
       case 28: // 50b
+        if (dynamicProperty.getGameData("straightDistance") === "1")
+          return exp.confirmMessage(player, "§4The distance is already 50 blocks!", "random.anvil_land");
+        dynamicProperty.setGameData("straightDistance", "3");
+        // CHECK fillAndPlace()
+        exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
         break;
+
       case 12: // staircased
-        if (dynamicProperty.getBoolean("straightHeight"))
+        if (dynamicProperty.getGameData("straightHeight") === "S")
           return exp.confirmMessage(player, "§4The height is already staircased!", "random.anvil_land");
-        dynamicProperty.switchBoolean("straightHeight");
-        fillAndPlace(structure, flat, stairCased);
+        dynamicProperty.setGameData("straightHeight", "S");
+
+        fillAndPlace(
+          data.structures[0],
+          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: false },
+          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: true }
+        );
         exp.confirmMessage(player, `§aThe height is now§r §6StairCased§r§a!`, "random.orb");
         break;
+
       case 21: // flat
-        if (!dynamicProperty.getBoolean("straightHeight"))
+        if (dynamicProperty.getGameData("straightHeight") === "F")
           return exp.confirmMessage(player, "§4The height is already flat!", "random.anvil_land");
-        dynamicProperty.switchBoolean("straightHeight");
-        fillAndPlace(structure, stairCased, flat);
+        dynamicProperty.setGameData("straightHeight", "F");
+        fillAndPlace(
+          data.structures[0],
+          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: true },
+          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: false }
+        );
         exp.confirmMessage(player, `§aThe height is now§r §6Flat§r§a!`, "random.orb");
         break;
     }
@@ -263,12 +344,10 @@ export const listener = function () {
 };
 
 // CHECK DEBUGGING PURPOSES
-mc.world.afterEvents.chatSend.subscribe((e) => {
-  e.cancel = true;
-  const player = e.sender;
+mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
   bridger.player = player;
   mc.world.sendMessage("bridger player now defined");
   //////////////////////////////////////////////////
   // debug from here
-  mc.world.sendMessage(String(dynamicProperty.getBoolean("straightHeight")));
+  mc.world.sendMessage(String(dynamicProperty.getGameData("straightHeight")));
 });
