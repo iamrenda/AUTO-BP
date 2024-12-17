@@ -155,9 +155,14 @@ export const bridgerFormHandler = async function (player) {
     const { stairCased, flat } = structure.location;
     const structure = data.structure[data.tempData.structureIndex];
 
-    switch (
-      islandSelection // CHECK selection for distance
-    ) {
+    // CHECK selection for distance
+    switch (islandSelection) {
+      case 10: // 16b
+        break;
+      case 19: // 25b
+        break;
+      case 28: // 50b
+        break;
       case 12: // staircased
         if (data.tempData.stairCased)
           return sendConfirmationMessage(player, "The height is already staircased!", "random.anvil.land");
