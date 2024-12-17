@@ -137,7 +137,7 @@ export const bridgerFormHandler = async function (player) {
   const { selection: bridgerSelection } = await form.bridgerForm(player);
 
   // bridgerForm: general
-  if (bridgerSelection === 1) {
+  if (bridgerSelection === 10) {
     const { selection: generalSelection } = await form.bridgerGeneralForm(player);
     switch (generalSelection) {
       case 10:
@@ -150,7 +150,7 @@ export const bridgerFormHandler = async function (player) {
   }
 
   // bridgerForm: island
-  if (bridgerSelection === 3) {
+  if (bridgerSelection === 12) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
     const structure = data.structure[data.tempData.structureIndex];
     const { stairCased, flat } = structure.location;
@@ -181,7 +181,7 @@ export const bridgerFormHandler = async function (player) {
   }
 
   // bridgerForm: reset pb
-  if (bridgerSelection === 5) {
+  if (bridgerSelection === 14) {
     try {
       const { selection: confirmSelection } = await form.confirmationForm(player);
       if (confirmSelection !== 6) return;
@@ -194,7 +194,7 @@ export const bridgerFormHandler = async function (player) {
   }
 
   // bridgerForm: quit bridger
-  if (bridgerSelection === 7) {
+  if (bridgerSelection === 16) {
     exp.setGameId("lobby");
     resetMap(false);
     exp.confirmMessage(player, "§7Teleporting back to lobby...");

@@ -57,18 +57,18 @@ const confirmationForm = async function (player) {
 };
 
 const bridgerForm = async function (player) {
-  const form = new ChestFormData("9").title("Settings").pattern(["_b_i_r_o_"], {
+  const form = new ChestFormData("27").title("Settings").pattern(["_________", "_b_i_r_o_", "_________"], {
     b: {
-      itemName: "§2General",
+      itemName: "§3General",
       itemDesc: [],
-      texture: "minecraft:grass_block",
+      texture: "minecraft:comparator",
       stackAmount: 1,
       enchanted: false,
     },
     i: {
-      itemName: "§3Island",
+      itemName: "§2Island",
       itemDesc: [],
-      texture: "minecraft:sandstone_stairs",
+      texture: "minecraft:grass_block",
       stackAmount: 1,
       enchanted: false,
     },
