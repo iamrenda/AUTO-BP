@@ -1,4 +1,3 @@
-import { world, BlockVolume } from "@minecraft/server";
 import { lobbyForm } from "../script/forms.js";
 import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
@@ -16,6 +15,7 @@ export const nagivatorFormHandler = function (player) {
 
       exp.setGameId("bridger");
       exp.teleportation(player, data.locationData.bridger.straight);
+      exp.confirmMessage(player, "§7Teleporting to bridger...");
     }
 
     // clutcher

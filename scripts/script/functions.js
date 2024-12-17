@@ -39,4 +39,16 @@ const teleportation = function (player, obj) {
   player.teleport(obj.position, { facingLocation: obj.facing });
 };
 
-export { giveItems, teleportation, getGameId, setGameId };
+/**
+ * confirmMessage: show message with sound
+ *
+ * @param {Player} player - player object
+ * @param {String} message - message to send
+ * @param {String} sound - minecraft sound to play (optional)
+ */
+const confirmMessage = function (player, message, sound = "") {
+  player.sendMessage(message);
+  if (sound) player.playSound(sound);
+};
+
+export { giveItems, teleportation, getGameId, setGameId, confirmMessage };

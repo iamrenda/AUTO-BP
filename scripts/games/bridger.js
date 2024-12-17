@@ -137,7 +137,14 @@ export const bridgerFormHandler = function (player) {
   form.bridgerForm(player).then(({ selection }) => {
     // block selection
     if (selection === 1)
-      form.bridgerBlockForm(player).then((res) => (data.tempData.block = data.blocks[res.selection].texture));
+      form
+        .bridgerBlockForm(player)
+        .then((res) => {
+          const block = data.blocks[res.selection];
+          data.tempData.block = block.texture;
+          exp.confirmMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`, "random.orb");
+        })
+        .catch(() => null);
 
     // height selection
     if (selection === 3) {
@@ -150,6 +157,9 @@ export const bridgerFormHandler = function (player) {
         : fillAndPlace(structure, flat, stairCased); // stairCased mode
 
       dynamicProperty.switchBoolean("straightHeight");
+
+      const heightText = !data.tempData.stairCased ? "Flat" : "StairCased";
+      exp.confirmMessage(player, `§aThe height is now§r §6${heightText}§r§a!`, "random.orb");
     }
 
     // reset pb
@@ -159,7 +169,7 @@ export const bridgerFormHandler = function (player) {
 
         try {
           dynamicProperty.resetPB("straight25b");
-          player.sendMessage("§aSuccess! Your personal best score has been reset!");
+          exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
         } catch (err) {
           player.sendMessage(`§4Error, please try again. (error: ${err})`);
         }
@@ -171,6 +181,7 @@ export const bridgerFormHandler = function (player) {
     if (selection === 7) {
       exp.setGameId("lobby");
       resetMap(false);
+      exp.confirmMessage(player, "§7Teleporting back to lobby...");
     }
   });
 };

@@ -28,7 +28,7 @@ const blocks = [
   { blockName: "Amethyst Block", texture: "minecraft:amethyst_block" },
   { blockName: "White Wool", texture: "minecraft:white_wool" },
   { blockName: "Crying Obsidian", texture: "minecraft:crying_obsidian" },
-  { blockName: "Barrier", texture: "minecraft:barrier" },
+  { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
 
 /**
