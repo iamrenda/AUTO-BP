@@ -59,9 +59,9 @@ const confirmationForm = async function (player) {
 const bridgerForm = async function (player) {
   const form = new ChestFormData("9").title("Settings").pattern(["_b_i_r_o_"], {
     b: {
-      itemName: "§2Blocks", // CHECK
+      itemName: "§2General",
       itemDesc: [],
-      texture: tempData.block,
+      texture: " minecraft:grass_block",
       stackSize: 1,
       enchanted: false,
     },
@@ -90,8 +90,20 @@ const bridgerForm = async function (player) {
   return await form.show(player);
 };
 
-// CHECK
-const bridgerGeneralForm = async function (player) {};
+const bridgerGeneralForm = async function (player) {
+  const form = new ChestFormData("27")
+    .title("Bridger General Settings")
+    .pattern((["_________"], ["_b_______"], ["_________"]), {
+      b: {
+        itemName: "§2Blocks",
+        itemDesc: [],
+        texture: tempData.block,
+        stackSize: 1,
+        enchanted: false,
+      },
+    });
+  return await form.show(player);
+};
 
 const bridgerIslandForm = async function (player) {
   const form = new ChestFormData("45")
@@ -133,6 +145,7 @@ const bridgerIslandForm = async function (player) {
         enchanted: !dynamicProperty.getBoolean("straightHeight"),
       },
     });
+  return await form.show(player);
 };
 
 const bridgerBlockForm = async function (player) {
@@ -146,4 +159,4 @@ const bridgerBlockForm = async function (player) {
   return await form.show(player);
 };
 
-export { lobbyForm, confirmationForm, bridgerIslandForm, bridgerForm, bridgerBlockForm };
+export { lobbyForm, confirmationForm, bridgerGeneralForm, bridgerIslandForm, bridgerForm, bridgerBlockForm };

@@ -135,31 +135,53 @@ export const defineBridger = function (pl) {
 
 export const bridgerFormHandler = function (player) {
   form.bridgerForm(player).then(({ selection }) => {
-    // block selection
+    // General
     if (selection === 1)
-      form
-        .bridgerBlockForm(player)
-        .then((res) => {
-          const block = data.blocks[res.selection];
-          data.tempData.block = block.texture;
-          exp.confirmMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`, "random.orb");
-        })
-        .catch(() => null);
+      form.bridgerGeneralForm.then(({ selection }) => {
+        if (selection === 11)
+          form
+            .bridgerBlockForm(player)
+            .then((res) => {
+              const block = data.blocks[res.selection];
+              data.tempData.block = block.texture;
+              exp.confirmMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`, "random.orb");
+            })
+            .catch(() => null);
+      });
 
-    // height selection
+    // Island
     if (selection === 3) {
-      data.tempData.stairCased = !data.tempData.stairCased;
+      form.bridgerIslandForm.then(({ selection }) => {
+        // flat CHECK unsure
+        if (selection === 21) {
+          data.tempData.stairCased = !data.tempData.stairCased;
 
-      const structure = data.structure[data.tempData.structureIndex];
-      const { stairCased, flat } = structure.location;
-      !data.tempData.stairCased
-        ? fillAndPlace(structure, stairCased, flat) // flat mode
-        : fillAndPlace(structure, flat, stairCased); // stairCased mode
+          const structure = data.structure[data.tempData.structureIndex];
+          const { stairCased, flat } = structure.location;
+          !data.tempData.stairCased
+            ? fillAndPlace(structure, stairCased, flat) // flat mode
+            : fillAndPlace(structure, flat, stairCased); // stairCased mode
 
-      dynamicProperty.switchBoolean("straightHeight");
+          dynamicProperty.switchBoolean("straightHeight");
 
-      const heightText = !data.tempData.stairCased ? "Flat" : "StairCased";
-      exp.confirmMessage(player, `§aThe height is now§r §6${heightText}§r§a!`, "random.orb");
+          const heightText = !data.tempData.stairCased ? "Flat" : "StairCased";
+          exp.confirmMessage(player, `§aThe height is now§r §6${heightText}§r§a!`, "random.orb");
+        }
+        if (selection === 28) {
+          data.tempData.stairCased = !data.tempData.stairCased;
+
+          const structure = data.structure[data.tempData.structureIndex];
+          const { stairCased, flat } = structure.location;
+          !data.tempData.stairCased
+            ? fillAndPlace(structure, stairCased, flat) // flat mode
+            : fillAndPlace(structure, flat, stairCased); // stairCased mode
+
+          dynamicProperty.switchBoolean("straightHeight");
+
+          const heightText = !data.tempData.stairCased ? "Flat" : "StairCased";
+          exp.confirmMessage(player, `§aThe height is now§r §6${heightText}§r§a!`, "random.orb");
+        }
+      });
     }
 
     // reset pb
