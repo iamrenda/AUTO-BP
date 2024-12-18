@@ -118,8 +118,8 @@ const enablePlate = function (cancelTimer = false) {
  * fillAndPlace: clear previous island and place new island at new location
  *
  * @param {Object} structure - an object from data.structures
- * @param {Object} {distance1:"1"|"2"|"3", isStairCased1:Boolean} - info which filled with air
- * @param {Object} {distance2:"1"|"2"|"3", isStairCased2:Boolean} - info which new structure will be built
+ * @param {Object} {distance1:16|21|50, isStairCased1:Boolean} - info which filled with air
+ * @param {Object} {distance2:16|21|50, isStairCased2:Boolean} - info which new structure will be built
  */
 const fillAndPlace = function (
   structure,
@@ -129,21 +129,21 @@ const fillAndPlace = function (
   // CHECK check is distance1 and distance2 is vaild input
   const dimension = mc.world.getDimension("overworld");
   const fillAirLocation = {
-    start: { x: 9993, y: null, z: null },
-    end: { x: 10005, y: null, z: null },
+    start: { x: 9993, y: undefined, z: undefined },
+    end: { x: 10005, y: undefined, z: undefined },
   };
-  const structurePlaceLocation = { x: 9993, y: null, z: null };
+  const structurePlaceLocation = { x: 9993, y: undefined, z: undefined };
 
   // fillAirLocation
-  if (distance1 === "1") {
+  if (distance1 === 16) {
     fillAirLocation.start.y = !isStairCased1 ? 93 : 94;
     fillAirLocation.start.z = 10019;
   }
-  if (distance1 === "2") {
+  if (distance1 === 21) {
     fillAirLocation.start.y = !isStairCased1 ? 93 : 95;
     fillAirLocation.start.z = 10024;
   }
-  if (distance1 === "3") {
+  if (distance1 === 50) {
     fillAirLocation.start.y = !isStairCased1 ? 93 : 98;
     fillAirLocation.start.z = 10053;
   }
@@ -151,15 +151,15 @@ const fillAndPlace = function (
   fillAirLocation.end.z = fillAirLocation.start.z + 9;
 
   // structure place location
-  if (distance2 === "1") {
+  if (distance2 === 16) {
     structurePlaceLocation.y = !isStairCased2 ? 93 : 94;
     structurePlaceLocation.z = 10019;
   }
-  if (distance2 === "2") {
+  if (distance2 === 21) {
     structurePlaceLocation.y = !isStairCased2 ? 93 : 95;
     structurePlaceLocation.z = 10024;
   }
-  if (distance2 === "3") {
+  if (distance2 === 50) {
     structurePlaceLocation.y = !isStairCased2 ? 93 : 98;
     structurePlaceLocation.z = 10053;
   }
@@ -172,43 +172,43 @@ const fillAndPlace = function (
 /**
  * handleDistanceChange: replace island based on distance and save in dynamic property
  *
- * @param {String} newDistance - "1": 16blocks | "2": 25 blocks | "3": 50 blocks
- * @param {String} blocks - "16" || "25" || "50"
+ * @param {Player} player - player object
+ * @param {number} blocks - 16 | 21 | 50
  */
-const handleDistanceChange = async function (player, newDistance, blocks) {
-  if (dynamicProperty.getGameData("straightDistance") === newDistance)
+const handleDistanceChange = function (player, blocks) {
+  if (dynamicProperty.getGameData("straightDistance") === String(blocks))
     return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
   fillAndPlace(
     data.structures[0],
     {
-      distance: dynamicProperty.getGameData("straightDistance"),
-      isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
+      distance: +dynamicProperty.getGameData("straightDistance"),
+      isStairCased: dynamicProperty.getGameData("straightIsStairCased"),
     },
-    { distance: newDistance, isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
+    { distance: blocks, isStairCased: dynamicProperty.getGameData("straightIsStairCased") }
   );
-  dynamicProperty.setGameData("straightDistance", newDistance);
-  exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} Blocks§r§a!`, "random.orb");
+  dynamicProperty.setGameData("straightDistance", blocks);
+  exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
 };
 
 /**
  * handleHeightChange: replace island based on height and save in dynamic property
  *
- * @param {String} newHeight - "S": StairCased | "F": Flat
- * @param {String} heightType - "staircased" | "flat"
+ * @param {Player} player - "S": StairCased | "F": Flat
+ * @param {Boolean} isStairCased - new height
  */
-const handleHeightChange = async function (player, newHeight, heightType) {
-  if (dynamicProperty.getGameData("straightHeight") === newHeight)
+const handleHeightChange = function (player, isStairCased) {
+  if (dynamicProperty.getGameData("straightIsStairCased") === isStairCased)
     return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
-  dynamicProperty.setGameData("straightHeight", newHeight);
   fillAndPlace(
     data.structures[0],
     {
-      distance: dynamicProperty.getGameData("straightDistance"),
-      isStairCased: dynamicProperty.getGameData("straightHeight") !== "S",
+      distance: +dynamicProperty.getGameData("straightDistance"),
+      isStairCased: !isStairCased,
     },
-    { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: newHeight === "S" }
+    { distance: +dynamicProperty.getGameData("straightDistance"), isStairCased: isStairCased }
   );
-  exp.confirmMessage(player, `§aThe height is now§r §6${heightType.toUpperCase()}§r§a!`, "random.orb");
+  dynamicProperty.setGameData("straightIsStairCased", isStairCased);
+  exp.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
 };
 
 /////////////////////////////////////////////////////////
@@ -236,24 +236,20 @@ export const bridgerFormHandler = async function (player) {
   if (bridgerSelection === 12) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
 
-    if (islandSelection === 10) await handleDistanceChange(player, "1", "16");
-    if (islandSelection === 19) await handleDistanceChange(player, "2", "21");
-    if (islandSelection === 28) await handleDistanceChange(player, "3", "50");
-    if (islandSelection === 12) await handleHeightChange(player, "S", "staircased");
-    if (islandSelection === 21) await handleHeightChange(player, "F", "flat");
+    if (islandSelection === 10) handleDistanceChange(player, 16);
+    if (islandSelection === 19) handleDistanceChange(player, 21);
+    if (islandSelection === 28) handleDistanceChange(player, 50);
+    if (islandSelection === 12) handleHeightChange(player, true);
+    if (islandSelection === 21) handleHeightChange(player, false);
   }
 
   // bridgerForm: reset pb
   if (bridgerSelection === 14) {
-    try {
-      const { selection: confirmSelection } = await form.confirmationForm(player);
-      if (confirmSelection !== 6) return;
-      dynamicProperty.resetPB("straight21b");
-      exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
-      updateFloatingText();
-    } catch (err) {
-      player.sendMessage(`§4Error, please try again. (error: ${err})`);
-    }
+    const { selection: confirmSelection } = await form.confirmationForm(player);
+    if (confirmSelection !== 6) return;
+    dynamicProperty.resetPB("straight21b");
+    exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
+    updateFloatingText();
   }
 
   // bridgerForm: quit bridger

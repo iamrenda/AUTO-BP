@@ -37,7 +37,7 @@ const lobbyForm = async function (player) {
 };
 
 const confirmationForm = async function (player) {
-  const form = new ChestFormData("9").title("§4§lAre you sure?").pattern(["__n___y__"], {
+  const form = new ChestFormData("27").title("§4§lAre you sure?").pattern(["_________", "__n___y__", "_________"], {
     n: {
       itemName: "§7Cancel",
       itemDesc: [],
@@ -114,35 +114,35 @@ const bridgerIslandForm = async function (player) {
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 16,
-        enchanted: dynamicProperty.getGameData("straightDistance") === "1",
+        enchanted: +dynamicProperty.getGameData("straightDistance") === 16,
       },
       m: {
         itemName: "§621 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 21,
-        enchanted: dynamicProperty.getGameData("straightDistance") === "2",
+        enchanted: +dynamicProperty.getGameData("straightDistance") === 21,
       },
       l: {
         itemName: "§650 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 50,
-        enchanted: dynamicProperty.getGameData("straightDistance") === "3",
+        enchanted: +dynamicProperty.getGameData("straightDistance") === 50,
       },
       c: {
         itemName: "§6StairCased",
         itemDesc: [],
         texture: "minecraft:sandstone_stairs",
         stackAmount: 1,
-        enchanted: dynamicProperty.getGameData("straightHeight") === "S",
+        enchanted: dynamicProperty.getGameData("straightIsStairCased"),
       },
       f: {
         itemName: "§6Flat",
         itemDesc: [],
         texture: "minecraft:sandstone_slab",
         stackAmount: 1,
-        enchanted: dynamicProperty.getGameData("straightHeight") === "F",
+        enchanted: !dynamicProperty.getGameData("straightIsStairCased"),
       },
     });
   return await form.show(player);

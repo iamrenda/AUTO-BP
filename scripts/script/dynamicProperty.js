@@ -1,14 +1,25 @@
 import { world } from "@minecraft/server";
 
 /**
- * booleanDatas:
+ * gameDatas:
  *   straightHeight: S - StairCased | F - Flat
  *   straightDistance: 1 - 16blocks | 2 - 21blocks | 3 - 50blocks
  */
-
 const dynamicProperty = {
   games: ["straight16b", "straight21b", "straight50b", "incline16b", "incline25b", "incline50b"],
-  gameDatas: ["straightHeight", "straightDistance"],
+  gameDatas: {
+    straightIsStairCased: {
+      // returned Boolean
+      T: true,
+      F: false,
+    },
+    straightDistance: {
+      // returned string
+      1: "16",
+      2: "21",
+      3: "50",
+    },
+  },
 
   // checking arg game name is vaild
   checkGameName(game) {
@@ -80,21 +91,21 @@ const dynamicProperty = {
     world.setDynamicProperty("auto:successAtmps", newRawData);
   },
 
-  // booleanData must be an element from gameDatas
-  // always return in string
   getGameData(gameData) {
     if (!this.checkGameData) return;
     const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
-    const dataIndex = this.gameDatas.indexOf(gameData);
-    return rawDataArr[dataIndex];
+    const dataIndex = Object.keys(this.gameDatas).indexOf(gameData);
+    const rawValue = rawDataArr[dataIndex];
+    return this.gameDatas[gameData][rawValue];
   },
 
-  // booleanData must be an element from gameDatas
   setGameData(gameData, data) {
     if (!this.checkGameData) return;
     const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
-    const dataIndex = this.gameDatas.indexOf(gameData);
-    rawDataArr[dataIndex] = data;
+    const dataIndex = Object.keys(this.gameDatas).indexOf(gameData);
+    rawDataArr[dataIndex] = Object.keys(this.gameDatas[gameData]).find(
+      (key) => String(this.gameDatas[gameData][key]) === String(data)
+    );
     const newRawData = rawDataArr.join("|");
     world.setDynamicProperty("auto:gameDatas", newRawData);
   },
@@ -103,7 +114,7 @@ const dynamicProperty = {
     world.setDynamicProperty("auto:pb", "-1|-1|-1|-1|-1|-1");
     world.setDynamicProperty("auto:atmps", "-1|-1|-1|-1|-1|-1");
     world.setDynamicProperty("auto:successAtmps", "-1|-1|-1|-1|-1|-1");
-    world.setDynamicProperty("auto:gameDatas", "S|2");
+    world.setDynamicProperty("auto:gameDatas", "F|2");
   },
 };
 
