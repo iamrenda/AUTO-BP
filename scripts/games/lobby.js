@@ -1,6 +1,7 @@
 import { lobbyForm } from "../script/forms.js";
 import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
+import dynamicProperty from "../script/dynamicProperty.js";
 
 export const nagivatorFormHandler = async function (player) {
   const { selection } = await lobbyForm(player);
@@ -14,7 +15,7 @@ export const nagivatorFormHandler = async function (player) {
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ]);
 
-    exp.setGameId("bridger");
+    dynamicProperty.setGameId(`straight${dynamicProperty.getGameData("straightDistance")}b`);
     exp.teleportation(player, data.locationData.bridger.straight);
     exp.confirmMessage(player, "§7Teleporting to bridger...");
   }
@@ -22,7 +23,7 @@ export const nagivatorFormHandler = async function (player) {
   // clutcher
   if (selection === 3) {
     console.warn("2");
-    exp.setGameId("clutcher");
+    dynamicProperty.setGameId("clutcher");
   }
 
   // back to lobby

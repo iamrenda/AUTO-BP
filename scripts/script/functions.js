@@ -1,16 +1,4 @@
-import { world, ItemStack } from "@minecraft/server";
-
-const getGameId = function () {
-  return world.getDynamicProperty("auto:gameId");
-};
-
-const setGameId = function (gameId) {
-  const gameIds = ["lobby", "bridger", "clutcher"];
-
-  if (gameIds.includes(gameId)) world.setDynamicProperty("auto:gameId", gameId);
-  else return console.warn("[ERROR] Improper game id detected");
-};
-
+import { ItemStack } from "@minecraft/server";
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  *
@@ -51,4 +39,4 @@ const confirmMessage = function (player, message, sound = "") {
   if (sound) player.playSound(sound);
 };
 
-export { giveItems, teleportation, getGameId, setGameId, confirmMessage };
+export { giveItems, teleportation, confirmMessage };

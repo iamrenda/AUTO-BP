@@ -1,18 +1,21 @@
 import * as mc from "@minecraft/server";
 import * as exp from "./functions.js";
 import * as data from "./data.js";
+import dynamicProperty from "./dynamicProperty.js";
 
 import * as lobby from "../games/lobby.js";
 import * as bridger from "../games/bridger.js";
 
 // player right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
-  switch (exp.getGameId()) {
+  switch (dynamicProperty.getGameId()) {
     case "lobby":
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
       break;
 
-    case "bridger":
+    case "straight16b":
+    case "straight21b":
+    case "straight50b":
       if (item.typeId === "minecraft:book") bridger.bridgerFormHandler(player);
       break;
   }
@@ -20,10 +23,12 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
 
 // player placing a block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
-  switch (exp.getGameId()) {
+  switch (dynamicProperty.getGameId()) {
     case "lobby":
       break;
-    case "bridger":
+    case "straight16b":
+    case "straight21b":
+    case "straight50b":
       bridger.placingBlockEvt(block);
       break;
   }
@@ -31,10 +36,12 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
 
 // player pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(() => {
-  switch (exp.getGameId()) {
+  switch (dynamicProperty.getGameId()) {
     case "lobby":
       break;
-    case "bridger":
+    case "straight16b":
+    case "straight21b":
+    case "straight50b":
       bridger.pressurePlatePushEvt();
       break;
   }
@@ -49,7 +56,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 });
 
 // player leaving the world
-mc.world.beforeEvents.playerLeave.subscribe(() => exp.setGameId("lobby"));
+mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
 
 // player breaking a block // CHECK
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
@@ -57,10 +64,10 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
 mc.system.runInterval(() => {
-  switch (exp.getGameId()) {
-    case "lobby":
-      break;
-    case "bridger":
+  switch (dynamicProperty.getGameId()) {
+    case "straight16b":
+    case "straight21b":
+    case "straight50b":
       bridger.listener();
       break;
   }

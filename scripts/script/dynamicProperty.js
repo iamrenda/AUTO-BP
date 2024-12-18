@@ -21,32 +21,21 @@ const dynamicProperty = {
     },
   },
 
-  // checking arg game name is vaild
-  checkGameName(game) {
-    if (!this.games.includes(game)) {
-      console.warn("[ERROR] Unknown game detected");
-      return false;
-    }
-    return true;
+  getGameId() {
+    return world.getDynamicProperty("auto:gameId");
   },
 
-  checkGameData(data) {
-    if (!this.gameDatas.includes(data)) {
-      console.warn("[ERROR] Unknown boolean data detected");
-      return false;
-    }
-    return true;
+  setGameId(gameId) {
+    world.setDynamicProperty("auto:gameId", gameId);
   },
 
   getPB(game) {
-    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
   },
 
   setPB(game, ticks) {
-    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = String(ticks);
@@ -55,19 +44,16 @@ const dynamicProperty = {
   },
 
   resetPB(game) {
-    if (!this.checkGameName) return;
     this.setPB(game, -1);
   },
 
   getAttempts(game) {
-    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:atmps").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
   },
 
   addAttempts(game) {
-    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:atmps").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = +rawDataArr[gameIndex] + 1;
@@ -76,14 +62,12 @@ const dynamicProperty = {
   },
 
   getSuccessAttempts(game) {
-    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:successAtmps").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
   },
 
   addSuccessAttempts(game) {
-    if (!this.checkGameName) return;
     const rawDataArr = world.getDynamicProperty("auto:successAtmps").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = +rawDataArr[gameIndex] + 1;
@@ -92,7 +76,6 @@ const dynamicProperty = {
   },
 
   getGameData(gameData) {
-    if (!this.checkGameData) return;
     const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
     const dataIndex = Object.keys(this.gameDatas).indexOf(gameData);
     const rawValue = rawDataArr[dataIndex];
@@ -100,7 +83,6 @@ const dynamicProperty = {
   },
 
   setGameData(gameData, data) {
-    if (!this.checkGameData) return;
     const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
     const dataIndex = Object.keys(this.gameDatas).indexOf(gameData);
     rawDataArr[dataIndex] = Object.keys(this.gameDatas[gameData]).find(
@@ -112,9 +94,9 @@ const dynamicProperty = {
 
   resetdynamicProperties() {
     world.setDynamicProperty("auto:pb", "-1|-1|-1|-1|-1|-1");
-    world.setDynamicProperty("auto:atmps", "-1|-1|-1|-1|-1|-1");
-    world.setDynamicProperty("auto:successAtmps", "-1|-1|-1|-1|-1|-1");
-    world.setDynamicProperty("auto:gameDatas", "F|2");
+    world.setDynamicProperty("auto:atmps", "0|0|0|0|0|0");
+    world.setDynamicProperty("auto:successAtmps", "0|0|0|0|0|0");
+    world.setDynamicProperty("auto:gameDatas", "F|1");
   },
 };
 
