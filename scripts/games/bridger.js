@@ -117,20 +117,6 @@ const enablePlate = function (cancelTimer = false) {
 /**
  * fillAndPlace: clear previous island and place new island at new location
  *
- * @param {Object} structure - object that contains name, file, and location
- * @param {Vector3[]} clearLocation - contains location to fill with air
- * @param {Vector3} placeLocation - contains the location to place structure
- */
-const fillAndPlaceOld = function (structure, clearLocation, placeLocation) {
-  const dimension = mc.world.getDimension("overworld");
-
-  dimension.fillBlocks(new mc.BlockVolume(clearLocation[0], clearLocation[1]), "minecraft:air");
-  mc.world.structureManager.place(structure.file, dimension, placeLocation[0]);
-};
-
-/**
- * fillAndPlace: clear previous island and place new island at new location
- *
  * @param {Object} structure - an object from data.structures
  * @param {Object} {distance1:"1"|"2"|"3", isStairCased1:Boolean} - info which filled with air
  * @param {Object} {distance2:"1"|"2"|"3", isStairCased2:Boolean} - info which new structure will be built
@@ -213,25 +199,46 @@ export const bridgerFormHandler = async function (player) {
       case 10: // 16b
         if (dynamicProperty.getGameData("straightDistance") === "1")
           return exp.confirmMessage(player, "§4The distance is already 16 blocks!", "random.anvil_land");
+        fillAndPlace(
+          data.structures[0],
+          {
+            distance: dynamicProperty.getGameData("straightDistance"),
+            isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
+          },
+          { distance: "1", isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
+        );
         dynamicProperty.setGameData("straightDistance", "1");
-        // CHECK fillAndPlace()
         exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
         break;
 
-      case 19: // 25b
-        if (dynamicProperty.getGameData("straightDistance") === "1")
-          return exp.confirmMessage(player, "§4The distance is already 25 blocks!", "random.anvil_land");
+      case 19: // 21b
+        if (dynamicProperty.getGameData("straightDistance") === "2")
+          return exp.confirmMessage(player, "§4The distance is already 21 blocks!", "random.anvil_land");
+        fillAndPlace(
+          data.structures[0],
+          {
+            distance: dynamicProperty.getGameData("straightDistance"),
+            isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
+          },
+          { distance: "2", isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
+        );
         dynamicProperty.setGameData("straightDistance", "2");
-        // CHECK fillAndPlace()
-        exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
+        exp.confirmMessage(player, `§aThe distance is now§r §621 Blocks§r§a!`, "random.orb");
         break;
 
       case 28: // 50b
-        if (dynamicProperty.getGameData("straightDistance") === "1")
+        if (dynamicProperty.getGameData("straightDistance") === "3")
           return exp.confirmMessage(player, "§4The distance is already 50 blocks!", "random.anvil_land");
+        fillAndPlace(
+          data.structures[0],
+          {
+            distance: dynamicProperty.getGameData("straightDistance"),
+            isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
+          },
+          { distance: "3", isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
+        );
         dynamicProperty.setGameData("straightDistance", "3");
-        // CHECK fillAndPlace()
-        exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
+        exp.confirmMessage(player, `§aThe distance is now§r §650 Blocks§r§a!`, "random.orb");
         break;
 
       case 12: // staircased
@@ -349,5 +356,4 @@ mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
   mc.world.sendMessage("bridger player now defined");
   //////////////////////////////////////////////////
   // debug from here
-  mc.world.sendMessage(String(dynamicProperty.getGameData("straightHeight")));
 });
