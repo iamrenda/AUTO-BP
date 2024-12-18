@@ -35,14 +35,18 @@ const showMessage = function (wasPB) {
   const game = dynamicProperty.getGameId();
   wasPB
     ? bridger.player.sendMessage(
-        `§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Your Personal Best:§r §f${
+        `§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Distance:§r §f${dynamicProperty.getGameData(
+          "straightDistance"
+        )} Blocks\n   §6Your Personal Best:§r §f${
           dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))
         }§f\n   §6Time Recorded:§r §f${tickToSec(
           bridger.ticks
         )}§r\n\n   §d§lNEW PERSONAL BEST!!§r\n§7----------------------------`
       )
     : bridger.player.sendMessage(
-        `§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Your Personal Best:§r §f${
+        `§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Distance:§r §f${dynamicProperty.getGameData(
+          "straightDistance"
+        )} Blocks\n   §6Your Personal Best:§r §f${
           dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))
         }§f\n   §6Time Recorded:§r §f${tickToSec(bridger.ticks)}§r\n§7----------------------------`
       );
@@ -63,7 +67,11 @@ const updateFloatingText = function () {
     successAttempts: dynamicProperty.getSuccessAttempts(game),
   };
   const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
-  const displayText = `§7---§r §b${bridger.player.nameTag}'s Stats§r §7---§r\n§6Personal Best:§r §f${info.pb}§r\n§6Bridging Attempts:§r §f${info.attempts}§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
+  const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${dynamicProperty.getGameData(
+    "straightDistance"
+  )} blocks§r\n§6Personal Best:§r §f${info.pb}§r\n§6Bridging Attempts:§r §f${
+    info.attempts
+  }§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
 
   floatingEntity.nameTag = displayText;
 };
@@ -285,18 +293,6 @@ export const pressurePlatePushEvt = function () {
   } else showMessage(false);
   dynamicProperty.addAttempts(game);
   dynamicProperty.addSuccessAttempts(game);
-
-  const dimension = mc.world.getDimension("overworld");
-  dimension.spawnEntity("minecraft:fireworks_rocket", {
-    x: 9998,
-    y: 101,
-    z: 10027,
-  });
-  dimension.spawnEntity("minecraft:fireworks_rocket", {
-    x: 10002,
-    y: 101,
-    z: 10027,
-  });
 };
 
 export const listener = function () {
