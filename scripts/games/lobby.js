@@ -11,7 +11,6 @@ export const nagivatorFormHandler = async function (player) {
     exp.giveItems(player, [
       { item: data.tempData.block, quantity: 64 },
       { item: data.tempData.block, quantity: 64 },
-      { item: "minecraft:wooden_pickaxe", quantity: 1 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ]);
 

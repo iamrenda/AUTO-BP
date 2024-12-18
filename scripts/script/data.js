@@ -27,15 +27,6 @@ const blocks = [
   { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
 
-const pickaxes = [
-  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:wooden_pickaxe" },
-  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:stone_pickaxe" },
-  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:iron_pickaxe" },
-  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:golden_pickaxe" },
-  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:diamond_pickaxe" },
-  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:netherite_pickaxe" },
-];
-
 /**
  * name: name of the structure to display
  * file: file name to load
@@ -52,12 +43,10 @@ const structures = [
 /**
  * block: minecraft block name to bridge with
  * stairCased: whether difference in y-axis is neccessary or not
- * pickaxe: minecraft item name to use as a pickaxe
  */
 const tempData = {
   block: "minecraft:sandstone",
   structureIndex: 0, // CHECK hard coded
-  pickaxe: "minecraft:wooden_pickaxe",
 };
 
-export { locationData, tempData, structures, blocks, pickaxes };
+export { locationData, tempData, structures, blocks };

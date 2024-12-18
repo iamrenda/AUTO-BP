@@ -98,7 +98,6 @@ const resetMap = function (wasAttempt = true) {
     ? [
         { item: data.tempData.block, quantity: 64 },
         { item: data.tempData.block, quantity: 64 },
-        { item: "minecraft:wooden_pickaxe", quantity: 1 },
         { item: "minecraft:book", quantity: 1, slot: 8 },
       ]
     : [{ item: "minecraft:compass", quantity: 1, slot: 4 }];
@@ -223,23 +222,12 @@ export const bridgerFormHandler = async function (player) {
   const game = dynamicProperty.getGameId();
   const { selection: bridgerSelection } = await form.bridgerForm(player);
 
-  // bridgerForm: general
+  // bridgerForm: block
   if (bridgerSelection === 10) {
-    const { selection: generalSelection } = await form.bridgerGeneralForm(player);
-    switch (generalSelection) {
-      case 10:
-        const { selection: blockSelection } = await form.bridgerBlockForm(player);
-        const blockObj = data.blocks[blockSelection];
-        data.tempData.block = blockObj.texture;
-        exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
-        break;
-      case 12:
-        const { selection: pickSelection } = await form.pickaxeForm(player);
-        const pickaxeObj = data.pickaxes[pickSelection];
-        data.tempData.pickaxe = pickaxeObj.texture;
-        exp.confirmMessage(player, `§aThe block has changed to§r §6${pickaxeObj.pickaxeName}§r§a!`, "random.orb");
-        break;
-    }
+    const { selection: blockSelection } = await form.bridgerBlockForm(player);
+    const blockObj = data.blocks[blockSelection];
+    data.tempData.block = blockObj.texture;
+    exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
   // bridgerForm: island
