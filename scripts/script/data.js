@@ -27,6 +27,15 @@ const blocks = [
   { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
 
+const pickaxes = [
+  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:wooden_pickaxe" },
+  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:stone_pickaxe" },
+  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:iron_pickaxe" },
+  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:golden_pickaxe" },
+  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:diamond_pickaxe" },
+  { pickaxeName: "Wooden Pickaxe", texture: "minecraft:netherite_pickaxe" },
+];
+
 /**
  * name: name of the structure to display
  * file: file name to load
@@ -51,4 +60,4 @@ const tempData = {
   pickaxe: "minecraft:wooden_pickaxe",
 };
 
-export { locationData, tempData, structures, blocks };
+export { locationData, tempData, structures, blocks, pickaxes };

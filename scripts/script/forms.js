@@ -1,5 +1,5 @@
 import { ChestFormData } from "../extensions/forms.js";
-import { tempData, blocks } from "./data.js";
+import { tempData, blocks, pickaxes } from "./data.js";
 import dynamicProperty from "./dynamicProperty.js";
 
 const lobbyForm = async function (player) {
@@ -56,6 +56,27 @@ const confirmationForm = async function (player) {
   return await form.show(player);
 };
 
+const pickaxeForm = async function (player) {
+  const form = new ChestFormData("27").title("Pickaxe Selection");
+
+  pickaxes.map(({ pickaxeName, texture }, index) =>
+    texture === tempData.pickaxe
+      ? form.button(index, pickaxeName, ["", "§eSelected"], texture, 1, true)
+      : form.button(index, pickaxeName, [], texture, 1, false)
+  );
+};
+
+const bridgerBlockForm = async function (player) {
+  const form = new ChestFormData("27").title("Block Selection");
+
+  blocks.map(({ blockName, texture }, index) =>
+    texture === tempData.block
+      ? form.button(index, blockName, ["", "§eSelected"], texture, 1, true)
+      : form.button(index, blockName, [], texture, 1, false)
+  );
+  return await form.show(player);
+};
+
 const bridgerForm = async function (player) {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_b_i_r_o_", "_________"], {
     b: {
@@ -93,11 +114,18 @@ const bridgerForm = async function (player) {
 const bridgerGeneralForm = async function (player) {
   const form = new ChestFormData("27")
     .title("Bridger General Settings")
-    .pattern(["_________", "_b_______", "_________"], {
+    .pattern(["_________", "_b_p_____", "_________"], {
       b: {
         itemName: "§2Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
+        stackAmount: 1,
+        enchanted: false,
+      },
+      p: {
+        itemName: "§2Pickaxe",
+        itemDesc: [],
+        texture: tempData.pickaxe,
         stackAmount: 1,
         enchanted: false,
       },
@@ -148,15 +176,12 @@ const bridgerIslandForm = async function (player) {
   return await form.show(player);
 };
 
-const bridgerBlockForm = async function (player) {
-  const form = new ChestFormData("27").title("Block Selection");
-
-  blocks.map(({ blockName, texture }, index) =>
-    texture === tempData.block
-      ? form.button(index, blockName, ["", "§eSelected"], texture, 1, true)
-      : form.button(index, blockName, [], texture, 1, false)
-  );
-  return await form.show(player);
+export {
+  lobbyForm,
+  confirmationForm,
+  bridgerGeneralForm,
+  bridgerIslandForm,
+  bridgerForm,
+  bridgerBlockForm,
+  pickaxeForm,
 };
-
-export { lobbyForm, confirmationForm, bridgerGeneralForm, bridgerIslandForm, bridgerForm, bridgerBlockForm };

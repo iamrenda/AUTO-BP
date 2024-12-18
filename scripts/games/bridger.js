@@ -229,9 +229,15 @@ export const bridgerFormHandler = async function (player) {
     switch (generalSelection) {
       case 10:
         const { selection: blockSelection } = await form.bridgerBlockForm(player);
-        const block = data.blocks[blockSelection];
-        data.tempData.block = block.texture;
-        exp.confirmMessage(player, `§aThe block has changed to§r §6${block.blockName}§r§a!`, "random.orb");
+        const blockObj = data.blocks[blockSelection];
+        data.tempData.block = blockObj.texture;
+        exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
+        break;
+      case 12:
+        const { selection: pickSelection } = await form.pickaxeForm(player);
+        const pickaxeObj = data.pickaxes[pickSelection];
+        data.tempData.pickaxe = pickaxeObj.texture;
+        exp.confirmMessage(player, `§aThe block has changed to§r §6${pickaxeObj.pickaxeName}§r§a!`, "random.orb");
         break;
     }
   }
