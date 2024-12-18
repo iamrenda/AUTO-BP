@@ -169,6 +169,48 @@ const fillAndPlace = function (
   mc.world.structureManager.place(structure.file, dimension, structurePlaceLocation);
 };
 
+/**
+ * handleDistanceChange: replace island based on distance and save in dynamic property
+ *
+ * @param {String} newDistance - "1": 16blocks | "2": 25 blocks | "3": 50 blocks
+ * @param {String} blocks - "16" || "25" || "50"
+ */
+const handleDistanceChange = async function (player, newDistance, blocks) {
+  if (dynamicProperty.getGameData("straightDistance") === newDistance)
+    return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
+  fillAndPlace(
+    data.structures[0],
+    {
+      distance: dynamicProperty.getGameData("straightDistance"),
+      isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
+    },
+    { distance: newDistance, isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
+  );
+  dynamicProperty.setGameData("straightDistance", newDistance);
+  exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} Blocks§r§a!`, "random.orb");
+};
+
+/**
+ * handleHeightChange: replace island based on height and save in dynamic property
+ *
+ * @param {String} newHeight - "S": StairCased | "F": Flat
+ * @param {String} heightType - "staircased" | "flat"
+ */
+const handleHeightChange = async function (player, newHeight, heightType) {
+  if (dynamicProperty.getGameData("straightHeight") === newHeight)
+    return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
+  dynamicProperty.setGameData("straightHeight", newHeight);
+  fillAndPlace(
+    data.structures[0],
+    {
+      distance: dynamicProperty.getGameData("straightDistance"),
+      isStairCased: dynamicProperty.getGameData("straightHeight") !== "S",
+    },
+    { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: newHeight === "S" }
+  );
+  exp.confirmMessage(player, `§aThe height is now§r §6${heightType.toUpperCase()}§r§a!`, "random.orb");
+};
+
 /////////////////////////////////////////////////////////
 export const defineBridger = function (pl) {
   bridger.player = pl;
@@ -194,78 +236,11 @@ export const bridgerFormHandler = async function (player) {
   if (bridgerSelection === 12) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
 
-    // CHECK selection for distance
-    switch (islandSelection) {
-      case 10: // 16b
-        if (dynamicProperty.getGameData("straightDistance") === "1")
-          return exp.confirmMessage(player, "§4The distance is already 16 blocks!", "random.anvil_land");
-        fillAndPlace(
-          data.structures[0],
-          {
-            distance: dynamicProperty.getGameData("straightDistance"),
-            isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
-          },
-          { distance: "1", isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
-        );
-        dynamicProperty.setGameData("straightDistance", "1");
-        exp.confirmMessage(player, `§aThe distance is now§r §616 Blocks§r§a!`, "random.orb");
-        break;
-
-      case 19: // 21b
-        if (dynamicProperty.getGameData("straightDistance") === "2")
-          return exp.confirmMessage(player, "§4The distance is already 21 blocks!", "random.anvil_land");
-        fillAndPlace(
-          data.structures[0],
-          {
-            distance: dynamicProperty.getGameData("straightDistance"),
-            isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
-          },
-          { distance: "2", isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
-        );
-        dynamicProperty.setGameData("straightDistance", "2");
-        exp.confirmMessage(player, `§aThe distance is now§r §621 Blocks§r§a!`, "random.orb");
-        break;
-
-      case 28: // 50b
-        if (dynamicProperty.getGameData("straightDistance") === "3")
-          return exp.confirmMessage(player, "§4The distance is already 50 blocks!", "random.anvil_land");
-        fillAndPlace(
-          data.structures[0],
-          {
-            distance: dynamicProperty.getGameData("straightDistance"),
-            isStairCased: dynamicProperty.getGameData("straightHeight") === "S",
-          },
-          { distance: "3", isStairCased: dynamicProperty.getGameData("straightHeight") === "S" }
-        );
-        dynamicProperty.setGameData("straightDistance", "3");
-        exp.confirmMessage(player, `§aThe distance is now§r §650 Blocks§r§a!`, "random.orb");
-        break;
-
-      case 12: // staircased
-        if (dynamicProperty.getGameData("straightHeight") === "S")
-          return exp.confirmMessage(player, "§4The height is already staircased!", "random.anvil_land");
-        dynamicProperty.setGameData("straightHeight", "S");
-
-        fillAndPlace(
-          data.structures[0],
-          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: false },
-          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: true }
-        );
-        exp.confirmMessage(player, `§aThe height is now§r §6StairCased§r§a!`, "random.orb");
-        break;
-
-      case 21: // flat
-        if (dynamicProperty.getGameData("straightHeight") === "F")
-          return exp.confirmMessage(player, "§4The height is already flat!", "random.anvil_land");
-        dynamicProperty.setGameData("straightHeight", "F");
-        fillAndPlace(
-          data.structures[0],
-          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: true },
-          { distance: dynamicProperty.getGameData("straightDistance"), isStairCased: false }
-        );
-        exp.confirmMessage(player, `§aThe height is now§r §6Flat§r§a!`, "random.orb");
-        break;
-    }
+    if (islandSelection === 10) await handleDistanceChange(player, "1", "16");
+    if (islandSelection === 19) await handleDistanceChange(player, "2", "21");
+    if (islandSelection === 28) await handleDistanceChange(player, "3", "50");
+    if (islandSelection === 12) await handleHeightChange(player, "S", "staircased");
+    if (islandSelection === 21) await handleHeightChange(player, "F", "flat");
   }
 
   // bridgerForm: reset pb
