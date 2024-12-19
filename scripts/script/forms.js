@@ -61,22 +61,22 @@ const bridgerBlockForm = async function (player) {
 
   blocks.map(({ blockName, texture }, index) =>
     texture === tempData.block
-      ? form.button(index, blockName, ["", "§eSelected"], texture, 1, true)
-      : form.button(index, blockName, [], texture, 1, false)
+      ? form.button(index + 9, blockName, ["", "§eSelected"], texture, 1, true)
+      : form.button(index + 9, blockName, [], texture, 1, false)
   );
   return await form.show(player);
 };
 
 const bridgerForm = async function (player) {
-  const form = new ChestFormData("27").title("Settings").pattern(["_________", "_b_i_r_o_", "_________"], {
-    b: {
+  const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
+    i: {
       itemName: "§3General",
       itemDesc: [],
-      texture: "minecraft:comparator",
+      texture: "minecraft:grass_block",
       stackAmount: 1,
       enchanted: false,
     },
-    i: {
+    b: {
       itemName: "§2Block",
       itemDesc: [],
       texture: tempData.block,

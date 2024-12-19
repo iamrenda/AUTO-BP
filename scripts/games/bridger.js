@@ -198,6 +198,7 @@ const handleDistanceChange = function (player, blocks) {
   dynamicProperty.setGameData("straightDistance", blocks);
   dynamicProperty.setGameId(`straight${blocks}b`);
   exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
+  updateFloatingText();
 };
 
 /**
@@ -230,16 +231,8 @@ export const bridgerFormHandler = async function (player) {
   const game = dynamicProperty.getGameId();
   const { selection: bridgerSelection } = await form.bridgerForm(player);
 
-  // bridgerForm: block
+  // bridgerForm: general
   if (bridgerSelection === 10) {
-    const { selection: blockSelection } = await form.bridgerBlockForm(player);
-    const blockObj = data.blocks[blockSelection];
-    data.tempData.block = blockObj.texture;
-    exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
-  }
-
-  // bridgerForm: island
-  if (bridgerSelection === 12) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
 
     if (islandSelection === 10) handleDistanceChange(player, 16);
@@ -247,6 +240,14 @@ export const bridgerFormHandler = async function (player) {
     if (islandSelection === 28) handleDistanceChange(player, 50);
     if (islandSelection === 12) handleHeightChange(player, true);
     if (islandSelection === 21) handleHeightChange(player, false);
+  }
+
+  // bridgerForm: block
+  if (bridgerSelection === 12) {
+    const { selection: blockSelection } = await form.bridgerBlockForm(player);
+    const blockObj = data.blocks[blockSelection - 9];
+    data.tempData.block = blockObj.texture;
+    exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
   // bridgerForm: reset pb
