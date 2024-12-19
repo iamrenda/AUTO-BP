@@ -8,11 +8,7 @@ export const nagivatorFormHandler = async function (player) {
 
   // bridger
   if (selection === 1) {
-    exp.giveItems(player, [
-      { item: data.tempData.block, quantity: 64 },
-      { item: data.tempData.block, quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ]);
+    exp.giveItems(player, data.getInvData("bridger"));
 
     dynamicProperty.setGameId(`straight${dynamicProperty.getGameData("straightDistance")}b`);
     exp.teleportation(player, data.locationData.bridger.straight);

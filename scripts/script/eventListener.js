@@ -50,11 +50,7 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
   bridger.defineBridger(player);
   exp.teleportation(player, data.locationData.lobby);
-  exp.giveItems(player, [
-    { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
-    { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
-    { item: "minecraft:stick", quantity: 1, slot: 6, name: "§dCredits" },
-  ]);
+  exp.giveItems(player, data.inv.lobby);
 });
 
 // player leaving the world

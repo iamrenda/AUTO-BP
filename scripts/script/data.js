@@ -1,3 +1,33 @@
+/**
+ * block: minecraft block name to bridge with
+ */
+const tempData = {
+  block: "minecraft:sandstone",
+};
+
+/**
+ * getInvData: get inventory data for giveItems
+ *
+ * @param {String} game - the inventory data to retrieve based on the game
+ */
+const getInvData = function (game) {
+  if (game === "lobby")
+    return [
+      { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
+      { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
+      { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
+    ];
+  if (game === "bridger")
+    return [
+      { item: tempData.block, quantity: 64 },
+      { item: tempData.block, quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ];
+};
+
+/**
+ * locationData: lcoation to teleport when player joining to a game
+ */
 const locationData = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
@@ -30,8 +60,6 @@ const blocks = [
 /**
  * name: name of the structure to display
  * file: file name to load
- * location: [0] - location to load the file
- *           [0] & [1] - locations to fill air
  */
 const structures = [
   {
@@ -40,13 +68,4 @@ const structures = [
   },
 ];
 
-/**
- * block: minecraft block name to bridge with
- * stairCased: whether difference in y-axis is neccessary or not
- */
-const tempData = {
-  block: "minecraft:sandstone",
-  structureIndex: 0, // CHECK hard coded
-};
-
-export { locationData, tempData, structures, blocks };
+export { getInvData, locationData, tempData, structures, blocks };

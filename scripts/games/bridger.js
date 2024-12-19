@@ -102,18 +102,7 @@ const resetMap = function (wasAttempt = true) {
     : exp.teleportation(bridger.player, data.locationData.lobby);
 
   // give items to player
-  const items = wasAttempt
-    ? [
-        { item: data.tempData.block, quantity: 64 },
-        { item: data.tempData.block, quantity: 64 },
-        { item: "minecraft:book", quantity: 1, slot: 8 },
-      ]
-    : [
-        { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
-        { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
-        { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
-      ];
-  exp.giveItems(bridger.player, items);
+  exp.giveItems(bridger.player, data.getInvData(wasAttempt ? "bridger" : "lobby"));
 };
 
 /**
@@ -249,13 +238,9 @@ export const bridgerFormHandler = async function (player) {
   if (bridgerSelection === 12) {
     const { selection: blockSelection } = await form.bridgerBlockForm(player);
     const blockObj = data.blocks[blockSelection - 9];
-    const items = [
-      { item: blockObj.texture, quantity: 64 },
-      { item: blockObj.texture, quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ];
+
     data.tempData.block = blockObj.texture;
-    exp.giveItems(player, items);
+    exp.giveItems(player, data.getInvData("bridger"));
     exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
