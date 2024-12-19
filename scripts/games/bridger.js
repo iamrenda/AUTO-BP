@@ -94,7 +94,7 @@ const resetMap = function (wasAttempt = true) {
   bridger.ticks = 0;
 
   // update floating text
-  updateFloatingText();
+  if (wasAttempt) updateFloatingText();
 
   // teleport player
   wasAttempt
@@ -246,7 +246,13 @@ export const bridgerFormHandler = async function (player) {
   if (bridgerSelection === 12) {
     const { selection: blockSelection } = await form.bridgerBlockForm(player);
     const blockObj = data.blocks[blockSelection - 9];
+    const items = [
+      { item: blockObj.texture, quantity: 64 },
+      { item: blockObj.texture, quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ];
     data.tempData.block = blockObj.texture;
+    exp.giveItems(player, items);
     exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
