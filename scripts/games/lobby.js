@@ -28,3 +28,10 @@ export const nagivatorFormHandler = async function (player) {
   // back to lobby
   if (selection === 7) exp.teleportation(player, data.locationData.lobby);
 };
+
+export const launchingHandler = function (player) {
+  const { x: directionX, y: directionY, z: directionZ } = player.getViewDirection();
+  player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));
+  player.playSound("breeze_wind_charge.burst", player.location);
+  player.spawnParticle("minecraft:huge_explosion_emitter", player.location);
+};

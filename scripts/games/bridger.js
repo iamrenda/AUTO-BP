@@ -108,7 +108,10 @@ const resetMap = function (wasAttempt = true) {
         { item: data.tempData.block, quantity: 64 },
         { item: "minecraft:book", quantity: 1, slot: 8 },
       ]
-    : [{ item: "minecraft:compass", quantity: 1, slot: 4 }];
+    : [
+        { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
+        { item: "minecraft:compass", quantity: 1, slot: 4 },
+      ];
   exp.giveItems(bridger.player, items);
 };
 
@@ -135,7 +138,6 @@ const fillAndPlace = function (
   { distance: distance1, isStairCased: isStairCased1 },
   { distance: distance2, isStairCased: isStairCased2 }
 ) {
-  // CHECK check is distance1 and distance2 is vaild input
   const dimension = mc.world.getDimension("overworld");
   const fillAirLocation = {
     start: { x: 9993, y: undefined, z: undefined },

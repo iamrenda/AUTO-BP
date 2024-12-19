@@ -10,9 +10,10 @@ const giveItems = function (player, itemArr) {
 
   container.clearAll();
 
-  for (const { item, quantity, slot } of itemArr) {
+  for (const { item, quantity, slot, name = "" } of itemArr) {
     const i = new ItemStack(item, quantity);
     i.lockMode = "inventory";
+    if (name) i.nameTag = name;
     slot ? container.setItem(slot, i) : container.addItem(i);
   }
 };

@@ -11,6 +11,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
   switch (dynamicProperty.getGameId()) {
     case "lobby":
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
+      if (item.typeId === "minecraft:fishing_rod") lobby.launchingHandler(player);
       break;
 
     case "straight16b":
@@ -24,8 +25,6 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
 // player placing a block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
   switch (dynamicProperty.getGameId()) {
-    case "lobby":
-      break;
     case "straight16b":
     case "straight21b":
     case "straight50b":
@@ -37,8 +36,6 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
 // player pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(() => {
   switch (dynamicProperty.getGameId()) {
-    case "lobby":
-      break;
     case "straight16b":
     case "straight21b":
     case "straight50b":
@@ -52,7 +49,10 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
   bridger.defineBridger(player);
   exp.teleportation(player, data.locationData.lobby);
-  exp.giveItems(player, [{ item: "minecraft:compass", quantity: 1, slot: 4 }]);
+  exp.giveItems(player, [
+    { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
+    { item: "minecraft:compass", quantity: 1, slot: 4 },
+  ]);
 });
 
 // player leaving the world
