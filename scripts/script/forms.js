@@ -37,22 +37,24 @@ const lobbyForm = async function (player) {
 };
 
 const confirmationForm = async function (player) {
-  const form = new ChestFormData("27").title("§4§lAre you sure?").pattern(["_________", "__n___y__", "_________"], {
-    n: {
-      itemName: "§7Cancel",
-      itemDesc: [],
-      texture: "minecraft:gray_wool",
-      stackAmount: 1,
-      enchanted: false,
-    },
-    y: {
-      itemName: "§l§4Confirm",
-      itemDesc: [],
-      texture: "minecraft:red_wool",
-      stackAmount: 1,
-      enchanted: false,
-    },
-  });
+  const form = new ChestFormData("27")
+    .title(`§4§lReset PB for ${dynamicProperty.getGameData("straightDistance")} Blocks`)
+    .pattern(["_________", "__n___y__", "_________"], {
+      n: {
+        itemName: "§7Cancel",
+        itemDesc: [],
+        texture: "minecraft:gray_wool",
+        stackAmount: 1,
+        enchanted: false,
+      },
+      y: {
+        itemName: "§l§4Reset",
+        itemDesc: [],
+        texture: "minecraft:red_wool",
+        stackAmount: 1,
+        enchanted: false,
+      },
+    });
   return await form.show(player);
 };
 
@@ -77,7 +79,7 @@ const bridgerForm = async function (player) {
       enchanted: false,
     },
     b: {
-      itemName: "§2Block",
+      itemName: "§2Blocks",
       itemDesc: [],
       texture: tempData.block,
       stackAmount: 1,

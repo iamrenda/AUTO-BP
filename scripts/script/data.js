@@ -19,7 +19,7 @@ const blocks = [
   { blockName: "Sandstone", texture: "minecraft:sandstone" },
   { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
   { blockName: "Bamboo Planks", texture: "minecraft:bamboo_planks" },
-  { blockName: "White Stained Glass", texture: "minecraft:white_stained_glass" },
+  { blockName: "White Glazed Terracotta", texture: "minecraft:white_glazed_terracotta" },
   { blockName: "Cobblestone", texture: "minecraft:cobblestone" },
   { blockName: "Amethyst Block", texture: "minecraft:amethyst_block" },
   { blockName: "White Wool", texture: "minecraft:white_wool" },

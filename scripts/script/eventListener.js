@@ -61,7 +61,7 @@ mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lob
 // player breaking a block // CHECK
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
-mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = true));
+mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

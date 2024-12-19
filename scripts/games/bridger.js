@@ -253,7 +253,7 @@ export const bridgerFormHandler = async function (player) {
   // bridgerForm: reset pb
   if (bridgerSelection === 14) {
     const { selection: confirmSelection } = await form.confirmationForm(player);
-    if (confirmSelection !== 6) return;
+    if (confirmSelection !== 15) return;
     dynamicProperty.resetPB(game);
     exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
     updateFloatingText();
