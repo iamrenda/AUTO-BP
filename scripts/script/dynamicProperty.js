@@ -1,6 +1,10 @@
 import { world } from "@minecraft/server";
 
 /**
+ * games:
+ *   "lobby", "straight16b", "straight21b", "straight50b", "incline16b", "incline25b", "incline50b", "clutcher"
+ */
+/**
  * gameDatas:
  *   straightHeight: S - StairCased | F - Flat
  *   straightDistance: 1 - 16blocks | 2 - 21blocks | 3 - 50blocks

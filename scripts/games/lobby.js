@@ -1,4 +1,5 @@
 import { lobbyForm, lobbyCreditForm } from "../script/forms.js";
+import { defineBridger } from "./bridger.js";
 import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
 import dynamicProperty from "../script/dynamicProperty.js";
@@ -8,6 +9,7 @@ export const nagivatorFormHandler = async function (player) {
 
   // bridger
   if (selection === 1) {
+    defineBridger(player);
     exp.giveItems(player, data.getInvData("bridger"));
 
     dynamicProperty.setGameId(`straight${dynamicProperty.getGameData("straightDistance")}b`);
@@ -17,7 +19,6 @@ export const nagivatorFormHandler = async function (player) {
 
   // clutcher
   if (selection === 3) {
-    console.warn("2");
     dynamicProperty.setGameId("clutcher");
   }
 

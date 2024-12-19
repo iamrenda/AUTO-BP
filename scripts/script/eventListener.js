@@ -5,6 +5,7 @@ import dynamicProperty from "./dynamicProperty.js";
 
 import * as lobby from "../games/lobby.js";
 import * as bridger from "../games/bridger.js";
+import * as clutcher from "../games/clutcher.js";
 
 // player right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
@@ -19,6 +20,10 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
     case "straight21b":
     case "straight50b":
       if (item.typeId === "minecraft:book") bridger.bridgerFormHandler(player);
+      break;
+
+    case "clutcher":
+      if (item.typeId === "minecraft:book") clutcher.clutcherFormHandler(player);
       break;
   }
 });
@@ -48,7 +53,7 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
-  bridger.defineBridger(player);
+  dynamicProperty.setGameId("lobby");
   exp.teleportation(player, data.locationData.lobby);
   exp.giveItems(player, data.inv.lobby);
 });

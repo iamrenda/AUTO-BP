@@ -1,8 +1,11 @@
+import { DisplaySlotId } from "@minecraft/server";
+
 /**
  * block: minecraft block name to bridge with
  */
 const tempData = {
   block: "minecraft:sandstone",
+  clutch: [3, 2, 1, 0, 0, 0, 0, 0, 0],
 };
 
 /**
@@ -68,4 +71,26 @@ const structures = [
   },
 ];
 
-export { getInvData, locationData, tempData, structures, blocks };
+const clutchStrength = {
+  0: {
+    texture: "minecraft:gray_stained_glass",
+    name: "§7None",
+  },
+  1: {
+    texture: "minecraft:green_stained_glass",
+    name: "§aLight",
+    strength: 2,
+  },
+  2: {
+    texture: "minecraft:yellow_stained_glass",
+    name: "§eMedium",
+    strength: 3,
+  },
+  3: {
+    texture: "minecraft:red_stained_glass",
+    name: "§cHard",
+    strength: 5,
+  },
+};
+
+export { getInvData, locationData, tempData, structures, blocks, clutchStrength };

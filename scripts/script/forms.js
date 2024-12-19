@@ -1,6 +1,6 @@
 import ChestFormData from "../extensions/forms.js";
 import { ActionFormData } from "@minecraft/server-ui";
-import { tempData, blocks } from "./data.js";
+import { tempData, blocks, clutchStrength } from "./data.js";
 import dynamicProperty from "./dynamicProperty.js";
 
 const lobbyForm = async function (player) {
@@ -158,4 +158,64 @@ const bridgerIslandForm = async function (player) {
   return await form.show(player);
 };
 
-export { lobbyForm, lobbyCreditForm, confirmationForm, bridgerIslandForm, bridgerForm, bridgerBlockForm };
+const clutcherForm = async function (player) {
+  const form = new ChestFormData("27").title("Clutcher Selector").pattern(["_________", "_r_s_b_q_", "_________"], {
+    r: {
+      itemName: "§aStart",
+      itemDesc: [],
+      texture: "minecraft:green_dye",
+      stackAmount: 1,
+      enchanted: false,
+    },
+    s: {
+      itemName: "§dSettings",
+      itemDesc: [],
+      texture: "minecraft:repeater",
+      stackAmount: 1,
+      enchanted: false,
+    },
+    b: {
+      itemName: "§2Blocks",
+      itemDesc: [],
+      texture: "minecraft:sandstone", // CHECK change block
+      stackAmount: 1,
+      enchanted: false,
+    },
+    q: {
+      itemName: "§cQuit",
+      itemDesc: [],
+      texture: "minecraft:red_dye",
+      stackAmount: 1,
+      enchanted: false,
+    },
+  });
+
+  return form.show(player);
+};
+
+const clutchSettingsForm = async function (player) {
+  const form = new ChestFormData("27").title("Clutch Settings");
+  tempData.clutch.map((power, index) =>
+    form.button(
+      index + 9,
+      `Hit #${index + 1}: ${clutchStrength[power].name}`,
+      [],
+      clutchStrength[power].texture,
+      1,
+      false
+    )
+  );
+  form.button(22, "Close", [], "minecraft:barrier", false);
+  return form.show(player);
+};
+
+export {
+  lobbyForm,
+  lobbyCreditForm,
+  confirmationForm,
+  bridgerIslandForm,
+  bridgerForm,
+  bridgerBlockForm,
+  clutcherForm,
+  clutchSettingsForm,
+};
