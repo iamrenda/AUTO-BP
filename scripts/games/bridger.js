@@ -110,7 +110,8 @@ const resetMap = function (wasAttempt = true) {
       ]
     : [
         { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
-        { item: "minecraft:compass", quantity: 1, slot: 4 },
+        { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
+        { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
       ];
   exp.giveItems(bridger.player, items);
 };

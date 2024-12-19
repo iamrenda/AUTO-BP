@@ -74,4 +74,4 @@ declare class ChestFormData {
    */
   show(player: Player): Promise<ActionFormResponse>;
 }
-export { ChestFormData };
+export default ChestFormData;

@@ -11,7 +11,8 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
   switch (dynamicProperty.getGameId()) {
     case "lobby":
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
-      if (item.typeId === "minecraft:fishing_rod") lobby.launchingHandler(player);
+      if (item.typeId === "minecraft:stick") lobby.launchingHandler(player);
+      if (item.typeId === "minecraft:book") lobby.creditFormHandler(player);
       break;
 
     case "straight16b":
@@ -51,7 +52,8 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
   exp.teleportation(player, data.locationData.lobby);
   exp.giveItems(player, [
     { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
-    { item: "minecraft:compass", quantity: 1, slot: 4 },
+    { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
+    { item: "minecraft:stick", quantity: 1, slot: 6, name: "§dCredits" },
   ]);
 });
 

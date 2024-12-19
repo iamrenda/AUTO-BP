@@ -1,4 +1,4 @@
-import { lobbyForm } from "../script/forms.js";
+import { lobbyForm, lobbyCreditForm } from "../script/forms.js";
 import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
 import dynamicProperty from "../script/dynamicProperty.js";
@@ -34,4 +34,8 @@ export const launchingHandler = function (player) {
   player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));
   player.playSound("breeze_wind_charge.burst", player.location);
   player.spawnParticle("minecraft:huge_explosion_emitter", player.location);
+};
+
+export const creditFormHandler = function (player) {
+  lobbyCreditForm(player);
 };
