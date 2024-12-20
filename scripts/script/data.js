@@ -1,11 +1,9 @@
-import { DisplaySlotId } from "@minecraft/server";
-
 /**
  * block: minecraft block name to bridge with
  */
 const tempData = {
   block: "minecraft:sandstone",
-  clutch: [3, 2, 1, 0, 0, 0, 0, 0, 0],
+  clutch: [1],
 };
 
 /**
@@ -77,7 +75,7 @@ const clutchStrength = {
     name: "§7None",
   },
   1: {
-    texture: "minecraft:green_stained_glass",
+    texture: "minecraft:lime_stained_glass",
     name: "§aLight",
     strength: 2,
   },

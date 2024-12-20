@@ -1,6 +1,6 @@
 import ChestFormData from "../extensions/forms.js";
 import { ActionFormData } from "@minecraft/server-ui";
-import { tempData, blocks, clutchStrength } from "./data.js";
+import { tempData, blocks } from "./data.js";
 import dynamicProperty from "./dynamicProperty.js";
 
 const lobbyForm = async function (player) {
@@ -193,20 +193,14 @@ const clutcherForm = async function (player) {
   return form.show(player);
 };
 
-const clutchSettingsForm = async function (player) {
-  const form = new ChestFormData("27").title("Clutch Settings");
-  tempData.clutch.map((power, index) =>
-    form.button(
-      index + 9,
-      `Hit #${index + 1}: ${clutchStrength[power].name}`,
-      [],
-      clutchStrength[power].texture,
-      1,
-      false
-    )
-  );
-  form.button(22, "Close", [], "minecraft:barrier", false);
+const clutchNumForm = async function (player) {
+  const form = new ChestFormData("27").title("Clutcher Hit Setting");
+  for (let i = 0; i <= 8; i++) form.button(i + 9, `${i + 1} Hits`, [], "minecraft:blaze_rod", i + 1, false);
   return form.show(player);
+};
+
+const clutchSettingsForm = function () {
+  return new ChestFormData("27").title("Clutch Settings");
 };
 
 export {
@@ -217,5 +211,6 @@ export {
   bridgerForm,
   bridgerBlockForm,
   clutcherForm,
+  clutchNumForm,
   clutchSettingsForm,
 };
