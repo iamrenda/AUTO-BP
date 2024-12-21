@@ -4,11 +4,6 @@ import * as data from "../script/data.js";
 import * as form from "../script/forms.js";
 import dynamicProperty from "../script/dynamicProperty.js";
 
-const date = new Date();
-const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(
-  date.getFullYear()
-).slice(-2)}`;
-
 const bridger = {
   player: null,
 
@@ -262,9 +257,7 @@ export const bridgerFormHandler = async function (player) {
 };
 
 export const placingBlockEvt = function (block) {
-  if (!bridger.blocks) {
-    bridger.timer = mc.system.runInterval(() => bridger.timer && bridger.ticks++);
-  }
+  if (!bridger.blocks) bridger.timer = mc.system.runInterval(() => bridger.timer && bridger.ticks++);
 
   bridger.blocks++;
   bridger.storedLocations.push(block.location);
@@ -310,13 +303,6 @@ export const listener = function () {
       dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))
     }\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${
       bridger.blocks
-    }\n§7-------------------§r\n §8§oVersion 4 | ${today}`
+    }\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
-
-// CHECK DEBUGGING PURPOSES
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-  bridger.player = player;
-  //////////////////////////////////////////////////
-  // debug from here
-});

@@ -36,6 +36,9 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
     case "straight50b":
       bridger.placingBlockEvt(block);
       break;
+    case "clutcher":
+      clutcher.placingBlockEvt();
+      break;
   }
 });
 
@@ -55,14 +58,11 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
   dynamicProperty.setGameId("lobby");
   exp.teleportation(player, data.locationData.lobby);
-  exp.giveItems(player, data.inv.lobby);
+  exp.giveItems(player, data.getInvData("lobby"));
 });
 
-// player leaving the world
-// mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
-
 // player breaking a block
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 // interaction with block
 mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));

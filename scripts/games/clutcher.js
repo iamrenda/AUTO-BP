@@ -5,10 +5,15 @@ import * as exp from "../script/functions.js";
 import * as data from "../script/data.js";
 
 const clutcher = {
-  countDown: null,
-  hitTimer: null,
-  sec: 3,
-  hitIndex: 0,
+  player: null,
+  blocks: 0,
+
+  countDown: null, // countdown before knockbacks
+  hitTimer: null, // interval between hits
+  sec: 3, // countdown seconds
+  hitIndex: 0, // hit count
+
+  toCountBlock: false, // whether placing blocks should be counted as in scoreboard
 };
 
 const updateClutcherSettings = async function (player, numHit) {
@@ -33,30 +38,39 @@ const updateClutcherSettings = async function (player, numHit) {
   await updateClutcherSettings(player, numHit);
 };
 
+const restartClutch = function (player) {
+  if (clutcher.hitTimer) mc.system.clearRun(clutcher.hitTimer);
+  clutcher.blocks = 0;
+  clutcher.hitIndex = 0;
+  exp.teleportation(player, data.locationData.clutcher);
+  exp.giveItems(player, data.getInvData("clutcher"));
+};
+
 const startClutch = function (player) {
   mc.system.clearRun(clutcher.countDown);
+  clutcher.toCountBlock = true;
   player.onScreenDisplay.setActionBar("§aGO!");
   clutcher.sec = 3;
 
-  const { x: viewX, z: viewZ } = player.getViewDirection(); // CHECK
+  const { x: viewX, z: viewZ } = player.getViewDirection();
   const powerSetting = data.tempData.clutch;
 
   player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.7);
   clutcher.hitIndex++;
 
   clutcher.hitTimer = mc.system.runInterval(() => {
-    if (clutcher.hitIndex === data.tempData.clutch.length) {
-      mc.system.clearRun(clutcher.hitTimer);
-      clutcher.hitIndex = 0;
-      return;
-    }
+    if (clutcher.hitIndex === data.tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
 
     player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.7);
     clutcher.hitIndex++;
-  }, 9);
+  }, 12);
 };
 
 ///////////////////////////////////////////////////////////////////
+export const defineClutcher = function (player) {
+  clutcher.player = player;
+};
+
 export const clutcherFormHandler = async function (player) {
   const { selection } = await form.clutcherForm(player);
 
@@ -88,26 +102,25 @@ export const clutcherFormHandler = async function (player) {
   }
 };
 
+export const placingBlockEvt = function () {
+  if (!clutcher.toCountBlock) return;
+  clutcher.blocks++;
+};
+
 export const listener = function () {
   const game = dynamicProperty.getGameId();
 
-  if (bridger.player.location.y <= 88) {
-    if (bridger.plateDisabled) enablePlate(true);
-    else {
-      if (bridger.timer) {
-        mc.system.clearRun(bridger.timer);
-        bridger.timer = null; // disabling temp
-      }
-      dynamicProperty.addAttempts(game);
-      resetMap();
-    }
-  }
+  if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
 
-  // bridger.player.onScreenDisplay.setTitle(
-  //   `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
-  //     dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))
-  //   }\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${
-  //     bridger.blocks
-  //   }\n§7-------------------§r\n §8§oVersion 4 | ${today}`
-  // );
+  clutcher.player.onScreenDisplay.setTitle(
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   0 blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n\n §7- §6Blocks:§r\n   ${clutcher.blocks}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+  );
 };
+
+// CHECK DEBUGGING PURPOSES
+mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+  clutcher.player = player;
+  player.sendMessage("player now defined");
+  //////////////////////////////////////////////////
+  // debug from here
+});

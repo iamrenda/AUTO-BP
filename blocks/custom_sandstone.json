@@ -1,0 +1,18 @@
+{
+  "format_version": "1.21.40",
+  "minecraft:block": {
+    "description": {
+      "identifier": "auto:custom_sandstone",
+      "menu_category": {
+        "category": "construction"
+      }
+    },
+    "components": {
+      "minecraft:display_name": "Sandstone"
+    }
+    // "minecraft:tick": {
+    //   "interval_range": [10, 10],
+    //   "looping": true
+    // }
+  }
+}

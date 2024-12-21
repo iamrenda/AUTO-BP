@@ -40,4 +40,9 @@ const confirmMessage = function (player, message, sound = "") {
   if (sound) player.playSound(sound);
 };
 
-export { giveItems, teleportation, confirmMessage };
+const date = new Date();
+const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(
+  date.getFullYear()
+).slice(-2)}`;
+
+export { giveItems, teleportation, confirmMessage, today };
