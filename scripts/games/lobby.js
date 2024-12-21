@@ -19,7 +19,10 @@ export const nagivatorFormHandler = async function (player) {
 
   // clutcher
   if (selection === 3) {
+    exp.giveItems(player, data.getInvData("clutcher"));
     dynamicProperty.setGameId("clutcher");
+    exp.confirmMessage(player, "§7Teleporting to bridger...");
+    exp.teleportation(player, data.locationData.clutcher);
   }
 
   // back to lobby

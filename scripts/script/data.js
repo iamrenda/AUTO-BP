@@ -2,7 +2,8 @@
  * block: minecraft block name to bridge with
  */
 const tempData = {
-  block: "minecraft:sandstone",
+  blockBridger: "minecraft:sandstone",
+  blockClutcher: "minecraft:sandstone",
   clutch: [1],
 };
 
@@ -20,8 +21,13 @@ const getInvData = function (game) {
     ];
   if (game === "bridger")
     return [
-      { item: tempData.block, quantity: 64 },
-      { item: tempData.block, quantity: 64 },
+      { item: tempData.blockBridger, quantity: 64 },
+      { item: tempData.blockBridger, quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ];
+  if (game === "clutcher")
+    return [
+      { item: tempData.blockClutcher, quantity: 255 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
 };
@@ -39,6 +45,10 @@ const locationData = {
       position: { x: 10000.5, y: 100, z: 10000.5 },
       facing: { x: 10000.5, y: 100, z: 10001 },
     },
+  },
+  clutcher: {
+    position: { x: 20000.5, y: 100, z: 20000.5 },
+    facing: { x: 20000.5, y: 100, z: 20001 },
   },
 };
 

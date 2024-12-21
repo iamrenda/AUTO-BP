@@ -74,7 +74,7 @@ const bridgerBlockForm = async function (player) {
   const form = new ChestFormData("27").title("Block Selection");
 
   blocks.map(({ blockName, texture }, index) =>
-    texture === tempData.block
+    texture === tempData.blockBridger
       ? form.button(index + 9, blockName, ["", "§eSelected"], texture, 1, true)
       : form.button(index + 9, blockName, [], texture, 1, false)
   );
@@ -93,7 +93,7 @@ const bridgerForm = async function (player) {
     b: {
       itemName: "§2Blocks",
       itemDesc: [],
-      texture: tempData.block,
+      texture: tempData.blockBridger,
       stackAmount: 1,
       enchanted: false,
     },

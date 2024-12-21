@@ -239,7 +239,7 @@ export const bridgerFormHandler = async function (player) {
     const { selection: blockSelection } = await form.bridgerBlockForm(player);
     const blockObj = data.blocks[blockSelection - 9];
 
-    data.tempData.block = blockObj.texture;
+    data.tempData.blockBridger = blockObj.texture;
     exp.giveItems(player, data.getInvData("bridger"));
     exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }

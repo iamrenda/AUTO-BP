@@ -1,6 +1,8 @@
 import * as mc from "@minecraft/server";
 import * as form from "../script/forms.js";
-import { tempData, clutchStrength } from "../script/data.js";
+import dynamicProperty from "../script/dynamicProperty.js";
+import * as exp from "../script/functions.js";
+import * as data from "../script/data.js";
 
 const clutcher = {
   countDown: null,
@@ -11,21 +13,21 @@ const clutcher = {
 
 const updateClutcherSettings = async function (player, numHit) {
   const clutchForm = await form.clutchSettingsForm();
-  tempData.clutch.map((power, index) => {
+  data.tempData.clutch.map((power, index) => {
     clutchForm.button(
       index + 9,
-      `Hit #${index + 1}: ${clutchStrength[power].name}`,
+      `Hit #${index + 1}: ${data.clutchStrength[power].name}`,
       [],
-      clutchStrength[power].texture,
+      data.clutchStrength[power].texture,
       1,
       false
     );
   });
   const { selection, canceled } = await clutchForm.show(player);
   const clutchSelection = selection - 9;
-  const prevStrength = tempData.clutch[clutchSelection];
+  const prevStrength = data.tempData.clutch[clutchSelection];
 
-  tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
+  data.tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
   if (canceled) return;
   await updateClutcherSettings(player, numHit);
@@ -37,13 +39,13 @@ const startClutch = function (player) {
   clutcher.sec = 3;
 
   const { x: viewX, z: viewZ } = player.getViewDirection(); // CHECK
-  const powerSetting = tempData.clutch;
+  const powerSetting = data.tempData.clutch;
 
   player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.7);
   clutcher.hitIndex++;
 
   clutcher.hitTimer = mc.system.runInterval(() => {
-    if (clutcher.hitIndex === tempData.clutch.length) {
+    if (clutcher.hitIndex === data.tempData.clutch.length) {
       mc.system.clearRun(clutcher.hitTimer);
       clutcher.hitIndex = 0;
       return;
@@ -51,7 +53,7 @@ const startClutch = function (player) {
 
     player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.7);
     clutcher.hitIndex++;
-  }, 13);
+  }, 9);
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -73,10 +75,39 @@ export const clutcherFormHandler = async function (player) {
     const { selection: clutchNum } = await form.clutchNumForm(player);
     const numHit = clutchNum - 8;
 
-    tempData.clutch = new Array(numHit).fill(1);
+    data.tempData.clutch = new Array(numHit).fill(1);
     updateClutcherSettings(player, numHit);
   }
 
   // if (selection === 14)
-  // if (selection === 16)
+  if (selection === 16) {
+    dynamicProperty.setGameId("lobby");
+    exp.giveItems(player, data.getInvData("lobby"));
+    exp.teleportation(player, data.locationData.lobby);
+    exp.confirmMessage(player, "§7Teleporting back to lobby...");
+  }
+};
+
+export const listener = function () {
+  const game = dynamicProperty.getGameId();
+
+  if (bridger.player.location.y <= 88) {
+    if (bridger.plateDisabled) enablePlate(true);
+    else {
+      if (bridger.timer) {
+        mc.system.clearRun(bridger.timer);
+        bridger.timer = null; // disabling temp
+      }
+      dynamicProperty.addAttempts(game);
+      resetMap();
+    }
+  }
+
+  // bridger.player.onScreenDisplay.setTitle(
+  //   `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
+  //     dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))
+  //   }\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${
+  //     bridger.blocks
+  //   }\n§7-------------------§r\n §8§oVersion 4 | ${today}`
+  // );
 };
