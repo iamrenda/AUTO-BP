@@ -38,11 +38,11 @@ const updateClutcherSettings = async function (player, numHit) {
   await updateClutcherSettings(player, numHit);
 };
 
-const restartClutch = function (player) {
+const restartClutch = function (player, isSuccessful = false) {
   if (clutcher.hitTimer) mc.system.clearRun(clutcher.hitTimer);
   clutcher.blocks = 0;
   clutcher.hitIndex = 0;
-  exp.teleportation(player, data.locationData.clutcher);
+  if (!isSuccessful) exp.teleportation(player, data.locationData.clutcher);
   exp.giveItems(player, data.getInvData("clutcher"));
 };
 
@@ -55,15 +55,18 @@ const startClutch = function (player) {
   const { x: viewX, z: viewZ } = player.getViewDirection();
   const powerSetting = data.tempData.clutch;
 
-  player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.7);
+  player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);
   clutcher.hitIndex++;
 
   clutcher.hitTimer = mc.system.runInterval(() => {
-    if (clutcher.hitIndex === data.tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
+    if (clutcher.hitIndex === data.tempData.clutch.length) {
+      restartClutch(clutcher.player, true);
+      return mc.system.clearRun(clutcher.hitTimer);
+    }
 
-    player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.7);
+    player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);
     clutcher.hitIndex++;
-  }, 12);
+  }, 10);
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -108,8 +111,6 @@ export const placingBlockEvt = function () {
 };
 
 export const listener = function () {
-  const game = dynamicProperty.getGameId();
-
   if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
 
   clutcher.player.onScreenDisplay.setTitle(

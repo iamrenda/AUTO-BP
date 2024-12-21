@@ -47,8 +47,8 @@ const locationData = {
     },
   },
   clutcher: {
-    position: { x: 20000.5, y: 100, z: 20000.5 },
-    facing: { x: 20000.5, y: 100, z: 20001 },
+    position: { x: 19999.5, y: 104, z: 20002.5 },
+    facing: { x: 19999.5, y: 104, z: 20003 },
   },
 };
 
@@ -80,10 +80,6 @@ const structures = [
 ];
 
 const clutchStrength = {
-  0: {
-    texture: "minecraft:gray_stained_glass",
-    name: "§7None",
-  },
   1: {
     texture: "minecraft:lime_stained_glass",
     name: "§aLight",
