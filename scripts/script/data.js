@@ -3,7 +3,7 @@
  */
 const tempData = {
   blockBridger: "minecraft:sandstone",
-  blockClutcher: "minecraft:sandstone",
+  blockClutcher: "auto:custom_sandstone",
   clutch: [1],
 };
 

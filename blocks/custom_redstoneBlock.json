@@ -2,17 +2,17 @@
   "format_version": "1.21.40",
   "minecraft:block": {
     "description": {
-      "identifier": "auto:custom_sandstone",
+      "identifier": "auto:custom_redstoneBlock",
       "menu_category": {
         "category": "construction"
       }
     },
     "components": {
       "minecraft:tick": {
-        "interval_range": [60, 60],
+        "interval_range": [20, 20],
         "looping": false
       },
-      "minecraft:custom_components": ["auto:redstone"]
+      "minecraft:custom_components": ["auto:clear"]
     }
   }
 }

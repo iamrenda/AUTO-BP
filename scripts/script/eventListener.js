@@ -53,6 +53,21 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
   }
 });
 
+// world init
+mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => {
+  const dimension = mc.world.getDimension("overworld");
+  blockComponentRegistry.registerCustomComponent("auto:redstone", {
+    onTick({ block }) {
+      dimension.setBlockType(block.location, "auto:custom_redstoneblock");
+    },
+  });
+  blockComponentRegistry.registerCustomComponent("auto:clear", {
+    onTick({ block }) {
+      dimension.setBlockType(block.location, "minecraft:air");
+    },
+  });
+});
+
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
@@ -62,7 +77,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 });
 
 // player breaking a block
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 // interaction with block
 mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
