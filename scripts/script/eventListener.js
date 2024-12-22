@@ -29,7 +29,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
 });
 
 // player placing a block
-mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
+mc.world.afterEvents.playerPlaceBlock.subscribe(({ player, block }) => {
   switch (dynamicProperty.getGameId()) {
     case "straight16b":
     case "straight21b":
@@ -55,6 +55,11 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 
 // world init
 mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => {
+  blockComponentRegistry.registerCustomComponent("auto:redstone", {
+    onTick({ block }) {
+      mc.world.getDimension("overworld").setBlockType(block.location, "auto:custom_redstoneBlock");
+    },
+  });
   blockComponentRegistry.registerCustomComponent("auto:clear", {
     onTick({ block }) {
       mc.world.getDimension("overworld").setBlockType(block.location, "minecraft:air");
@@ -74,7 +79,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 // interaction with block
-mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
+// mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
@@ -90,12 +95,3 @@ mc.system.runInterval(() => {
       break;
   }
 });
-
-/*
-switch (exp.getGameId()) {
-    case "lobby":
-      break;
-    case "bridger":
-      break;
-  }
-*/

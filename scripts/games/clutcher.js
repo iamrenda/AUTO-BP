@@ -6,7 +6,6 @@ import * as data from "../script/data.js";
 
 const clutcher = {
   player: null,
-  direction: "Straight",
 
   countDown: null, // countdown before knockbacks
   hitTimer: null, // interval between hits
@@ -79,26 +78,30 @@ const countDownDisplay = function (player) {
   clutcher.sec--;
 };
 
+const readyForClutch = function (player) {
+  clutcher.hitIndex = 0;
+  countDownDisplay(player);
+
+  clutcher.countDown = mc.system.runInterval(() => {
+    if (!clutcher.sec) return startClutch(player);
+    countDownDisplay(player);
+  }, 20);
+};
 ///////////////////////////////////////////////////////////////////
 export const defineClutcher = function (player) {
   clutcher.player = player;
 };
 
 export const clutcherFormHandler = async function (player) {
+  // quick start
+  if (player.isSneaking && data.tempData.clutchShiftStart) return readyForClutch(player);
+
   const { selection } = await form.clutcherForm(player);
 
   // clutch start
-  if (selection === 10) {
-    clutcher.hitIndex = 0;
-    countDownDisplay(player);
+  if (selection === 10) readyForClutch(player);
 
-    clutcher.countDown = mc.system.runInterval(() => {
-      if (!clutcher.sec) return startClutch(player);
-      countDownDisplay(player);
-    }, 20);
-  }
-
-  // clutch hit settings
+  // clutch settings
   if (selection === 12) {
     const { selection: clutchNum } = await form.clutchNumForm(player);
     const numHit = clutchNum - 8;
@@ -107,7 +110,21 @@ export const clutcherFormHandler = async function (player) {
     updateClutcherSettings(player, numHit);
   }
 
-  // if (selection === 14)
+  // general settings
+  if (selection === 14) {
+    const { selection: generalSelection } = await form.clutchGeneralForm(player);
+
+    if (generalSelection === 10) {
+      data.tempData.clutchShiftStart = !data.tempData.clutchShiftStart;
+      exp.confirmMessage(
+        player,
+        `§a"Shift + Right Click" to start is now §6${data.tempData.clutchShiftStart ? "Enabled" : "Disabled"}§a!`,
+        "random.orb"
+      );
+    }
+  }
+
+  // quit
   if (selection === 16) {
     dynamicProperty.setGameId("lobby");
     exp.giveItems(player, data.getInvData("lobby"));
@@ -127,7 +144,7 @@ export const listener = function () {
   if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
 
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Direction:§r\n   ${clutcher.direction}\n\n §7- §6Distance:§r\n   0 blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   0 blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
 

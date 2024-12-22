@@ -3,8 +3,9 @@
  */
 const tempData = {
   blockBridger: "minecraft:sandstone",
-  blockClutcher: "auto:custom_sandstone",
+  blockClutcher: "minecraft:sandstone",
   clutch: [1],
+  clutchShiftStart: true,
 };
 
 /**
@@ -27,7 +28,7 @@ const getInvData = function (game) {
     ];
   if (game === "clutcher")
     return [
-      { item: tempData.blockClutcher, quantity: 99 },
+      { item: tempData.blockClutcher, quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
 };

@@ -168,16 +168,16 @@ const clutcherForm = async function (player) {
       enchanted: false,
     },
     s: {
-      itemName: "§dSettings",
+      itemName: "§dClutch Settings",
       itemDesc: [],
       texture: "minecraft:repeater",
       stackAmount: 1,
       enchanted: false,
     },
     b: {
-      itemName: "§2Blocks",
+      itemName: "§2General Settings",
       itemDesc: [],
-      texture: "minecraft:sandstone", // CHECK change block
+      texture: "minecraft:grass_block",
       stackAmount: 1,
       enchanted: false,
     },
@@ -193,8 +193,23 @@ const clutcherForm = async function (player) {
   return form.show(player);
 };
 
+const clutchGeneralForm = async function (player) {
+  const form = new ChestFormData("27")
+    .title("Clutcher General Settings")
+    .pattern(["_________", "_s_______", "_________"], {
+      s: {
+        itemName: '§6"Shift + Right Click" to start',
+        itemDesc: ["", tempData.clutchShiftStart ? "§aEnabled" : "§cDisabled"],
+        texture: tempData.clutchShiftStart ? "minecraft:redstone_torch" : "minecraft:unlit_redstone_torch",
+        stackAmount: 1,
+        enchanted: false,
+      },
+    });
+  return form.show(player);
+};
+
 const clutchNumForm = async function (player) {
-  const form = new ChestFormData("27").title("Clutcher Hit Setting");
+  const form = new ChestFormData("27").title("Clutcher Hit Settings");
   for (let i = 0; i <= 8; i++) form.button(i + 9, `${i + 1} Hits`, [], "minecraft:blaze_rod", i + 1, false);
   return form.show(player);
 };
@@ -211,6 +226,7 @@ export {
   bridgerForm,
   bridgerBlockForm,
   clutcherForm,
+  clutchGeneralForm,
   clutchNumForm,
   clutchSettingsForm,
 };
