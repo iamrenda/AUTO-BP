@@ -37,7 +37,7 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
       bridger.placingBlockEvt(block);
       break;
     case "clutcher":
-      clutcher.placingBlockEvt();
+      clutcher.placingBlockEvt(block);
       break;
   }
 });
@@ -55,15 +55,9 @@ mc.world.afterEvents.pressurePlatePush.subscribe(() => {
 
 // world init
 mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => {
-  const dimension = mc.world.getDimension("overworld");
-  blockComponentRegistry.registerCustomComponent("auto:redstone", {
-    onTick({ block }) {
-      dimension.setBlockType(block.location, "auto:custom_redstoneblock");
-    },
-  });
   blockComponentRegistry.registerCustomComponent("auto:clear", {
     onTick({ block }) {
-      dimension.setBlockType(block.location, "minecraft:air");
+      mc.world.getDimension("overworld").setBlockType(block.location, "minecraft:air");
     },
   });
 });

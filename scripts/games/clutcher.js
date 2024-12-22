@@ -6,14 +6,12 @@ import * as data from "../script/data.js";
 
 const clutcher = {
   player: null,
-  blocks: 0,
+  direction: "Straight",
 
   countDown: null, // countdown before knockbacks
   hitTimer: null, // interval between hits
   sec: 3, // countdown seconds
   hitIndex: 0, // hit count
-
-  toCountBlock: false, // whether placing blocks should be counted as in scoreboard
 };
 
 const updateClutcherSettings = async function (player, numHit) {
@@ -34,39 +32,51 @@ const updateClutcherSettings = async function (player, numHit) {
 
   data.tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
-  if (canceled) return;
+  if (canceled) return exp.confirmMessage(player, "§aThe clutcher settings is now saved!", "random.orb");
   await updateClutcherSettings(player, numHit);
 };
 
-const restartClutch = function (player, isSuccessful = false) {
+const restartClutch = function (player) {
+  if (!clutcher.hitTimer && clutcher.countDown) {
+    exp.confirmMessage(player, "§8Count down canceled", "note.guitar");
+    clutcher.sec = 3;
+  }
+  if (clutcher.countDown) mc.system.clearRun(clutcher.countDown);
   if (clutcher.hitTimer) mc.system.clearRun(clutcher.hitTimer);
-  clutcher.blocks = 0;
+
+  clutcher.hitTimer = null;
+  clutcher.countDown = null;
   clutcher.hitIndex = 0;
-  if (!isSuccessful) exp.teleportation(player, data.locationData.clutcher);
+  exp.teleportation(player, data.locationData.clutcher);
   exp.giveItems(player, data.getInvData("clutcher"));
+};
+
+const applyKnockback = function (player, { viewX, viewZ }, powerSetting) {
+  player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);
+  player.playSound("game.player.hurt");
+  clutcher.hitIndex++;
 };
 
 const startClutch = function (player) {
   mc.system.clearRun(clutcher.countDown);
-  clutcher.toCountBlock = true;
   player.onScreenDisplay.setActionBar("§aGO!");
+  player.playSound("note.pling");
   clutcher.sec = 3;
 
   const { x: viewX, z: viewZ } = player.getViewDirection();
   const powerSetting = data.tempData.clutch;
 
-  player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);
-  clutcher.hitIndex++;
-
+  applyKnockback(player, { viewX, viewZ }, powerSetting);
   clutcher.hitTimer = mc.system.runInterval(() => {
-    if (clutcher.hitIndex === data.tempData.clutch.length) {
-      restartClutch(clutcher.player, true);
-      return mc.system.clearRun(clutcher.hitTimer);
-    }
-
-    player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);
-    clutcher.hitIndex++;
+    if (clutcher.hitIndex === data.tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
+    applyKnockback(player, { viewX, viewZ }, powerSetting);
   }, 10);
+};
+
+const countDownDisplay = function (player) {
+  player.playSound("note.hat");
+  player.onScreenDisplay.setActionBar(`§6Count Down:§r §f${clutcher.sec}`);
+  clutcher.sec--;
 };
 
 ///////////////////////////////////////////////////////////////////
@@ -79,11 +89,12 @@ export const clutcherFormHandler = async function (player) {
 
   // clutch start
   if (selection === 10) {
-    if (clutcher.sec) player.onScreenDisplay.setActionBar(`Count Down: ${clutcher.sec}`);
+    clutcher.hitIndex = 0;
+    countDownDisplay(player);
+
     clutcher.countDown = mc.system.runInterval(() => {
-      clutcher.sec--;
-      if (clutcher.sec) player.onScreenDisplay.setActionBar(`Count Down: ${clutcher.sec}`);
-      else startClutch(player);
+      if (!clutcher.sec) return startClutch(player);
+      countDownDisplay(player);
     }, 20);
   }
 
@@ -105,16 +116,18 @@ export const clutcherFormHandler = async function (player) {
   }
 };
 
-export const placingBlockEvt = function () {
-  if (!clutcher.toCountBlock) return;
-  clutcher.blocks++;
+export const placingBlockEvt = function (block) {
+  mc.system.runTimeout(
+    () => mc.world.getDimension("overworld").setBlockType(block.location, "auto:custom_redstoneBlock"),
+    60
+  );
 };
 
 export const listener = function () {
   if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
 
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   0 blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n\n §7- §6Blocks:§r\n   ${clutcher.blocks}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Direction:§r\n   ${clutcher.direction}\n\n §7- §6Distance:§r\n   0 blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
 

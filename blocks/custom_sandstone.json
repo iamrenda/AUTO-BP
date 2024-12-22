@@ -7,12 +7,6 @@
         "category": "construction"
       }
     },
-    "components": {
-      "minecraft:tick": {
-        "interval_range": [60, 60],
-        "looping": false
-      },
-      "minecraft:custom_components": ["auto:redstone"]
-    }
+    "components": {}
   }
 }
