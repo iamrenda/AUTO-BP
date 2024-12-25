@@ -2,7 +2,7 @@ import { lobbyForm, lobbyCreditForm } from "../script/forms.js";
 import { defineBridger } from "./bridger.js";
 import { defineClutcher } from "./clutcher.js";
 import * as exp from "../script/functions.js";
-import * as data from "../script/data.js";
+import * as data from "../script/staticData.js";
 import dynamicProperty from "../script/dynamicProperty.js";
 
 export const nagivatorFormHandler = async function (player) {
@@ -21,6 +21,8 @@ export const nagivatorFormHandler = async function (player) {
   // clutcher
   if (selection === 3) {
     defineClutcher(player);
+    player.setGameMode("creative");
+    player.setGameMode(7);
     exp.giveItems(player, data.getInvData("clutcher"));
     dynamicProperty.setGameId("clutcher");
     exp.confirmMessage(player, "§7Teleporting to bridger...");

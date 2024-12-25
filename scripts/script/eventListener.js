@@ -1,6 +1,6 @@
 import * as mc from "@minecraft/server";
 import * as exp from "./functions.js";
-import * as data from "./data.js";
+import * as data from "./staticData.js";
 import dynamicProperty from "./dynamicProperty.js";
 
 import * as lobby from "../games/lobby.js";
@@ -95,3 +95,12 @@ mc.system.runInterval(() => {
       break;
   }
 });
+
+// every 10 tick
+mc.system.runInterval(() => {
+  switch (dynamicProperty.getGameId()) {
+    case "clutcher":
+      clutcher.slowListener();
+      break;
+  }
+}, 10);

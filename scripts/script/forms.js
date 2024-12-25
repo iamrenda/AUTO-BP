@@ -1,6 +1,6 @@
 import ChestFormData from "../extensions/forms.js";
 import { ActionFormData } from "@minecraft/server-ui";
-import { tempData, blocks } from "./data.js";
+import { tempData, blocks } from "./staticData.js";
 import dynamicProperty from "./dynamicProperty.js";
 
 const lobbyForm = async function (player) {

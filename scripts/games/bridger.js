@@ -1,6 +1,6 @@
 import * as mc from "@minecraft/server";
 import * as exp from "../script/functions.js";
-import * as data from "../script/data.js";
+import * as data from "../script/staticData.js";
 import * as form from "../script/forms.js";
 import dynamicProperty from "../script/dynamicProperty.js";
 

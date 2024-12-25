@@ -2,10 +2,14 @@ import * as mc from "@minecraft/server";
 import * as form from "../script/forms.js";
 import dynamicProperty from "../script/dynamicProperty.js";
 import * as exp from "../script/functions.js";
-import * as data from "../script/data.js";
+import * as data from "../script/staticData.js";
 
 const clutcher = {
   player: null,
+  startLocation: null,
+  endLocation: null,
+
+  blocks: 0,
 
   countDown: null, // countdown before knockbacks
   hitTimer: null, // interval between hits
@@ -45,7 +49,11 @@ const restartClutch = function (player) {
 
   clutcher.hitTimer = null;
   clutcher.countDown = null;
+  clutcher.startLocation = null;
+  clutcher.endLocation = null;
   clutcher.hitIndex = 0;
+  clutcher.blocks = 0;
+
   exp.teleportation(player, data.locationData.clutcher);
   exp.giveItems(player, data.getInvData("clutcher"));
 };
@@ -87,6 +95,14 @@ const readyForClutch = function (player) {
     countDownDisplay(player);
   }, 20);
 };
+
+function calculateDistance(location1, location2) {
+  let dx = location2.x - location1.x;
+  let dy = location2.y - location1.y;
+  let dz = location2.z - location1.z;
+  return Math.sqrt(dx * dx, dy * dy, dz * dz);
+}
+
 ///////////////////////////////////////////////////////////////////
 export const defineClutcher = function (player) {
   clutcher.player = player;
@@ -134,17 +150,36 @@ export const clutcherFormHandler = async function (player) {
 };
 
 export const placingBlockEvt = function (block) {
+  if (!clutcher.blocks) clutcher.startLocation = block.location;
+  if (clutcher.hitTimer) clutcher.blocks++;
+
+  clutcher.endLocation = block.location;
+
   mc.system.runTimeout(
     () => mc.world.getDimension("overworld").setBlockType(block.location, "auto:custom_redstoneBlock"),
     60
   );
 };
 
-export const listener = function () {
-  if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
+export const listener = async function () {
+  const player = clutcher.player;
 
+  if (player.location.y <= 88) restartClutch(player);
+
+  if (player.isFlying) {
+    player.setGameMode("survival");
+    await player.setGameMode("creative");
+    player.setGameMode(7);
+  }
+};
+
+export const slowListener = function () {
+  const distance = calculateDistance(
+    clutcher.startLocation ?? { x: 0, y: 0, z: 0 },
+    clutcher.endLocation ?? { x: 0, y: 0, z: 0 }
+  );
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   0 blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${distance} blocks\n\n §7- §6Blocks:§r\n   ${clutcher.blocks} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
 
