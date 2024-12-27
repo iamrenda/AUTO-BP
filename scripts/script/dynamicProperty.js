@@ -9,9 +9,9 @@ import { world } from "@minecraft/server";
  *   straightHeight: S - StairCased | F - Flat
  *   straightDistance: 1 - 16blocks | 2 - 21blocks | 3 - 50blocks
  */
-const dynamicProperty = {
-  games: ["straight16b", "straight21b", "straight50b", "incline16b", "incline25b", "incline50b"],
-  gameDatas: {
+class dynamicProperty {
+  static games = ["straight16b", "straight21b", "straight50b", "incline16b", "incline25b", "incline50b"];
+  static gameDatas = {
     straightIsStairCased: {
       // returned Boolean
       T: true,
@@ -23,70 +23,70 @@ const dynamicProperty = {
       2: "21",
       3: "50",
     },
-  },
+  };
 
-  getGameId() {
+  static getGameId() {
     return world.getDynamicProperty("auto:gameId");
-  },
+  }
 
-  setGameId(gameId) {
+  static setGameId(gameId) {
     world.setDynamicProperty("auto:gameId", gameId);
-  },
+  }
 
-  getPB(game) {
+  static getPB(game) {
     const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
-  },
+  }
 
-  setPB(game, ticks) {
+  static setPB(game, ticks) {
     const rawDataArr = world.getDynamicProperty("auto:pb").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = String(ticks);
     const newRawData = rawDataArr.join("|");
     world.setDynamicProperty("auto:pb", newRawData);
-  },
+  }
 
-  resetPB(game) {
+  static resetPB(game) {
     this.setPB(game, -1);
-  },
+  }
 
-  getAttempts(game) {
+  static getAttempts(game) {
     const rawDataArr = world.getDynamicProperty("auto:atmps").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
-  },
+  }
 
-  addAttempts(game) {
+  static addAttempts(game) {
     const rawDataArr = world.getDynamicProperty("auto:atmps").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = +rawDataArr[gameIndex] + 1;
     const newRawData = rawDataArr.join("|");
     world.setDynamicProperty("auto:atmps", newRawData);
-  },
+  }
 
-  getSuccessAttempts(game) {
+  static getSuccessAttempts(game) {
     const rawDataArr = world.getDynamicProperty("auto:successAtmps").split("|");
     const gameIndex = this.games.indexOf(game);
     return Number(rawDataArr[gameIndex]);
-  },
+  }
 
-  addSuccessAttempts(game) {
+  static addSuccessAttempts(game) {
     const rawDataArr = world.getDynamicProperty("auto:successAtmps").split("|");
     const gameIndex = this.games.indexOf(game);
     rawDataArr[gameIndex] = +rawDataArr[gameIndex] + 1;
     const newRawData = rawDataArr.join("|");
     world.setDynamicProperty("auto:successAtmps", newRawData);
-  },
+  }
 
-  getGameData(gameData) {
+  static getGameData(gameData) {
     const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
     const dataIndex = Object.keys(this.gameDatas).indexOf(gameData);
     const rawValue = rawDataArr[dataIndex];
     return this.gameDatas[gameData][rawValue];
-  },
+  }
 
-  setGameData(gameData, data) {
+  static setGameData(gameData, data) {
     const rawDataArr = world.getDynamicProperty("auto:gameDatas").split("|");
     const dataIndex = Object.keys(this.gameDatas).indexOf(gameData);
     rawDataArr[dataIndex] = Object.keys(this.gameDatas[gameData]).find(
@@ -94,14 +94,14 @@ const dynamicProperty = {
     );
     const newRawData = rawDataArr.join("|");
     world.setDynamicProperty("auto:gameDatas", newRawData);
-  },
+  }
 
-  resetdynamicProperties() {
+  static resetdynamicProperties() {
     world.setDynamicProperty("auto:pb", "-1|-1|-1|-1|-1|-1");
     world.setDynamicProperty("auto:atmps", "0|0|0|0|0|0");
     world.setDynamicProperty("auto:successAtmps", "0|0|0|0|0|0");
     world.setDynamicProperty("auto:gameDatas", "F|1");
-  },
-};
+  }
+}
 
 export default dynamicProperty;

@@ -9,7 +9,7 @@ const clutcher = {
   startLocation: null,
   endLocation: null,
 
-  blocks: 0,
+  listening: false, // listening for the first block placement
 
   countDown: null, // countdown before knockbacks
   hitTimer: null, // interval between hits
@@ -52,7 +52,6 @@ const restartClutch = function (player) {
   clutcher.startLocation = null;
   clutcher.endLocation = null;
   clutcher.hitIndex = 0;
-  clutcher.blocks = 0;
 
   exp.teleportation(player, data.locationData.clutcher);
   exp.giveItems(player, data.getInvData("clutcher"));
@@ -69,6 +68,7 @@ const startClutch = function (player) {
   player.onScreenDisplay.setActionBar("§aGO!");
   player.playSound("note.pling");
   clutcher.sec = 3;
+  clutcher.listening = true;
 
   const { x: viewX, z: viewZ } = player.getViewDirection();
   const powerSetting = data.tempData.clutch;
@@ -150,8 +150,10 @@ export const clutcherFormHandler = async function (player) {
 };
 
 export const placingBlockEvt = function (block) {
-  if (!clutcher.blocks) clutcher.startLocation = block.location;
-  if (clutcher.hitTimer) clutcher.blocks++;
+  if (clutcher.listening) {
+    clutcher.startLocation = block.location;
+    clutcher.listening = false;
+  }
 
   clutcher.endLocation = block.location;
 
@@ -179,7 +181,7 @@ export const slowListener = function () {
     clutcher.endLocation ?? { x: 0, y: 0, z: 0 }
   );
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${distance} blocks\n\n §7- §6Blocks:§r\n   ${clutcher.blocks} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
 
@@ -189,4 +191,8 @@ mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
   player.sendMessage("player now defined");
   //////////////////////////////////////////////////
   // debug from here
+  player.sendMessage(
+    `x: ${clutcher.startLocation?.x}, y: ${clutcher.startLocation?.y}, z: ${clutcher.startLocation?.y}`
+  );
+  player.sendMessage(`x: ${clutcher.endLocation?.x}, y: ${clutcher.endLocation?.y}, z: ${clutcher.endLocation?.y}`);
 });

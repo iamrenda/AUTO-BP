@@ -70,10 +70,12 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => 
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
-  dynamicProperty.setGameId("lobby");
   exp.teleportation(player, data.locationData.lobby);
   exp.giveItems(player, data.getInvData("lobby"));
 });
+
+// player leaving the worlds
+mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
 
 // player breaking a block
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
