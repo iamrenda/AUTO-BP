@@ -17,14 +17,16 @@ const bridger = {
 };
 
 /**
- * tickToSec: converts from tick to seconds
+ * converts from tick to seconds
+ * @param {number} ticks
  */
 const tickToSec = function (ticks) {
   return (ticks / 20).toFixed(2);
 };
 
 /**
- * showMessage: shows the result of the bridging
+ * shows the result of the bridging
+ * @param {boolean} wasPB
  */
 const showMessage = function (wasPB) {
   const game = dynamicProperty.getGameId();
@@ -72,8 +74,7 @@ const updateFloatingText = function () {
 };
 
 /**
- * resetMap: resets the map (clearing temp data, blocks, and teleporting)
- *
+ * resets the map (clearing temp data, blocks, and teleporting)
  * @param {boolean} wasAttempt - whether storing briding data is necessary or not
  */
 const resetMap = function (wasAttempt = true) {
@@ -101,8 +102,7 @@ const resetMap = function (wasAttempt = true) {
 };
 
 /**
- * enablePlate: re-enable pressure plate (disabled temp when plate is pressed)
- *
+ * re-enable pressure plate (disabled temp when plate is pressed)
  * @param {Boolean} cancelTimer - whether canceling timer to resetMap is necessary or not
  */
 const enablePlate = function (cancelTimer = false) {
@@ -112,8 +112,7 @@ const enablePlate = function (cancelTimer = false) {
 };
 
 /**
- * fillAndPlace: clear previous island and place new island at new location
- *
+ * clear previous island and place new island at new location
  * @param {Object} structure - an object from data.structures
  * @param {Object} {distance1:16|21|50, isStairCased1:Boolean} - info which filled with air
  * @param {Object} {distance2:16|21|50, isStairCased2:Boolean} - info which new structure will be built
@@ -166,8 +165,7 @@ const fillAndPlace = function (
 };
 
 /**
- * handleDistanceChange: replace island based on distance and save in dynamic property
- *
+ * replace island based on distance and save in dynamic property
  * @param {Player} player - player object
  * @param {number} blocks - 16 | 21 | 50
  */
@@ -189,8 +187,7 @@ const handleDistanceChange = function (player, blocks) {
 };
 
 /**
- * handleHeightChange: replace island based on height and save in dynamic property
- *
+ * replace island based on height and save in dynamic property
  * @param {Player} player - "S": StairCased | "F": Flat
  * @param {Boolean} isStairCased - new height
  */
@@ -209,6 +206,7 @@ const handleHeightChange = function (player, isStairCased) {
   exp.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
 };
 
+/////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 export const defineBridger = function (pl) {
   bridger.player = pl;
