@@ -78,7 +78,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
 
 // player breaking a block
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));

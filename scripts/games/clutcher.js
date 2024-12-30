@@ -7,6 +7,11 @@ import * as data from "../script/staticData.js";
 const clutcher = {
   player: null,
 
+  isListening: false, // weather listening for the first block detection
+  distance: 0,
+  startLocation: null,
+  endLocation: null,
+
   countDown: null, // countdown before knockbacks
   hitTimer: null, // interval between hits
   sec: 3, // countdown seconds
@@ -56,6 +61,10 @@ const restartClutch = function (player) {
   clutcher.countDown = null;
   clutcher.hitIndex = 0;
 
+  clutcher.startLocation = null;
+  clutcher.endLocation = null;
+  clutcher.distance = 0;
+
   exp.teleportation(player, data.locationData.clutcher);
   exp.giveItems(player, data.getInvData("clutcher"));
 };
@@ -78,6 +87,7 @@ const applyKnockback = function (player, { viewX, viewZ }, powerSetting) {
  */
 const startClutch = function (player) {
   mc.system.clearRun(clutcher.countDown);
+  clutcher.isListening = true;
   player.onScreenDisplay.setActionBar("§aGO!");
   player.playSound("note.pling");
   clutcher.sec = 3;
@@ -116,12 +126,18 @@ const readyForClutch = function (player) {
   }, 20);
 };
 
-function calculateDistance(location1, location2) {
+/**
+ * get the distance (rounded) between 2 location vector3 (ignoring y vector)
+ * @param {object: vector3} location1
+ * @param {object: vector3} location2
+ * @returns distance: number
+ */
+const calculateDistance = function (location1, location2) {
+  if (!location1 || !location2) return 0;
   const dx = location2.x - location1.x;
-  const dy = location2.y - location1.y;
   const dz = location2.z - location1.z;
-  return Math.sqrt(dx * dx, dy * dy, dz * dz);
-}
+  return Math.round(Math.sqrt(dx * dx + dz * dz));
+};
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 export const defineClutcher = function (player) {
@@ -169,25 +185,28 @@ export const clutcherFormHandler = async function (player) {
   }
 };
 
-export const placingBlockEvt = function (block) {
+export const placingBlockEvt = function ({ location }) {
+  if (clutcher.isListening) {
+    clutcher.isListening = false;
+    clutcher.startLocation = location;
+  }
+
+  if (clutcher.hitTimer) clutcher.endLocation = location;
+
   mc.system.runTimeout(
-    () => mc.world.getDimension("overworld").setBlockType(block.location, "auto:custom_redstoneBlock"),
+    () => mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock"),
     60
   );
 };
 
 export const listener = async function () {
-  if (clutcher.player.location.y <= 88) restartClutch(player);
+  if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
 };
 
 export const slowListener = function () {
-  // CHECK getting the distance
-  // const distance = calculateDistance(
-  //   clutcher.startLocation ?? { x: 0, y: 0, z: 0 },
-  //   clutcher.endLocation ?? { x: 0, y: 0, z: 0 }
-  // );
+  clutcher.distance = calculateDistance(clutcher.startLocation, clutcher.endLocation);
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
 
