@@ -6,18 +6,16 @@ import { ItemStack } from "@minecraft/server";
  * @param {Array} itemArr - an array containing object of {item: String, quantity: number, slot?: number}
  */
 const giveItems = function (player, itemArr) {
-  const container = player.getComponent("inventory").container;
-
-  container.clearAll();
-
-  for (const { item, quantity, slot, name = "" } of itemArr) {
-    const i = new ItemStack(item, quantity);
-    i.lockMode = "inventory";
-    if (name) i.nameTag = name;
-    slot ? container.setItem(slot, i) : container.addItem(i);
-  }
+    const container = player.getComponent("inventory").container;
+    container.clearAll();
+    for (const { item, quantity, slot, name = "" } of itemArr) {
+        const i = new ItemStack(item, quantity);
+        i.lockMode = "inventory";
+        if (name)
+            i.nameTag = name;
+        slot ? container.setItem(slot, i) : container.addItem(i);
+    }
 };
-
 /**
  * teleportation: teleport player
  *
@@ -25,9 +23,8 @@ const giveItems = function (player, itemArr) {
  * @param {Object} obj - an object contain location to teleport (must have key of position and facing)
  */
 const teleportation = function (player, obj) {
-  player.teleport(obj.position, { facingLocation: obj.facing });
+    player.teleport(obj.position, { facingLocation: obj.facing });
 };
-
 /**
  * confirmMessage: show message with sound
  *
@@ -36,13 +33,10 @@ const teleportation = function (player, obj) {
  * @param {String} sound - minecraft sound to play (optional)
  */
 const confirmMessage = function (player, message, sound = "") {
-  player.sendMessage(message);
-  if (sound) player.playSound(sound);
+    player.sendMessage(message);
+    if (sound)
+        player.playSound(sound);
 };
-
 const date = new Date();
-const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(
-  date.getFullYear()
-).slice(-2)}`;
-
+const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(-2)}`;
 export { giveItems, teleportation, confirmMessage, today };

@@ -1,43 +1,37 @@
-import { lobbyForm, lobbyCreditForm } from "../script/forms.js";
-import { defineBridger } from "./bridger.js";
-import { defineClutcher } from "./clutcher.js";
-import * as exp from "../script/functions.js";
-import * as data from "../script/staticData.js";
-import dynamicProperty from "../script/dynamicProperty.js";
-
+import { lobbyForm, lobbyCreditForm } from "../script/forms";
+import { defineBridger } from "./bridger";
+import { defineClutcher } from "./clutcher";
+import * as exp from "../script/functions";
+import * as data from "../script/staticData";
+import dynamicProperty from "../script/dynamicProperty";
 export const nagivatorFormHandler = async function (player) {
-  const { selection } = await lobbyForm(player);
-
-  // bridger
-  if (selection === 1) {
-    defineBridger(player);
-    exp.giveItems(player, data.getInvData("bridger"));
-
-    dynamicProperty.setGameId(`straight${dynamicProperty.getGameData("straightDistance")}b`);
-    exp.teleportation(player, data.locationData.bridger.straight);
-    exp.confirmMessage(player, "§7Teleporting to bridger...");
-  }
-
-  // clutcher
-  if (selection === 3) {
-    defineClutcher(player);
-    exp.giveItems(player, data.getInvData("clutcher"));
-    dynamicProperty.setGameId("clutcher");
-    exp.confirmMessage(player, "§7Teleporting to bridger...");
-    exp.teleportation(player, data.locationData.clutcher);
-  }
-
-  // back to lobby
-  if (selection === 7) exp.teleportation(player, data.locationData.lobby);
+    const { selection } = await lobbyForm(player);
+    // bridger
+    if (selection === 1) {
+        defineBridger(player);
+        exp.giveItems(player, data.getInvData("bridger"));
+        dynamicProperty.setGameId(`straight${dynamicProperty.getGameData("straightDistance")}b`);
+        exp.teleportation(player, data.locationData.bridger.straight);
+        exp.confirmMessage(player, "§7Teleporting to bridger...");
+    }
+    // clutcher
+    if (selection === 3) {
+        defineClutcher(player);
+        exp.giveItems(player, data.getInvData("clutcher"));
+        dynamicProperty.setGameId("clutcher");
+        exp.confirmMessage(player, "§7Teleporting to bridger...");
+        exp.teleportation(player, data.locationData.clutcher);
+    }
+    // back to lobby
+    if (selection === 7)
+        exp.teleportation(player, data.locationData.lobby);
 };
-
 export const launchingHandler = function (player) {
-  const { x: directionX, y: directionY, z: directionZ } = player.getViewDirection();
-  player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));
-  player.playSound("breeze_wind_charge.burst", player.location);
-  player.spawnParticle("minecraft:huge_explosion_emitter", player.location);
+    const { x: directionX, y: directionY, z: directionZ } = player.getViewDirection();
+    player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));
+    player.playSound("breeze_wind_charge.burst", player.location);
+    player.spawnParticle("minecraft:huge_explosion_emitter", player.location);
 };
-
 export const creditFormHandler = function (player) {
-  lobbyCreditForm(player);
+    lobbyCreditForm(player);
 };
