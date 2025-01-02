@@ -1,1 +1,1 @@
-import "./script/eventListener";
+import "./evnetListener/eventListener";

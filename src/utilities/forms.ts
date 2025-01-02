@@ -1,9 +1,12 @@
+import { Player } from "@minecraft/server";
 import ChestFormData from "../extensions/forms";
-import { ActionFormData } from "@minecraft/server-ui";
+import { ActionFormData, ActionFormResponse } from "@minecraft/server-ui";
 import { tempData, blocks } from "./staticData";
 import dynamicProperty from "./dynamicProperty";
 
-const lobbyForm = async function (player) {
+import { GameDataID } from "models/DynamicProperty";
+
+const lobbyForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("9").title("Lobby Selector").pattern(["_a_b___s_"], {
     a: {
       itemName: "§6§lBridger",
@@ -37,7 +40,7 @@ const lobbyForm = async function (player) {
   return await form.show(player);
 };
 
-const lobbyCreditForm = async function (player) {
+const lobbyCreditForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ActionFormData()
     .title("Credits")
     .body(
@@ -48,9 +51,9 @@ const lobbyCreditForm = async function (player) {
   return await form.show(player);
 };
 
-const confirmationForm = async function (player) {
+const confirmationForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
-    .title(`§4§lReset PB for ${dynamicProperty.getGameData("straightDistance")} Blocks`)
+    .title(`§4§lReset PB for ${dynamicProperty.getGameData(GameDataID.straightDistance)} Blocks`)
     .pattern(["_________", "__n___y__", "_________"], {
       n: {
         itemName: "§7Cancel",
@@ -70,7 +73,7 @@ const confirmationForm = async function (player) {
   return await form.show(player);
 };
 
-const bridgerBlockForm = async function (player) {
+const bridgerBlockForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Block Selection");
 
   blocks.map(({ blockName, texture }, index) =>
@@ -81,7 +84,7 @@ const bridgerBlockForm = async function (player) {
   return await form.show(player);
 };
 
-const bridgerForm = async function (player) {
+const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
     i: {
       itemName: "§3General",
@@ -115,7 +118,7 @@ const bridgerForm = async function (player) {
   return await form.show(player);
 };
 
-const bridgerIslandForm = async function (player) {
+const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("45")
     .title("Island Customization")
     .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {
@@ -124,41 +127,41 @@ const bridgerIslandForm = async function (player) {
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 16,
-        enchanted: +dynamicProperty.getGameData("straightDistance") === 16,
+        enchanted: +dynamicProperty.getGameData(GameDataID.straightDistance) === 16,
       },
       m: {
         itemName: "§621 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 21,
-        enchanted: +dynamicProperty.getGameData("straightDistance") === 21,
+        enchanted: +dynamicProperty.getGameData(GameDataID.straightDistance) === 21,
       },
       l: {
         itemName: "§650 Blocks",
         itemDesc: [],
         texture: "minecraft:sandstone",
         stackAmount: 50,
-        enchanted: +dynamicProperty.getGameData("straightDistance") === 50,
+        enchanted: +dynamicProperty.getGameData(GameDataID.straightDistance) === 50,
       },
       c: {
         itemName: "§6StairCased",
         itemDesc: [],
         texture: "minecraft:sandstone_stairs",
         stackAmount: 1,
-        enchanted: dynamicProperty.getGameData("straightIsStairCased"),
+        enchanted: dynamicProperty.getGameData(GameDataID.straightIsStairCased),
       },
       f: {
         itemName: "§6Flat",
         itemDesc: [],
         texture: "minecraft:sandstone_slab",
         stackAmount: 1,
-        enchanted: !dynamicProperty.getGameData("straightIsStairCased"),
+        enchanted: !dynamicProperty.getGameData(GameDataID.straightIsStairCased),
       },
     });
   return await form.show(player);
 };
 
-const clutcherForm = async function (player) {
+const clutcherForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Clutcher Selector").pattern(["_________", "_r_s_b_q_", "_________"], {
     r: {
       itemName: "§aStart",
@@ -193,7 +196,7 @@ const clutcherForm = async function (player) {
   return form.show(player);
 };
 
-const clutchGeneralForm = async function (player) {
+const clutchGeneralForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title("Clutcher General Settings")
     .pattern(["_________", "_s_______", "_________"], {
@@ -208,13 +211,13 @@ const clutchGeneralForm = async function (player) {
   return form.show(player);
 };
 
-const clutchNumForm = async function (player) {
+const clutchNumForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Clutcher Hit Settings");
   for (let i = 0; i <= 8; i++) form.button(i + 9, `${i + 1} Hits`, [], "minecraft:blaze_rod", i + 1, false);
   return form.show(player);
 };
 
-const clutchSettingsForm = function () {
+const clutchSettingsForm = function (): ChestFormData {
   return new ChestFormData("27").title("Clutch Settings");
 };
 

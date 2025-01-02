@@ -17,9 +17,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
             if (item.typeId === "minecraft:book")
                 lobby.creditFormHandler(player);
             break;
-        case "straight16b":
-        case "straight21b":
-        case "straight50b":
+        case "straightBridger":
             if (item.typeId === "minecraft:book")
                 bridger.bridgerFormHandler(player);
             break;
@@ -32,9 +30,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
 // player placing a block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
     switch (dynamicProperty.getGameId()) {
-        case "straight16b":
-        case "straight21b":
-        case "straight50b":
+        case "straightBridger":
             bridger.placingBlockEvt(block);
             break;
         case "clutcher":
@@ -45,9 +41,7 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }) => {
 // player pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(() => {
     switch (dynamicProperty.getGameId()) {
-        case "straight16b":
-        case "straight21b":
-        case "straight50b":
+        case "straightBridger":
             bridger.pressurePlatePushEvt();
             break;
     }
@@ -81,9 +75,7 @@ mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId(Game
 // every tick
 mc.system.runInterval(() => {
     switch (dynamicProperty.getGameId()) {
-        case "straight16b":
-        case "straight21b":
-        case "straight50b":
+        case "straightBridger":
             bridger.listener();
             break;
         case "clutcher":

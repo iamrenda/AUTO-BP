@@ -1,8 +1,9 @@
 import * as mc from "@minecraft/server";
-import * as form from "../script/forms";
-import dynamicProperty from "../script/dynamicProperty";
-import * as exp from "../script/functions";
-import * as data from "../script/staticData";
+import * as form from "../utilities/forms";
+import dynamicProperty from "../utilities/dynamicProperty";
+import * as exp from "../utilities/utilities";
+import * as data from "../utilities/staticData";
+import { GameID } from "models/DynamicProperty";
 const clutcher = {
     player: null,
     isListening: false, // weather listening for the first block detection
@@ -16,11 +17,9 @@ const clutcher = {
 };
 /**
  * keep showing strength form of each hit until cancel
- * @param {Player} player
- * @param {number} numHit
  */
 const updateClutcherSettings = async function (player, numHit) {
-    const clutchForm = await form.clutchSettingsForm();
+    const clutchForm = form.clutchSettingsForm();
     data.tempData.clutch.map((power, index) => {
         clutchForm.button(index + 9, `Hit #${index + 1}: ${data.clutchStrength[power].name}`, [], data.clutchStrength[power].texture, 1, false);
     });
@@ -34,7 +33,6 @@ const updateClutcherSettings = async function (player, numHit) {
 };
 /**
  * when player fails
- * @param {Player} player
  */
 const restartClutch = function (player) {
     if (!clutcher.hitTimer && clutcher.countDown) {
@@ -52,12 +50,10 @@ const restartClutch = function (player) {
     clutcher.endLocation = null;
     clutcher.distance = 0;
     exp.teleportation(player, data.locationData.clutcher);
-    exp.giveItems(player, data.getInvData("clutcher"));
+    exp.giveItems(player, data.getInvData(GameID.clutcher));
 };
 /**
  * applying knockback to player each hit
- * @param {Player} player
- * @param {Object} {viewX, viewZ}
  * @param {Array} powerSetting
  */
 const applyKnockback = function (player, { viewX, viewZ }, powerSetting) {
@@ -67,7 +63,6 @@ const applyKnockback = function (player, { viewX, viewZ }, powerSetting) {
 };
 /**
  * start applying knockback to the player
- * @param {Player} player
  */
 const startClutch = function (player) {
     mc.system.clearRun(clutcher.countDown);
@@ -86,7 +81,6 @@ const startClutch = function (player) {
 };
 /**
  * count down display
- * @param {Player} player
  */
 const countDownDisplay = function (player) {
     player.playSound("note.hat");
@@ -95,7 +89,6 @@ const countDownDisplay = function (player) {
 };
 /**
  * start count down
- * @param {Player} player
  */
 const readyForClutch = function (player) {
     clutcher.hitIndex = 0;
@@ -108,9 +101,6 @@ const readyForClutch = function (player) {
 };
 /**
  * get the distance (rounded) between 2 location vector3 (ignoring y vector)
- * @param {object: vector3} location1
- * @param {object: vector3} location2
- * @returns distance: number
  */
 const calculateDistance = function (location1, location2) {
     if (!location1 || !location2)
@@ -149,8 +139,8 @@ export const clutcherFormHandler = async function (player) {
     }
     // quit
     if (selection === 16) {
-        dynamicProperty.setGameId("lobby");
-        exp.giveItems(player, data.getInvData("lobby"));
+        dynamicProperty.setGameId(GameID.lobby);
+        exp.giveItems(player, data.getInvData(GameID.lobby));
         exp.teleportation(player, data.locationData.lobby);
         exp.confirmMessage(player, "§7Teleporting back to lobby...");
     }
@@ -173,9 +163,9 @@ export const slowListener = function () {
     clutcher.player.onScreenDisplay.setTitle(`      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`);
 };
 // CHECK DEBUGGING PURPOSES
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-    clutcher.player = player;
-    player.sendMessage("player now defined");
-    //////////////////////////////////////////////////
-    // debug from here
-});
+// mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+//   clutcher.player = player;
+//   player.sendMessage("player now defined");
+//   //////////////////////////////////////////////////
+//   // debug from here
+// });

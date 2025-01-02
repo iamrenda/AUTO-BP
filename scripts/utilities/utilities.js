@@ -1,4 +1,5 @@
 import { ItemLockMode, ItemStack } from "@minecraft/server";
+import { tempData } from "./staticData";
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  *
@@ -32,4 +33,7 @@ const confirmMessage = function (player, message, sound = "") {
 };
 const date = new Date();
 const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(date.getFullYear()).slice(-2)}`;
-export { giveItems, teleportation, confirmMessage, today };
+const setBridgerMode = function (game) {
+    tempData.bridgerMode = game;
+};
+export { giveItems, teleportation, confirmMessage, today, setBridgerMode };

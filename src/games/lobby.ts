@@ -1,28 +1,32 @@
-import { lobbyForm, lobbyCreditForm } from "../script/forms";
+import { Player } from "@minecraft/server";
+
+import { lobbyForm, lobbyCreditForm } from "../utilities/forms";
 import { defineBridger } from "./bridger";
 import { defineClutcher } from "./clutcher";
-import * as exp from "../script/functions";
-import * as data from "../script/staticData";
-import dynamicProperty from "../script/dynamicProperty";
+import * as exp from "../utilities/utilities";
+import * as data from "../utilities/staticData";
+import dynamicProperty from "../utilities/dynamicProperty";
+import { DynamicGameID, GameID } from "models/DynamicProperty";
 
-export const nagivatorFormHandler = async function (player) {
+export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await lobbyForm(player);
 
   // bridger
   if (selection === 1) {
     defineBridger(player);
-    exp.giveItems(player, data.getInvData("bridger"));
+    exp.giveItems(player, data.getInvData(GameID.straightBridger));
 
-    dynamicProperty.setGameId(`straight${dynamicProperty.getGameData("straightDistance")}b`);
-    exp.teleportation(player, data.locationData.bridger.straight);
+    dynamicProperty.setGameId(GameID.straightBridger);
+    exp.setBridgerMode(DynamicGameID.straight16blocks);
+    exp.teleportation(player, data.locationData.straightBridger);
     exp.confirmMessage(player, "§7Teleporting to bridger...");
   }
 
   // clutcher
   if (selection === 3) {
     defineClutcher(player);
-    exp.giveItems(player, data.getInvData("clutcher"));
-    dynamicProperty.setGameId("clutcher");
+    exp.giveItems(player, data.getInvData(GameID.clutcher));
+    dynamicProperty.setGameId(GameID.clutcher);
     exp.confirmMessage(player, "§7Teleporting to bridger...");
     exp.teleportation(player, data.locationData.clutcher);
   }
@@ -31,13 +35,13 @@ export const nagivatorFormHandler = async function (player) {
   if (selection === 7) exp.teleportation(player, data.locationData.lobby);
 };
 
-export const launchingHandler = function (player) {
+export const launchingHandler = function (player: Player) {
   const { x: directionX, y: directionY, z: directionZ } = player.getViewDirection();
   player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));
-  player.playSound("breeze_wind_charge.burst", player.location);
+  player.playSound("breeze_wind_charge.burst", { location: player.location });
   player.spawnParticle("minecraft:huge_explosion_emitter", player.location);
 };
 
-export const creditFormHandler = function (player) {
+export const creditFormHandler = function (player: Player) {
   lobbyCreditForm(player);
 };

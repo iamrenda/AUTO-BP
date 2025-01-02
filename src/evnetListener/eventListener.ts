@@ -1,14 +1,17 @@
 import * as mc from "@minecraft/server";
-import * as exp from "./functions";
-import * as data from "./staticData";
-import dynamicProperty from "./dynamicProperty";
+import * as exp from "../utilities/utilities";
+import * as data from "../utilities/staticData";
+import dynamicProperty from "../utilities/dynamicProperty";
 
 import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 
+import TeleportationLocation from "models/TeleportationLocation";
+import { GameID } from "models/DynamicProperty";
+
 // player right-click an item
-mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
+mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
   switch (dynamicProperty.getGameId()) {
     case "lobby":
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
@@ -16,9 +19,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
       if (item.typeId === "minecraft:book") lobby.creditFormHandler(player);
       break;
 
-    case "straight16b":
-    case "straight21b":
-    case "straight50b":
+    case "straightBridger":
       if (item.typeId === "minecraft:book") bridger.bridgerFormHandler(player);
       break;
 
@@ -29,11 +30,9 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => 
 });
 
 // player placing a block
-mc.world.afterEvents.playerPlaceBlock.subscribe(({ player, block }) => {
+mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   switch (dynamicProperty.getGameId()) {
-    case "straight16b":
-    case "straight21b":
-    case "straight50b":
+    case "straightBridger":
       bridger.placingBlockEvt(block);
       break;
     case "clutcher":
@@ -43,18 +42,16 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ player, block }) => {
 });
 
 // player pushed a pressureplate
-mc.world.afterEvents.pressurePlatePush.subscribe(() => {
+mc.world.afterEvents.pressurePlatePush.subscribe((): void => {
   switch (dynamicProperty.getGameId()) {
-    case "straight16b":
-    case "straight21b":
-    case "straight50b":
+    case "straightBridger":
       bridger.pressurePlatePushEvt();
       break;
   }
 });
 
 // world init
-mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => {
+mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): void => {
   blockComponentRegistry.registerCustomComponent("auto:redstone", {
     onTick({ block }) {
       mc.world.getDimension("overworld").setBlockType(block.location, "auto:custom_redstoneBlock");
@@ -69,13 +66,13 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => 
 
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
-mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
-  exp.teleportation(player, data.locationData.lobby);
-  exp.giveItems(player, data.getInvData("lobby"));
+mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
+  exp.teleportation(player, <TeleportationLocation>data.locationData[GameID.lobby]);
+  exp.giveItems(player, data.getInvData(GameID.lobby));
 });
 
 // player leaving the worlds
-mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
+mc.world.beforeEvents.playerLeave.subscribe((): void => dynamicProperty.setGameId(GameID.lobby));
 
 // player breaking a block
 // mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
@@ -85,11 +82,9 @@ mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lob
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
-mc.system.runInterval(() => {
+mc.system.runInterval((): void => {
   switch (dynamicProperty.getGameId()) {
-    case "straight16b":
-    case "straight21b":
-    case "straight50b":
+    case "straightBridger":
       bridger.listener();
       break;
     case "clutcher":
@@ -99,7 +94,7 @@ mc.system.runInterval(() => {
 });
 
 // every 10 tick
-mc.system.runInterval(() => {
+mc.system.runInterval((): void => {
   switch (dynamicProperty.getGameId()) {
     case "clutcher":
       clutcher.slowListener();
