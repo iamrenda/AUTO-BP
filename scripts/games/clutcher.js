@@ -54,7 +54,6 @@ const restartClutch = function (player) {
 };
 /**
  * applying knockback to player each hit
- * @param {Array} powerSetting
  */
 const applyKnockback = function (player, { viewX, viewZ }, powerSetting) {
     player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);

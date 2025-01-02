@@ -1,11 +1,11 @@
-import { DynamicGameID, GameID } from "models/DynamicProperty";
+import { DynamicGame, GameID } from "models/DynamicProperty";
 ////////////////////
 // EXPORTS
 /**
  * block: minecraft block name to bridge with
  */
 const tempData = {
-    bridgerMode: DynamicGameID.straight16blocks,
+    bridgerMode: DynamicGame.straight16blocks,
     blockBridger: "minecraft:sandstone",
     blockClutcher: "minecraft:sandstone",
     clutch: [1],

@@ -2,12 +2,12 @@ import MinecraftID from "models/minecraftID";
 import TeleportationLocation from "models/TeleportationLocation";
 import ItemInfo from "models/ItemInfo";
 import StructureInfo from "models/StructureInfo";
-import { DynamicGameID, GameID } from "models/DynamicProperty";
+import { DynamicGame, GameID } from "models/DynamicProperty";
 
 ////////////////////
 // INTERFACE
 type TempDataIF = {
-  bridgerMode: DynamicGameID;
+  bridgerMode: DynamicGame;
   blockBridger: MinecraftID.MinecraftBlockIdIF;
   blockClutcher: MinecraftID.MinecraftBlockIdIF;
   clutch: number[];
@@ -33,7 +33,7 @@ type ClutchStrengthIF = {
  * block: minecraft block name to bridge with
  */
 const tempData: TempDataIF = {
-  bridgerMode: DynamicGameID.straight16blocks,
+  bridgerMode: DynamicGame.straight16blocks,
   blockBridger: "minecraft:sandstone",
   blockClutcher: "minecraft:sandstone",
   clutch: [1],

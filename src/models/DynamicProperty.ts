@@ -1,8 +1,9 @@
-export enum DynamicPropertyName {
+export enum DynamicPropertyID {
+  GameID = "auto:gameId",
+  GameDatas = "auto:gameDatas",
   PB = "auto:pb",
   Attemps = "auto:atmps",
   SuccessAttempts = "auto:successAtmps",
-  GameDatas = "auto:gameDatas",
 }
 
 export enum GameID {
@@ -12,7 +13,7 @@ export enum GameID {
 }
 
 // only for setter / getter dynamic property purposes
-export enum DynamicGameID {
+export enum DynamicGame {
   straight16blocks = "straight16b",
   straight21blocks = "straight21b",
   straight50blocks = "straight50b",

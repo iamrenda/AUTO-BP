@@ -3,7 +3,7 @@ import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import * as form from "../utilities/forms";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { DynamicGameID, GameDataID, GameID } from "models/DynamicProperty";
+import { DynamicGame, GameDataID, GameID } from "models/DynamicProperty";
 import StructureInfo from "models/StructureInfo";
 
 type Bridger = {
@@ -194,7 +194,7 @@ const handleDistanceChange = function (player: mc.Player, blocks: IslandDistance
     { distance: blocks, isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased) }
   );
   dynamicProperty.setGameData(GameDataID.straightDistance, blocks);
-  exp.setBridgerMode(<DynamicGameID>`straight${blocks}b`);
+  exp.setBridgerMode(<DynamicGame>`straight${blocks}b`);
   exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   updateFloatingText();
 };

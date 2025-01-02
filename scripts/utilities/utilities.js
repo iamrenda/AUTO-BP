@@ -1,4 +1,4 @@
-import { ItemLockMode, ItemStack } from "@minecraft/server";
+import { world, ItemLockMode, ItemStack } from "@minecraft/server";
 import { tempData } from "./staticData";
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -36,4 +36,10 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
 const setBridgerMode = function (game) {
     tempData.bridgerMode = game;
 };
-export { giveItems, teleportation, confirmMessage, today, setBridgerMode };
+const getProperty = function (dynamicId) {
+    return world.getDynamicProperty(dynamicId).toString();
+};
+const setProperty = function (dynamicId, value) {
+    world.setDynamicProperty(dynamicId, value);
+};
+export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty };

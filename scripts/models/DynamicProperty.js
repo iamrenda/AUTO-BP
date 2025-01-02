@@ -1,10 +1,11 @@
-export var DynamicPropertyName;
-(function (DynamicPropertyName) {
-    DynamicPropertyName["PB"] = "auto:pb";
-    DynamicPropertyName["Attemps"] = "auto:atmps";
-    DynamicPropertyName["SuccessAttempts"] = "auto:successAtmps";
-    DynamicPropertyName["GameDatas"] = "auto:gameDatas";
-})(DynamicPropertyName || (DynamicPropertyName = {}));
+export var DynamicPropertyID;
+(function (DynamicPropertyID) {
+    DynamicPropertyID["GameID"] = "auto:gameId";
+    DynamicPropertyID["GameDatas"] = "auto:gameDatas";
+    DynamicPropertyID["PB"] = "auto:pb";
+    DynamicPropertyID["Attemps"] = "auto:atmps";
+    DynamicPropertyID["SuccessAttempts"] = "auto:successAtmps";
+})(DynamicPropertyID || (DynamicPropertyID = {}));
 export var GameID;
 (function (GameID) {
     GameID["lobby"] = "lobby";
@@ -12,15 +13,15 @@ export var GameID;
     GameID["clutcher"] = "clutcher";
 })(GameID || (GameID = {}));
 // only for setter / getter dynamic property purposes
-export var DynamicGameID;
-(function (DynamicGameID) {
-    DynamicGameID["straight16blocks"] = "straight16b";
-    DynamicGameID["straight21blocks"] = "straight21b";
-    DynamicGameID["straight50blocks"] = "straight50b";
+export var DynamicGame;
+(function (DynamicGame) {
+    DynamicGame["straight16blocks"] = "straight16b";
+    DynamicGame["straight21blocks"] = "straight21b";
+    DynamicGame["straight50blocks"] = "straight50b";
     // incline16blocks = "incline16b",
     // incline25blocks = "incline25b",
     // incline50blocks = "incline50b",
-})(DynamicGameID || (DynamicGameID = {}));
+})(DynamicGame || (DynamicGame = {}));
 export var GameDataID;
 (function (GameDataID) {
     GameDataID["straightIsStairCased"] = "straightIsStairCased";

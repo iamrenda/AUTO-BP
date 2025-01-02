@@ -4,7 +4,7 @@ import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { DynamicGameID, GameID } from "models/DynamicProperty";
+import { DynamicGame, GameID } from "models/DynamicProperty";
 export const nagivatorFormHandler = async function (player) {
     const { selection } = await lobbyForm(player);
     // bridger
@@ -12,7 +12,7 @@ export const nagivatorFormHandler = async function (player) {
         defineBridger(player);
         exp.giveItems(player, data.getInvData(GameID.straightBridger));
         dynamicProperty.setGameId(GameID.straightBridger);
-        exp.setBridgerMode(DynamicGameID.straight16blocks);
+        exp.setBridgerMode(DynamicGame.straight16blocks);
         exp.teleportation(player, data.locationData.straightBridger);
         exp.confirmMessage(player, "§7Teleporting to bridger...");
     }
