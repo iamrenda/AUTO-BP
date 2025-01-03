@@ -1,6 +1,6 @@
 import { Player } from "@minecraft/server";
 
-import { lobbyForm, lobbyCreditForm } from "../utilities/forms";
+import { lobbyForm, lobbyCreditForm } from "../forms/lobby";
 import { defineBridger } from "./bridger";
 import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";

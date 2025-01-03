@@ -100,7 +100,7 @@ const locationData: LocationDataIF = {
  * blockName: block's name to display
  * texture: block's texture's name
  */
-const blocks: DisplayBlockIF[] = [
+const formBlocks: DisplayBlockIF[] = [
   { blockName: "Sandstone", texture: "minecraft:sandstone" },
   { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
   { blockName: "Bamboo Planks", texture: "minecraft:bamboo_planks" },
@@ -141,4 +141,4 @@ const clutchStrength: ClutchStrengthIF = {
   },
 };
 
-export { getInvData, locationData, tempData, structures, blocks, clutchStrength };
+export { getInvData, locationData, tempData, structures, formBlocks, clutchStrength };

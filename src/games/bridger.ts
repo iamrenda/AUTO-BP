@@ -1,8 +1,10 @@
 import * as mc from "@minecraft/server";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import * as form from "../utilities/forms";
+
+import * as form from "forms/bridger";
 import dynamicProperty from "../utilities/dynamicProperty";
+import { confirmationForm } from "forms/utility";
 import { BridgerDynamicID, GameDataID } from "models/DynamicProperty";
 import StructureInfo from "models/StructureInfo";
 import TeleportationLocation from "models/TeleportationLocation";
@@ -261,7 +263,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   // bridgerForm: block
   if (bridgerSelection === 12) {
     const { selection: blockSelection } = await form.bridgerBlockForm(player);
-    const blockObj = data.blocks[blockSelection - 9];
+    const blockObj = data.formBlocks[blockSelection - 9];
 
     data.tempData.blockBridger = blockObj.texture;
     exp.giveItems(player, data.getInvData("straightBridger"));
@@ -270,7 +272,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
   // bridgerForm: reset pb
   if (bridgerSelection === 14) {
-    const { selection: confirmSelection } = await form.confirmationForm(player);
+    const { selection: confirmSelection } = await confirmationForm(player);
     if (confirmSelection !== 15) return;
     dynamicProperty.resetPB(game);
     exp.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");

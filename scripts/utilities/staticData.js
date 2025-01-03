@@ -68,7 +68,7 @@ const locationData = {
  * blockName: block's name to display
  * texture: block's texture's name
  */
-const blocks = [
+const formBlocks = [
     { blockName: "Sandstone", texture: "minecraft:sandstone" },
     { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
     { blockName: "Bamboo Planks", texture: "minecraft:bamboo_planks" },
@@ -106,4 +106,4 @@ const clutchStrength = {
         strength: 5,
     },
 };
-export { getInvData, locationData, tempData, structures, blocks, clutchStrength };
+export { getInvData, locationData, tempData, structures, formBlocks, clutchStrength };

@@ -1,8 +1,9 @@
 import * as mc from "@minecraft/server";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import * as form from "../utilities/forms";
+import * as form from "forms/bridger";
 import dynamicProperty from "../utilities/dynamicProperty";
+import { confirmationForm } from "forms/utility";
 import { GameDataID } from "models/DynamicProperty";
 const bridger = {
     player: null,
@@ -181,14 +182,14 @@ export const bridgerFormHandler = async function (player) {
     // bridgerForm: block
     if (bridgerSelection === 12) {
         const { selection: blockSelection } = await form.bridgerBlockForm(player);
-        const blockObj = data.blocks[blockSelection - 9];
+        const blockObj = data.formBlocks[blockSelection - 9];
         data.tempData.blockBridger = blockObj.texture;
         exp.giveItems(player, data.getInvData("straightBridger"));
         exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
     }
     // bridgerForm: reset pb
     if (bridgerSelection === 14) {
-        const { selection: confirmSelection } = await form.confirmationForm(player);
+        const { selection: confirmSelection } = await confirmationForm(player);
         if (confirmSelection !== 15)
             return;
         dynamicProperty.resetPB(game);

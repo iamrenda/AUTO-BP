@@ -1,5 +1,5 @@
 import * as mc from "@minecraft/server";
-import * as form from "../utilities/forms";
+import * as form from "../forms/clutcher";
 import dynamicProperty from "../utilities/dynamicProperty";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
