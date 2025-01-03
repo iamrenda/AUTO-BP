@@ -1,11 +1,11 @@
-import { DynamicGame, GameID } from "models/DynamicProperty";
+import { BridgerDynamicID } from "models/DynamicProperty";
 ////////////////////
 // EXPORTS
 /**
  * block: minecraft block name to bridge with
  */
 const tempData = {
-    bridgerMode: DynamicGame.straight16blocks,
+    bridgerMode: BridgerDynamicID.straight16blocks,
     blockBridger: "minecraft:sandstone",
     blockClutcher: "minecraft:sandstone",
     clutch: [1],
@@ -13,9 +13,7 @@ const tempData = {
 };
 /**
  * getInvData: get inventory data for giveItems
- *
- * @param {String} game - the inventory data to retrieve based on the game
- */ // CHECK game
+ */
 const getInvData = function (game) {
     if (game === "lobby")
         return [
@@ -39,18 +37,32 @@ const getInvData = function (game) {
  * locationData: lcoation to teleport when player joining to a game
  */
 const locationData = {
-    [GameID.lobby]: {
+    lobby: {
         position: { x: 91.5, y: 262.0, z: 63.5 },
         facing: { x: 91.5, y: 262.0, z: 64 },
     },
-    [GameID.straightBridger]: {
+    straightBridger: {
         position: { x: 10000.5, y: 100, z: 10000.5 },
         facing: { x: 10000.5, y: 100, z: 10001 },
     },
-    [GameID.clutcher]: {
-        position: { x: 19999.5, y: 104, z: 20002.5 },
-        facing: { x: 19999.5, y: 104, z: 20003 },
-    },
+    clutcher: [
+        {
+            position: { x: 19999.5, y: 104, z: 20002.5 },
+            facing: { x: 19999.5, y: 104, z: 20003 },
+        },
+        {
+            position: { x: 19978.5, y: 104, z: 20031.5 },
+            facing: { x: 19979, y: 104, z: 20031.5 },
+        },
+        {
+            position: { x: 20007.5, y: 103, z: 20052.5 },
+            facing: { x: 20007.5, y: 103, z: 20052 },
+        },
+        {
+            position: { x: 20027.5, y: 104, z: 20023.5 },
+            facing: { x: 20027, y: 104, z: 20023.5 },
+        },
+    ],
 };
 /**
  * blockName: block's name to display

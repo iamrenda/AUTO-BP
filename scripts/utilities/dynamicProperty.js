@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { GameID, DynamicPropertyID, DynamicGame, GameDataID } from "models/DynamicProperty";
+import { DynamicPropertyID, BridgerDynamicID, GameDataID } from "models/DynamicProperty";
 const getProperty = function (dynamicId) {
     return world.getDynamicProperty(dynamicId).toString();
 };
@@ -8,12 +8,12 @@ const setProperty = function (dynamicId, value) {
 };
 const getGameValue = function (game, dynamicId) {
     const rawDataArr = getProperty(dynamicId).split("|");
-    const gameIndex = Object.values(DynamicGame).indexOf(game);
+    const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
     return +rawDataArr[gameIndex];
 };
 const setGameValue = function (game, dynamicId, value) {
     const rawDataArr = getProperty(dynamicId).split("|");
-    const gameIndex = Object.values(DynamicGame).indexOf(game);
+    const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
     rawDataArr[gameIndex] = String(value);
     setProperty(dynamicId, rawDataArr.join("|"));
 };
@@ -64,7 +64,7 @@ class dynamicProperty {
         world.setDynamicProperty("auto:gameDatas", newRawData);
     }
     static resetdynamicProperties() {
-        setProperty(DynamicPropertyID.GameID, GameID.lobby);
+        setProperty(DynamicPropertyID.GameID, "lobby");
         setProperty(DynamicPropertyID.GameDatas, "F|1");
         setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
         setProperty(DynamicPropertyID.Attemps, "0|0|0|0|0|0");

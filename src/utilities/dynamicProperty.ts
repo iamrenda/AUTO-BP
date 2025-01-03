@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { GameID, DynamicPropertyID, DynamicGame, GameDataID } from "models/DynamicProperty";
+import { GameID, DynamicPropertyID, BridgerDynamicID, GameDataID } from "models/DynamicProperty";
 
 const getProperty = function (dynamicId: DynamicPropertyID): string {
   return world.getDynamicProperty(dynamicId).toString();
@@ -9,15 +9,15 @@ const setProperty = function (dynamicId: DynamicPropertyID, value: any): void {
   world.setDynamicProperty(dynamicId, value);
 };
 
-const getGameValue = function (game: DynamicGame, dynamicId: DynamicPropertyID): number {
+const getGameValue = function (game: BridgerDynamicID, dynamicId: DynamicPropertyID): number {
   const rawDataArr = getProperty(dynamicId).split("|");
-  const gameIndex = Object.values(DynamicGame).indexOf(game);
+  const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
   return +rawDataArr[gameIndex];
 };
 
-const setGameValue = function (game: DynamicGame, dynamicId: DynamicPropertyID, value: number): void {
+const setGameValue = function (game: BridgerDynamicID, dynamicId: DynamicPropertyID, value: number): void {
   const rawDataArr = getProperty(dynamicId).split("|");
-  const gameIndex = Object.values(DynamicGame).indexOf(game);
+  const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
   rawDataArr[gameIndex] = String(value);
   setProperty(dynamicId, rawDataArr.join("|"));
 };
@@ -45,33 +45,33 @@ class dynamicProperty {
   }
 
   // PERSONAL BEST
-  static getPB(game: DynamicGame): number {
+  static getPB(game: BridgerDynamicID): number {
     return getGameValue(game, DynamicPropertyID.PB);
   }
 
-  static setPB(game: DynamicGame, ticks: number): void {
+  static setPB(game: BridgerDynamicID, ticks: number): void {
     setGameValue(game, DynamicPropertyID.PB, ticks);
   }
 
-  static resetPB(game: DynamicGame): void {
+  static resetPB(game: BridgerDynamicID): void {
     this.setPB(game, -1);
   }
 
   // ATTEMPTS
-  static getAttempts(game: DynamicGame): number {
+  static getAttempts(game: BridgerDynamicID): number {
     return getGameValue(game, DynamicPropertyID.Attemps);
   }
 
-  static addAttempts(game: DynamicGame): void {
+  static addAttempts(game: BridgerDynamicID): void {
     setGameValue(game, DynamicPropertyID.Attemps, this.getAttempts(game) + 1);
   }
 
   // SUCCESS ATTEMPTS
-  static getSuccessAttempts(game: DynamicGame): number {
+  static getSuccessAttempts(game: BridgerDynamicID): number {
     return getGameValue(game, DynamicPropertyID.SuccessAttempts);
   }
 
-  static addSuccessAttempts(game: DynamicGame): void {
+  static addSuccessAttempts(game: BridgerDynamicID): void {
     setGameValue(game, DynamicPropertyID.SuccessAttempts, this.getSuccessAttempts(game) + 1);
   }
 
@@ -94,7 +94,7 @@ class dynamicProperty {
   }
 
   static resetdynamicProperties(): void {
-    setProperty(DynamicPropertyID.GameID, GameID.lobby);
+    setProperty(DynamicPropertyID.GameID, "lobby");
     setProperty(DynamicPropertyID.GameDatas, "F|1");
 
     setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");

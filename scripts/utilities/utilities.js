@@ -2,9 +2,6 @@ import { world, ItemLockMode, ItemStack } from "@minecraft/server";
 import { tempData } from "./staticData";
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
- *
- * @param {Player} player - player object
- * @param {Array} itemArr - an array containing object of {item: String, quantity: number, slot?: number}
  */
 const giveItems = function (player, itemArr) {
     const container = player.getComponent("inventory").container;
@@ -42,4 +39,14 @@ const getProperty = function (dynamicId) {
 const setProperty = function (dynamicId, value) {
     world.setDynamicProperty(dynamicId, value);
 };
-export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty };
+/**
+ * get the distance (rounded) between 2 location vector3 (ignoring y vector)
+ */
+const calculateDistance = function (location1, location2) {
+    if (!location1 || !location2)
+        return 0;
+    const dx = location2.x - location1.x;
+    const dz = location2.z - location1.z;
+    return Math.round(Math.sqrt(dx * dx + dz * dz));
+};
+export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty, calculateDistance };

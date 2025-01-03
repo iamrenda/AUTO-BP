@@ -6,14 +6,10 @@ export enum DynamicPropertyID {
   SuccessAttempts = "auto:successAtmps",
 }
 
-export enum GameID {
-  lobby = "lobby",
-  straightBridger = "straightBridger",
-  clutcher = "clutcher",
-}
+export type GameID = "lobby" | "straightBridger" | "clutcher";
 
 // only for setter / getter dynamic property purposes
-export enum DynamicGame {
+export enum BridgerDynamicID {
   straight16blocks = "straight16b",
   straight21blocks = "straight21b",
   straight50blocks = "straight50b",

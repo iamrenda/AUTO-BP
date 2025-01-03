@@ -1,11 +1,10 @@
 import * as mc from "@minecraft/server";
-import * as exp from "./utilities";
-import * as data from "./staticData";
-import dynamicProperty from "./dynamicProperty";
+import * as exp from "../utilities/utilities";
+import * as data from "../utilities/staticData";
+import dynamicProperty from "../utilities/dynamicProperty";
 import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
-import { GameID } from "models/DynamicProperty";
 // player right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
     switch (dynamicProperty.getGameId()) {
@@ -62,13 +61,13 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }) => 
 /////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
-    exp.teleportation(player, data.locationData[GameID.lobby]);
-    exp.giveItems(player, data.getInvData(GameID.lobby));
+    exp.teleportation(player, data.locationData.lobby);
+    exp.giveItems(player, data.getInvData("lobby"));
 });
 // player leaving the worlds
-mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId(GameID.lobby));
+mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
 // player breaking a block
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 /////////////////////////////////////////////////////////////////////////////////

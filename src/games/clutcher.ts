@@ -3,9 +3,25 @@ import * as form from "../utilities/forms";
 import dynamicProperty from "../utilities/dynamicProperty";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import { GameID } from "models/DynamicProperty";
+import TeleportationLocation from "models/TeleportationLocation";
 
-const clutcher = {
+type Clutcher = {
+  player: mc.Player;
+
+  isListening: boolean;
+  distance: number;
+  startLocation: mc.Vector3;
+  endLocation: mc.Vector3;
+
+  countDown?: number;
+  hitTimer?: number;
+  sec: number;
+  hitIndex: number;
+
+  teleportationIndex: number;
+};
+
+const clutcher: Clutcher = {
   player: null,
 
   isListening: false, // weather listening for the first block detection
@@ -17,12 +33,25 @@ const clutcher = {
   hitTimer: null, // interval between hits
   sec: 3, // countdown seconds
   hitIndex: 0, // hit count
+
+  teleportationIndex: 0,
+};
+
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
+/**
+ * teleport player to counter clockwise location
+ */
+const teleportToCounterClockwise = function (player: mc.Player) {
+  const location = data.locationData.clutcher[clutcher.teleportationIndex];
+  exp.teleportation(player, location);
+  clutcher.teleportationIndex = clutcher.teleportationIndex === 3 ? 0 : clutcher.teleportationIndex + 1;
 };
 
 /**
- * keep showing strength form of each hit until cancel
+ * knockback customizer for each hit, shows until cancel
  */
-const updateClutcherSettings = async function (player: mc.Player, numHit: number) {
+const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
   const clutchForm = form.clutchSettingsForm();
   data.tempData.clutch.map((power, index) => {
     clutchForm.button(
@@ -41,20 +70,13 @@ const updateClutcherSettings = async function (player: mc.Player, numHit: number
   data.tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
   if (canceled) return exp.confirmMessage(player, "§aThe clutcher settings is now saved!", "random.orb");
-  await updateClutcherSettings(player, numHit);
+  await updateKnockBackForm(player, numHit);
 };
 
 /**
- * when player fails
+ * reset clutcher data
  */
-const restartClutch = function (player: mc.Player) {
-  if (!clutcher.hitTimer && clutcher.countDown) {
-    exp.confirmMessage(player, "§8Count down canceled", "note.guitar");
-    clutcher.sec = 3;
-  }
-  if (clutcher.countDown) mc.system.clearRun(clutcher.countDown);
-  if (clutcher.hitTimer) mc.system.clearRun(clutcher.hitTimer);
-
+const resetClutcherData = function () {
   clutcher.hitTimer = null;
   clutcher.countDown = null;
   clutcher.hitIndex = 0;
@@ -62,16 +84,38 @@ const restartClutch = function (player: mc.Player) {
   clutcher.startLocation = null;
   clutcher.endLocation = null;
   clutcher.distance = 0;
-
-  exp.teleportation(player, data.locationData.clutcher);
-  exp.giveItems(player, data.getInvData(GameID.clutcher));
 };
 
 /**
- * applying knockback to player each hit
+ * when player fails
  */
-const applyKnockback = function (player: mc.Player, { viewX, viewZ }, powerSetting: number[]) {
-  player.applyKnockback(-viewX, -viewZ, powerSetting[clutcher.hitIndex], 0.6);
+const restartClutch = function (player: mc.Player) {
+  // if fail during countdown
+  if (!clutcher.hitTimer && clutcher.countDown) {
+    exp.confirmMessage(player, "§8Count down canceled", "note.guitar");
+    clutcher.sec = 3;
+  }
+
+  // cancelling countdown & hitTimer
+  if (clutcher.countDown) mc.system.clearRun(clutcher.countDown);
+  if (clutcher.hitTimer) mc.system.clearRun(clutcher.hitTimer);
+
+  // reset clutcher data
+  resetClutcherData();
+
+  // teleport and give item
+
+  teleportToCounterClockwise(player);
+  exp.giveItems(player, data.getInvData("clutcher"));
+};
+
+/**
+ * applying knockback to player from knockback
+ */
+const applyKnockback = function (player: mc.Player, { viewX, viewZ }, horizontalKb: number) {
+  const verticalKb = 0.6;
+
+  player.applyKnockback(-viewX, -viewZ, horizontalKb, verticalKb);
   player.playSound("game.player.hurt");
   clutcher.hitIndex++;
 };
@@ -87,12 +131,12 @@ const startClutch = function (player: mc.Player) {
   clutcher.sec = 3;
 
   const { x: viewX, z: viewZ } = player.getViewDirection();
-  const powerSetting = data.tempData.clutch;
+  const powerSetting: number[] = data.tempData.clutch;
 
-  applyKnockback(player, { viewX, viewZ }, powerSetting);
+  applyKnockback(player, { viewX, viewZ }, powerSetting[clutcher.hitIndex]);
   clutcher.hitTimer = mc.system.runInterval(() => {
     if (clutcher.hitIndex === data.tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
-    applyKnockback(player, { viewX, viewZ }, powerSetting);
+    applyKnockback(player, { viewX, viewZ }, powerSetting[clutcher.hitIndex]);
   }, 10);
 };
 
@@ -117,16 +161,6 @@ const readyForClutch = function (player: mc.Player) {
     countDownDisplay(player);
   }, 20);
 };
-
-/**
- * get the distance (rounded) between 2 location vector3 (ignoring y vector)
- */
-const calculateDistance = function (location1: mc.Vector3, location2: mc.Vector3): number {
-  if (!location1 || !location2) return 0;
-  const dx = location2.x - location1.x;
-  const dz = location2.z - location1.z;
-  return Math.round(Math.sqrt(dx * dx + dz * dz));
-};
 ///////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////
 export const defineClutcher = function (player: mc.Player) {
@@ -138,7 +172,6 @@ export const clutcherFormHandler = async function (player: mc.Player) {
   if (player.isSneaking && data.tempData.clutchShiftStart) return readyForClutch(player);
 
   const { selection } = await form.clutcherForm(player);
-
   // clutch start
   if (selection === 10) readyForClutch(player);
 
@@ -148,7 +181,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
     const numHit = clutchNum - 8;
 
     data.tempData.clutch = new Array(numHit).fill(1);
-    updateClutcherSettings(player, numHit);
+    updateKnockBackForm(player, numHit);
   }
 
   // general settings
@@ -167,9 +200,9 @@ export const clutcherFormHandler = async function (player: mc.Player) {
 
   // quit
   if (selection === 16) {
-    dynamicProperty.setGameId(GameID.lobby);
-    exp.giveItems(player, data.getInvData(GameID.lobby));
-    exp.teleportation(player, data.locationData.lobby);
+    dynamicProperty.setGameId("lobby");
+    exp.giveItems(player, data.getInvData("lobby"));
+    exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
     exp.confirmMessage(player, "§7Teleporting back to lobby...");
   }
 };
@@ -193,16 +226,16 @@ export const listener = async function () {
 };
 
 export const slowListener = function () {
-  clutcher.distance = calculateDistance(clutcher.startLocation, clutcher.endLocation);
+  clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
   clutcher.player.onScreenDisplay.setTitle(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
 
 // CHECK DEBUGGING PURPOSES
-// mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-//   clutcher.player = player;
-//   player.sendMessage("player now defined");
-//   //////////////////////////////////////////////////
-//   // debug from here
-// });
+mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+  clutcher.player = player;
+  player.sendMessage("player now defined");
+  //////////////////////////////////////////////////
+  // debug from here
+});

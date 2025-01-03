@@ -6,7 +6,8 @@ import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { DynamicGame, GameID } from "models/DynamicProperty";
+import { BridgerDynamicID } from "models/DynamicProperty";
+import TeleportationLocation from "models/TeleportationLocation";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await lobbyForm(player);
@@ -14,25 +15,25 @@ export const nagivatorFormHandler = async function (player: Player) {
   // bridger
   if (selection === 1) {
     defineBridger(player);
-    exp.giveItems(player, data.getInvData(GameID.straightBridger));
+    exp.giveItems(player, data.getInvData("straightBridger"));
 
-    dynamicProperty.setGameId(GameID.straightBridger);
-    exp.setBridgerMode(DynamicGame.straight16blocks);
-    exp.teleportation(player, data.locationData.straightBridger);
+    dynamicProperty.setGameId("straightBridger");
+    exp.setBridgerMode(BridgerDynamicID.straight16blocks);
+    exp.teleportation(player, <TeleportationLocation>data.locationData.straightBridger);
     exp.confirmMessage(player, "§7Teleporting to bridger...");
   }
 
   // clutcher
   if (selection === 3) {
     defineClutcher(player);
-    exp.giveItems(player, data.getInvData(GameID.clutcher));
-    dynamicProperty.setGameId(GameID.clutcher);
+    exp.giveItems(player, data.getInvData("clutcher"));
+    dynamicProperty.setGameId("clutcher");
     exp.confirmMessage(player, "§7Teleporting to bridger...");
-    exp.teleportation(player, data.locationData.clutcher);
+    exp.teleportation(player, data.locationData.clutcher[0]);
   }
 
   // back to lobby
-  if (selection === 7) exp.teleportation(player, data.locationData.lobby);
+  if (selection === 7) exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
 };
 
 export const launchingHandler = function (player: Player) {

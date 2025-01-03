@@ -1,14 +1,11 @@
-import { world, ItemLockMode, ItemStack, Player } from "@minecraft/server";
+import { world, ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
 import { tempData } from "./staticData";
 import ItemInfo from "models/ItemInfo";
 import TeleportationLocation from "models/TeleportationLocation";
-import { DynamicGame, DynamicPropertyID } from "models/DynamicProperty";
+import { BridgerDynamicID, DynamicPropertyID } from "models/DynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
- *
- * @param {Player} player - player object
- * @param {Array} itemArr - an array containing object of {item: String, quantity: number, slot?: number}
  */
 const giveItems = function (player: Player, itemArr: ItemInfo[]): void {
   const container = player.getComponent("inventory").container;
@@ -43,7 +40,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
   date.getFullYear()
 ).slice(-2)}`;
 
-const setBridgerMode = function (game: DynamicGame): void {
+const setBridgerMode = function (game: BridgerDynamicID): void {
   tempData.bridgerMode = game;
 };
 
@@ -55,4 +52,14 @@ const setProperty = function (dynamicId: DynamicPropertyID, value: any): void {
   world.setDynamicProperty(dynamicId, value);
 };
 
-export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty };
+/**
+ * get the distance (rounded) between 2 location vector3 (ignoring y vector)
+ */
+const calculateDistance = function (location1: Vector3, location2: Vector3): number {
+  if (!location1 || !location2) return 0;
+  const dx = location2.x - location1.x;
+  const dz = location2.z - location1.z;
+  return Math.round(Math.sqrt(dx * dx + dz * dz));
+};
+
+export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty, calculateDistance };

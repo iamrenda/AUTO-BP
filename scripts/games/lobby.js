@@ -4,25 +4,25 @@ import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { DynamicGame, GameID } from "models/DynamicProperty";
+import { BridgerDynamicID } from "models/DynamicProperty";
 export const nagivatorFormHandler = async function (player) {
     const { selection } = await lobbyForm(player);
     // bridger
     if (selection === 1) {
         defineBridger(player);
-        exp.giveItems(player, data.getInvData(GameID.straightBridger));
-        dynamicProperty.setGameId(GameID.straightBridger);
-        exp.setBridgerMode(DynamicGame.straight16blocks);
+        exp.giveItems(player, data.getInvData("straightBridger"));
+        dynamicProperty.setGameId("straightBridger");
+        exp.setBridgerMode(BridgerDynamicID.straight16blocks);
         exp.teleportation(player, data.locationData.straightBridger);
         exp.confirmMessage(player, "§7Teleporting to bridger...");
     }
     // clutcher
     if (selection === 3) {
         defineClutcher(player);
-        exp.giveItems(player, data.getInvData(GameID.clutcher));
-        dynamicProperty.setGameId(GameID.clutcher);
+        exp.giveItems(player, data.getInvData("clutcher"));
+        dynamicProperty.setGameId("clutcher");
         exp.confirmMessage(player, "§7Teleporting to bridger...");
-        exp.teleportation(player, data.locationData.clutcher);
+        exp.teleportation(player, data.locationData.clutcher[0]);
     }
     // back to lobby
     if (selection === 7)

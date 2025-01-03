@@ -3,7 +3,7 @@ import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import * as form from "../utilities/forms";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { GameDataID, GameID } from "models/DynamicProperty";
+import { GameDataID } from "models/DynamicProperty";
 const bridger = {
     player: null,
     storedLocations: [],
@@ -13,6 +13,8 @@ const bridger = {
     plateDisabled: false,
     autoReq: null, // timeOut
 };
+/////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////
 /**
  * converts from tick to seconds
  */
@@ -47,16 +49,22 @@ const updateFloatingText = function () {
     floatingEntity.nameTag = displayText;
 };
 /**
+ * reset bridger data
+ */
+const resetBridgerData = function () {
+    bridger.blocks = 0;
+    bridger.ticks = 0;
+    bridger.storedLocations = [];
+};
+/**
  * resets the map (clearing temp data, blocks, and teleporting)
  */
 const resetMap = function (wasAttempt = true) {
     // clear bridged blocks
     if (bridger.storedLocations.length)
         bridger.storedLocations.map((location) => mc.world.getDimension("overworld").setBlockType(location, "minecraft:air"));
-    bridger.storedLocations = [];
     // reset blocks and ticks
-    bridger.blocks = 0;
-    bridger.ticks = 0;
+    resetBridgerData();
     // update floating text
     if (wasAttempt)
         updateFloatingText();
@@ -65,7 +73,7 @@ const resetMap = function (wasAttempt = true) {
         ? exp.teleportation(bridger.player, data.locationData.straightBridger)
         : exp.teleportation(bridger.player, data.locationData.lobby);
     // give items to player
-    exp.giveItems(bridger.player, data.getInvData(wasAttempt ? GameID.straightBridger : GameID.lobby));
+    exp.giveItems(bridger.player, data.getInvData(wasAttempt ? "straightBridger" : "lobby"));
 };
 /**
  * re-enable pressure plate (disabled temp when plate is pressed)
@@ -120,12 +128,14 @@ const fillAndPlace = function (structure, { distance: distance1, isStairCased: i
  * replace island based on distance and save in dynamic property
  */
 const handleDistanceChange = function (player, blocks) {
+    // check whether player clicked on the same distance
     if (dynamicProperty.getGameData(GameDataID.straightDistance) === String(blocks))
         return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
     fillAndPlace(data.structures[0], {
         distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
         isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased),
     }, { distance: blocks, isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased) });
+    // set distance as dynamic property, set bridger mode for temp data
     dynamicProperty.setGameData(GameDataID.straightDistance, blocks);
     exp.setBridgerMode(`straight${blocks}b`);
     exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
@@ -135,12 +145,14 @@ const handleDistanceChange = function (player, blocks) {
  * replace island based on height and save in dynamic property
  */
 const handleHeightChange = function (player, isStairCased) {
+    // check whether player clicked on the same distance
     if (dynamicProperty.getGameData(GameDataID.straightIsStairCased) === isStairCased)
         return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
     fillAndPlace(data.structures[0], {
         distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
         isStairCased: !isStairCased,
     }, { distance: +dynamicProperty.getGameData(GameDataID.straightDistance), isStairCased: isStairCased });
+    // set staircased as dynamic property
     dynamicProperty.setGameData(GameDataID.straightIsStairCased, isStairCased);
     exp.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
 };
@@ -171,7 +183,7 @@ export const bridgerFormHandler = async function (player) {
         const { selection: blockSelection } = await form.bridgerBlockForm(player);
         const blockObj = data.blocks[blockSelection - 9];
         data.tempData.blockBridger = blockObj.texture;
-        exp.giveItems(player, data.getInvData(GameID.straightBridger));
+        exp.giveItems(player, data.getInvData("straightBridger"));
         exp.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
     }
     // bridgerForm: reset pb
@@ -185,7 +197,7 @@ export const bridgerFormHandler = async function (player) {
     }
     // bridgerForm: quit bridger
     if (bridgerSelection === 16) {
-        dynamicProperty.setGameId(GameID.lobby);
+        dynamicProperty.setGameId("lobby");
         resetMap(false);
         exp.confirmMessage(player, "§7Teleporting back to lobby...");
     }
@@ -232,9 +244,3 @@ export const listener = function () {
     }
     bridger.player.onScreenDisplay.setTitle(`      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${bridger.blocks}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`);
 };
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-    bridger.player = player;
-    player.sendMessage("player now defined");
-    //////////////////////////////////////////////////
-    // debug from here
-});

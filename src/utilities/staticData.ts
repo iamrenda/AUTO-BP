@@ -2,12 +2,12 @@ import MinecraftID from "models/minecraftID";
 import TeleportationLocation from "models/TeleportationLocation";
 import ItemInfo from "models/ItemInfo";
 import StructureInfo from "models/StructureInfo";
-import { DynamicGame, GameID } from "models/DynamicProperty";
+import { BridgerDynamicID, GameID } from "models/DynamicProperty";
 
 ////////////////////
 // INTERFACE
 type TempDataIF = {
-  bridgerMode: DynamicGame;
+  bridgerMode: BridgerDynamicID;
   blockBridger: MinecraftID.MinecraftBlockIdIF;
   blockClutcher: MinecraftID.MinecraftBlockIdIF;
   clutch: number[];
@@ -15,7 +15,7 @@ type TempDataIF = {
 };
 
 type LocationDataIF = {
-  [key in GameID]: TeleportationLocation;
+  [key in GameID]: TeleportationLocation | TeleportationLocation[];
 };
 
 type DisplayBlockIF = {
@@ -33,7 +33,7 @@ type ClutchStrengthIF = {
  * block: minecraft block name to bridge with
  */
 const tempData: TempDataIF = {
-  bridgerMode: DynamicGame.straight16blocks,
+  bridgerMode: BridgerDynamicID.straight16blocks,
   blockBridger: "minecraft:sandstone",
   blockClutcher: "minecraft:sandstone",
   clutch: [1],
@@ -42,9 +42,7 @@ const tempData: TempDataIF = {
 
 /**
  * getInvData: get inventory data for giveItems
- *
- * @param {String} game - the inventory data to retrieve based on the game
- */ // CHECK game
+ */
 const getInvData = function (game: GameID): ItemInfo[] {
   if (game === "lobby")
     return [
@@ -70,18 +68,32 @@ const getInvData = function (game: GameID): ItemInfo[] {
  */
 
 const locationData: LocationDataIF = {
-  [GameID.lobby]: {
+  lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
     facing: { x: 91.5, y: 262.0, z: 64 },
   },
-  [GameID.straightBridger]: {
+  straightBridger: {
     position: { x: 10000.5, y: 100, z: 10000.5 },
     facing: { x: 10000.5, y: 100, z: 10001 },
   },
-  [GameID.clutcher]: {
-    position: { x: 19999.5, y: 104, z: 20002.5 },
-    facing: { x: 19999.5, y: 104, z: 20003 },
-  },
+  clutcher: [
+    {
+      position: { x: 19999.5, y: 104, z: 20002.5 },
+      facing: { x: 19999.5, y: 104, z: 20003 },
+    },
+    {
+      position: { x: 19978.5, y: 104, z: 20031.5 },
+      facing: { x: 19979, y: 104, z: 20031.5 },
+    },
+    {
+      position: { x: 20007.5, y: 103, z: 20052.5 },
+      facing: { x: 20007.5, y: 103, z: 20052 },
+    },
+    {
+      position: { x: 20027.5, y: 104, z: 20023.5 },
+      facing: { x: 20027, y: 104, z: 20023.5 },
+    },
+  ],
 };
 
 /**
