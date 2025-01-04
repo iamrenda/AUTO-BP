@@ -12,6 +12,7 @@ const eatGhead = (player) => {
     player.playSound("random.burp");
     exp.confirmMessage(player, "§2You ate a §6Golden Head §2and gained 5 seconds of regeneration IIII and 2 minutes of Absorption!");
     exp.confirmMessage(player, "§2You also gained 16 seconds of Speed II!");
+    // consume
     const container = player.getComponent("inventory").container;
     const slot = player.selectedSlotIndex;
     container.setItem(slot, undefined);
@@ -75,8 +76,19 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
 // player leaving the worlds
 mc.world.beforeEvents.playerLeave.subscribe(() => dynamicProperty.setGameId("lobby"));
 // chat message
-mc.world.beforeEvents.chatSend.subscribe(({ message, sender: player }) => {
-    // CHECK GHEAD
+mc.world.beforeEvents.chatSend.subscribe((event) => {
+    const { message, sender: player } = event;
+    if (message.includes("AUTO!")) {
+        event.cancel = true;
+        mc.system.run(() => {
+            exp.confirmMessage(player, "§aHaha, thanks for playing this world. This is a present for you!");
+            exp.confirmMessage(player, "§aYou have §63 Golden Heads§a in your inventory!", "random.totem");
+            const container = player.getComponent("inventory").container;
+            for (let i = 1; i <= 3; i++)
+                container.addItem(new mc.ItemStack("auto:ghead", 1));
+        });
+        return;
+    }
 });
 // player breaking a block
 // mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));

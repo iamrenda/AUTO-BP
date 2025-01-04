@@ -233,9 +233,9 @@ export const slowListener = function () {
 };
 
 // CHECK DEBUGGING PURPOSES
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-  clutcher.player = player;
-  player.sendMessage("player now defined");
-  //////////////////////////////////////////////////
-  // debug from here
-});
+// mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+//   clutcher.player = player;
+//   player.sendMessage("player now defined");
+//   //////////////////////////////////////////////////
+//   // debug from here
+// });
