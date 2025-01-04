@@ -9,10 +9,27 @@ import * as clutcher from "../games/clutcher";
 
 import TeleportationLocation from "models/TeleportationLocation";
 
+const eatGhead = (player: mc.Player): void => {
+  player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
+  player.addEffect("minecraft:absorption", 2400, { amplifier: 1 });
+  player.addEffect("minecraft:speed", 320, { amplifier: 2 });
+  player.playSound("random.burp");
+  exp.confirmMessage(
+    player,
+    "§2You ate a §6Golden Head §2and gained 5 seconds of regeneration IIII and 2 minutes of Absorption!"
+  );
+  exp.confirmMessage(player, "§2You also gained 16 seconds of Speed II!");
+
+  const container = player.getComponent("inventory").container;
+  const slot = player.selectedSlotIndex;
+  container.setItem(slot, undefined);
+};
+
 // player right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
   switch (dynamicProperty.getGameId()) {
     case "lobby":
+      if (item.typeId === "auto:ghead") eatGhead(player);
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
       if (item.typeId === "minecraft:stick") lobby.launchingHandler(player);
       if (item.typeId === "minecraft:book") lobby.creditFormHandler(player);
@@ -51,7 +68,7 @@ mc.world.afterEvents.pressurePlatePush.subscribe((): void => {
 
 /////////////////////////////////////////////////////////////////////////////////
 // world init
-mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): void => {
+mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry, itemComponentRegistry }) => {
   blockComponentRegistry.registerCustomComponent("auto:clear", {
     onTick({ block }) {
       mc.world.getDimension("overworld").setBlockType(block.location, "minecraft:air");
