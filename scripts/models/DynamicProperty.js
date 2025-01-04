@@ -12,12 +12,14 @@ export var BridgerDynamicID;
     BridgerDynamicID["straight16blocks"] = "straight16b";
     BridgerDynamicID["straight21blocks"] = "straight21b";
     BridgerDynamicID["straight50blocks"] = "straight50b";
-    // incline16blocks = "incline16b",
-    // incline25blocks = "incline25b",
-    // incline50blocks = "incline50b",
+    BridgerDynamicID["incline16blocks"] = "incline16b";
+    BridgerDynamicID["incline25blocks"] = "incline25b";
+    BridgerDynamicID["incline50blocks"] = "incline50b";
 })(BridgerDynamicID || (BridgerDynamicID = {}));
 export var GameDataID;
 (function (GameDataID) {
     GameDataID["straightIsStairCased"] = "straightIsStairCased";
     GameDataID["straightDistance"] = "straightDistance";
+    GameDataID["inclinedIsStairCased"] = "inclinedIsStairCased";
+    GameDataID["inclinedDistance"] = "inclinedDistance";
 })(GameDataID || (GameDataID = {}));

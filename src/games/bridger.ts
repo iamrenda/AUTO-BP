@@ -67,12 +67,21 @@ const showMessage = function (wasPB: boolean): void {
 };
 
 /**
- * updateFloatingText: updates the floating texts including stats about the player
+ * floating entity grabber
+ */
+const floatingEntity = function (): mc.Entity {
+  switch (dynamicProperty.getGameId()) {
+    case "straightBridger":
+      return mc.world.getDimension("overworld").getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
+    case "inclinedBridger":
+      return mc.world.getDimension("overworld").getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 } })[0];
+  }
+};
+
+/**
+ * updates the floating texts including stats about the player
  */
 const updateFloatingText = function (): void {
-  const floatingEntity = mc.world
-    .getDimension("overworld")
-    .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
   const game = data.tempData.bridgerMode;
   const pbData = dynamicProperty.getPB(game);
   const info = {
@@ -88,7 +97,7 @@ const updateFloatingText = function (): void {
     info.attempts
   }§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
 
-  floatingEntity.nameTag = displayText;
+  floatingEntity().nameTag = displayText;
 };
 
 /**
@@ -104,6 +113,8 @@ const resetBridgerData = function (): void {
  * resets the map (clearing temp data, blocks, and teleporting)
  */
 const resetMap = function (wasAttempt: boolean = true): void {
+  const gameId = dynamicProperty.getGameId();
+
   // clear bridged blocks
   if (bridger.storedLocations.length)
     bridger.storedLocations.map((location) =>
@@ -116,13 +127,13 @@ const resetMap = function (wasAttempt: boolean = true): void {
   // update floating text
   if (wasAttempt) updateFloatingText();
 
+  // give items to player
+  exp.giveItems(bridger.player, data.getInvData(wasAttempt ? gameId : "lobby"));
+
   // teleport player
   wasAttempt
-    ? exp.teleportation(bridger.player, <TeleportationLocation>data.locationData.straightBridger)
+    ? exp.teleportation(bridger.player, <TeleportationLocation>data.locationData[gameId])
     : exp.teleportation(bridger.player, <TeleportationLocation>data.locationData.lobby);
-
-  // give items to player
-  exp.giveItems(bridger.player, data.getInvData(wasAttempt ? "straightBridger" : "lobby"));
 };
 
 /**
@@ -139,7 +150,7 @@ const enablePlate = function (cancelTimer: boolean = false): void {
  * clear previous island and place new island at new location
  * @param {Object} info which filled with air
  * @param {Object} info which new structure will be built
- */
+ */ // CHECK
 type FillAndPlaceIF = {
   distance: 16 | 21 | 50;
   isStairCased: boolean;
@@ -315,8 +326,6 @@ export const pressurePlatePushEvt = function () {
 };
 
 export const listener = function () {
-  const game = data.tempData.bridgerMode;
-
   if (bridger.player.location.y <= 88) {
     if (bridger.plateDisabled) enablePlate(true);
     else {
@@ -324,11 +333,14 @@ export const listener = function () {
         mc.system.clearRun(bridger.timer);
         bridger.timer = null; // disabling temp
       }
-      dynamicProperty.addAttempts(game);
+      dynamicProperty.addAttempts(data.tempData.bridgerMode);
       resetMap();
     }
   }
+};
 
+export const slowListener = function () {
+  const game = data.tempData.bridgerMode;
   bridger.player.onScreenDisplay.setTitle(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
       dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))

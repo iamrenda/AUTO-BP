@@ -32,6 +32,25 @@ const lobbyForm = async function (player) {
     });
     return await form.show(player);
 };
+const formBridgerDirForm = async function (player) {
+    const form = new ChestFormData("9").title("Direction").pattern(["__s___i__"], {
+        s: {
+            itemName: "§6Straight",
+            itemDesc: [],
+            texture: "minecraft:arrow",
+            stackAmount: 1,
+            enchanted: false,
+        },
+        i: {
+            itemName: "§6Inclined",
+            itemDesc: [],
+            texture: "minecraft:string",
+            stackAmount: 1,
+            enchanted: false,
+        },
+    });
+    return await form.show(player);
+};
 const lobbyCreditForm = async function (player) {
     const form = new ActionFormData()
         .title("Credits")
@@ -39,4 +58,4 @@ const lobbyCreditForm = async function (player) {
         .button("Close");
     return await form.show(player);
 };
-export { lobbyForm, lobbyCreditForm };
+export { lobbyForm, lobbyCreditForm, formBridgerDirForm };

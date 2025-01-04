@@ -1,5 +1,6 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
+import minecraftID from "models/minecraftID";
 
 export default class ChestFormData {
   /**
@@ -28,7 +29,7 @@ export default class ChestFormData {
     slot: number,
     itemName?: string,
     itemDesc?: string[],
-    texture?: string,
+    texture?: minecraftID.MinecraftIDUnion,
     stackAmount?: number,
     enchanted?: boolean
   ): ChestFormData;
@@ -57,7 +58,7 @@ export default class ChestFormData {
         itemDesc?: string[];
         stackAmount?: number;
         enchanted?: boolean;
-        texture: string;
+        texture: minecraftID.MinecraftIDUnion;
       };
     }
   ): ChestFormData;

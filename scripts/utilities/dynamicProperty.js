@@ -65,7 +65,7 @@ class dynamicProperty {
     }
     static resetdynamicProperties() {
         setProperty(DynamicPropertyID.GameID, "lobby");
-        setProperty(DynamicPropertyID.GameDatas, "F|1");
+        setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
         setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
         setProperty(DynamicPropertyID.Attemps, "0|0|0|0|0|0");
         setProperty(DynamicPropertyID.SuccessAttempts, "0|0|0|0|0|0");
@@ -79,6 +79,15 @@ dynamicProperty.gameDatas = {
     [GameDataID.straightDistance]: {
         1: "16",
         2: "21",
+        3: "50",
+    },
+    [GameDataID.inclinedIsStairCased]: {
+        T: true,
+        F: false,
+    },
+    [GameDataID.inclinedDistance]: {
+        1: "16",
+        2: "25",
         3: "50",
     },
 };

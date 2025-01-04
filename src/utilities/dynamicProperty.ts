@@ -23,7 +23,7 @@ const setGameValue = function (game: BridgerDynamicID, dynamicId: DynamicPropert
 };
 
 class dynamicProperty {
-  static gameDatas = {
+  static gameDatas: Record<GameDataID, { [key: string]: any }> = {
     [GameDataID.straightIsStairCased]: {
       T: true,
       F: false,
@@ -31,6 +31,15 @@ class dynamicProperty {
     [GameDataID.straightDistance]: {
       1: "16",
       2: "21",
+      3: "50",
+    },
+    [GameDataID.inclinedIsStairCased]: {
+      T: true,
+      F: false,
+    },
+    [GameDataID.inclinedDistance]: {
+      1: "16",
+      2: "25",
       3: "50",
     },
   };
@@ -95,7 +104,7 @@ class dynamicProperty {
 
   static resetdynamicProperties(): void {
     setProperty(DynamicPropertyID.GameID, "lobby");
-    setProperty(DynamicPropertyID.GameDatas, "F|1");
+    setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
 
     setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
     setProperty(DynamicPropertyID.Attemps, "0|0|0|0|0|0");

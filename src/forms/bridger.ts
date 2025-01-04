@@ -5,17 +5,6 @@ import { tempData, formBlocks } from "utilities/staticData";
 import dynamicProperty from "utilities/dynamicProperty";
 import { GameDataID } from "models/DynamicProperty";
 
-const bridgerBlockForm = async function (player: Player): Promise<ActionFormResponse> {
-  const form = new ChestFormData("27").title("Block Selection");
-
-  formBlocks.map(({ blockName, texture }, index) =>
-    texture === tempData.blockBridger
-      ? form.button(index + 9, blockName, ["", "§eSelected"], texture, 1, true)
-      : form.button(index + 9, blockName, [], texture, 1, false)
-  );
-  return await form.show(player);
-};
-
 const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
     i: {
@@ -47,6 +36,17 @@ const bridgerForm = async function (player: Player): Promise<ActionFormResponse>
       enchanted: false,
     },
   });
+  return await form.show(player);
+};
+
+const bridgerBlockForm = async function (player: Player): Promise<ActionFormResponse> {
+  const form = new ChestFormData("27").title("Block Selection");
+
+  formBlocks.map(({ blockName, texture }, index) =>
+    texture === tempData.blockBridger
+      ? form.button(index + 9, blockName, ["", "§eSelected"], texture, 1, true)
+      : form.button(index + 9, blockName, [], texture, 1, false)
+  );
   return await form.show(player);
 };
 

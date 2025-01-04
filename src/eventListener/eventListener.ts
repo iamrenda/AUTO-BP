@@ -49,13 +49,9 @@ mc.world.afterEvents.pressurePlatePush.subscribe((): void => {
   }
 });
 
+/////////////////////////////////////////////////////////////////////////////////
 // world init
 mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): void => {
-  blockComponentRegistry.registerCustomComponent("auto:redstone", {
-    onTick({ block }) {
-      mc.world.getDimension("overworld").setBlockType(block.location, "auto:custom_redstoneBlock");
-    },
-  });
   blockComponentRegistry.registerCustomComponent("auto:clear", {
     onTick({ block }) {
       mc.world.getDimension("overworld").setBlockType(block.location, "minecraft:air");
@@ -63,7 +59,6 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
   });
 });
 
-/////////////////////////////////////////////////////////////////////////////////
 // player joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
@@ -73,8 +68,13 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
 // player leaving the worlds
 mc.world.beforeEvents.playerLeave.subscribe((): void => dynamicProperty.setGameId("lobby"));
 
+// chat message
+mc.world.beforeEvents.chatSend.subscribe(({ message, sender: player }) => {
+  // CHECK GHEAD
+});
+
 // player breaking a block
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
@@ -84,6 +84,7 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 mc.system.runInterval((): void => {
   switch (dynamicProperty.getGameId()) {
     case "straightBridger":
+    case "inclinedBridger":
       bridger.listener();
       break;
     case "clutcher":
@@ -95,6 +96,11 @@ mc.system.runInterval((): void => {
 // every 10 tick
 mc.system.runInterval((): void => {
   switch (dynamicProperty.getGameId()) {
+    case "straightBridger":
+    case "inclinedBridger":
+      bridger.slowListener();
+      break;
+
     case "clutcher":
       clutcher.slowListener();
       break;

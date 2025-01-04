@@ -1,6 +1,6 @@
 import { Player } from "@minecraft/server";
 
-import { lobbyForm, lobbyCreditForm } from "../forms/lobby";
+import * as form from "../forms/lobby";
 import { defineBridger } from "./bridger";
 import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
@@ -9,18 +9,26 @@ import dynamicProperty from "../utilities/dynamicProperty";
 import { BridgerDynamicID } from "models/DynamicProperty";
 import TeleportationLocation from "models/TeleportationLocation";
 
+const bridgerHandler = function (player: Player, game: "straightBridger" | "inclinedBridger") {
+  defineBridger(player);
+  exp.giveItems(player, data.getInvData(game));
+  dynamicProperty.setGameId(game);
+  if (game === "straightBridger") exp.setBridgerMode(BridgerDynamicID.straight16blocks);
+  else exp.setBridgerMode(BridgerDynamicID.incline16blocks);
+  exp.teleportation(player, <TeleportationLocation>data.locationData[game]);
+  exp.confirmMessage(player, "§7Teleporting to bridger...");
+};
+
 export const nagivatorFormHandler = async function (player: Player) {
-  const { selection } = await lobbyForm(player);
+  const { selection } = await form.lobbyForm(player);
 
   // bridger
   if (selection === 1) {
-    defineBridger(player);
-    exp.giveItems(player, data.getInvData("straightBridger"));
+    // bridger direction
+    const { selection: bridgerDirSelection } = await form.formBridgerDirForm(player);
 
-    dynamicProperty.setGameId("straightBridger");
-    exp.setBridgerMode(BridgerDynamicID.straight16blocks);
-    exp.teleportation(player, <TeleportationLocation>data.locationData.straightBridger);
-    exp.confirmMessage(player, "§7Teleporting to bridger...");
+    if (bridgerDirSelection === 2) bridgerHandler(player, "straightBridger");
+    else if (bridgerDirSelection === 6) bridgerHandler(player, "inclinedBridger");
   }
 
   // clutcher
@@ -44,5 +52,5 @@ export const launchingHandler = function (player: Player) {
 };
 
 export const creditFormHandler = function (player: Player) {
-  lobbyCreditForm(player);
+  form.lobbyCreditForm(player);
 };

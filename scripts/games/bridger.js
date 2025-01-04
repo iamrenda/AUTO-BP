@@ -32,12 +32,20 @@ const showMessage = function (wasPB) {
         : bridger.player.sendMessage(`§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Distance:§r §f${dynamicProperty.getGameData(GameDataID.straightDistance)} Blocks\n   §6Your Personal Best:§r §f${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}§f\n   §6Time Recorded:§r §f${tickToSec(bridger.ticks)}§r\n§7----------------------------`);
 };
 /**
- * updateFloatingText: updates the floating texts including stats about the player
+ * floating entity grabber
+ */
+const floatingEntity = function () {
+    switch (dynamicProperty.getGameId()) {
+        case "straightBridger":
+            return mc.world.getDimension("overworld").getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
+        case "inclinedBridger":
+            return mc.world.getDimension("overworld").getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 } })[0];
+    }
+};
+/**
+ * updates the floating texts including stats about the player
  */
 const updateFloatingText = function () {
-    const floatingEntity = mc.world
-        .getDimension("overworld")
-        .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
     const game = data.tempData.bridgerMode;
     const pbData = dynamicProperty.getPB(game);
     const info = {
@@ -47,7 +55,7 @@ const updateFloatingText = function () {
     };
     const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
     const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${dynamicProperty.getGameData(GameDataID.straightDistance)} blocks§r\n§6Personal Best:§r §f${info.pb}§r\n§6Bridging Attempts:§r §f${info.attempts}§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
-    floatingEntity.nameTag = displayText;
+    floatingEntity().nameTag = displayText;
 };
 /**
  * reset bridger data
@@ -61,6 +69,7 @@ const resetBridgerData = function () {
  * resets the map (clearing temp data, blocks, and teleporting)
  */
 const resetMap = function (wasAttempt = true) {
+    const gameId = dynamicProperty.getGameId();
     // clear bridged blocks
     if (bridger.storedLocations.length)
         bridger.storedLocations.map((location) => mc.world.getDimension("overworld").setBlockType(location, "minecraft:air"));
@@ -69,12 +78,12 @@ const resetMap = function (wasAttempt = true) {
     // update floating text
     if (wasAttempt)
         updateFloatingText();
+    // give items to player
+    exp.giveItems(bridger.player, data.getInvData(wasAttempt ? gameId : "lobby"));
     // teleport player
     wasAttempt
-        ? exp.teleportation(bridger.player, data.locationData.straightBridger)
+        ? exp.teleportation(bridger.player, data.locationData[gameId])
         : exp.teleportation(bridger.player, data.locationData.lobby);
-    // give items to player
-    exp.giveItems(bridger.player, data.getInvData(wasAttempt ? "straightBridger" : "lobby"));
 };
 /**
  * re-enable pressure plate (disabled temp when plate is pressed)
@@ -230,7 +239,6 @@ export const pressurePlatePushEvt = function () {
     dynamicProperty.addSuccessAttempts(game);
 };
 export const listener = function () {
-    const game = data.tempData.bridgerMode;
     if (bridger.player.location.y <= 88) {
         if (bridger.plateDisabled)
             enablePlate(true);
@@ -239,9 +247,12 @@ export const listener = function () {
                 mc.system.clearRun(bridger.timer);
                 bridger.timer = null; // disabling temp
             }
-            dynamicProperty.addAttempts(game);
+            dynamicProperty.addAttempts(data.tempData.bridgerMode);
             resetMap();
         }
     }
+};
+export const slowListener = function () {
+    const game = data.tempData.bridgerMode;
     bridger.player.onScreenDisplay.setTitle(`      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${bridger.blocks}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`);
 };

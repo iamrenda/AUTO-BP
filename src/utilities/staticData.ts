@@ -56,7 +56,7 @@ const getInvData = function (game: GameID): ItemInfo[] {
       { item: tempData.blockBridger, quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
-  if (game === "clutcher")
+  if (game === "clutcher" || game === "inclinedBridger")
     return [
       { item: tempData.blockClutcher, quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
@@ -75,6 +75,10 @@ const locationData: LocationDataIF = {
   straightBridger: {
     position: { x: 10000.5, y: 100, z: 10000.5 },
     facing: { x: 10000.5, y: 100, z: 10001 },
+  },
+  inclinedBridger: {
+    position: { x: 9978.5, y: 100, z: 10002.5 },
+    facing: { x: 9978, y: 100, z: 10003 },
   },
   clutcher: [
     {
@@ -119,7 +123,7 @@ const formBlocks: DisplayBlockIF[] = [
 const structures: StructureInfo[] = [
   {
     name: "default",
-    file: "mystructure:default",
+    file: "straightDefault.mcstructure",
   },
 ];
 

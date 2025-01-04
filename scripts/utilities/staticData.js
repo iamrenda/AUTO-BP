@@ -27,7 +27,7 @@ const getInvData = function (game) {
             { item: tempData.blockBridger, quantity: 64 },
             { item: "minecraft:book", quantity: 1, slot: 8 },
         ];
-    if (game === "clutcher")
+    if (game === "clutcher" || game === "inclinedBridger")
         return [
             { item: tempData.blockClutcher, quantity: 64 },
             { item: "minecraft:book", quantity: 1, slot: 8 },
@@ -44,6 +44,10 @@ const locationData = {
     straightBridger: {
         position: { x: 10000.5, y: 100, z: 10000.5 },
         facing: { x: 10000.5, y: 100, z: 10001 },
+    },
+    inclinedBridger: {
+        position: { x: 9978.5, y: 100, z: 10002.5 },
+        facing: { x: 9978, y: 100, z: 10003 },
     },
     clutcher: [
         {
@@ -86,7 +90,7 @@ const formBlocks = [
 const structures = [
     {
         name: "default",
-        file: "mystructure:default",
+        file: "straightDefault.mcstructure",
     },
 ];
 const clutchStrength = {
