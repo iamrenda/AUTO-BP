@@ -84,6 +84,7 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
   exp.giveItems(player, data.getInvData("lobby"));
+  exp.lobbyScoreboardDisplay(player);
 });
 
 // player leaving the worlds
@@ -108,6 +109,9 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
+
+// breaking a block
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

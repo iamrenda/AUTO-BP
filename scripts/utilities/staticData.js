@@ -84,6 +84,7 @@ const formBlocks = [
     { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
 /**
+ * for bridger
  * name: name of the structure to display
  * file: file name to load
  */
@@ -97,6 +98,10 @@ const structures = [
         file: "inclinedDefault",
     },
 ];
+/**
+ * for clutcher
+ * knockback strength with name & texture
+ */
 const clutchStrength = {
     1: {
         texture: "minecraft:lime_stained_glass",

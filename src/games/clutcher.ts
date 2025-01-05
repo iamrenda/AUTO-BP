@@ -34,7 +34,7 @@ const clutcher: Clutcher = {
   sec: 3, // countdown seconds
   hitIndex: 0, // hit count
 
-  teleportationIndex: 0,
+  teleportationIndex: 1,
 };
 
 /////////////////////////////////////////////////////////
@@ -203,6 +203,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
     dynamicProperty.setGameId("lobby");
     exp.giveItems(player, data.getInvData("lobby"));
     exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
+    exp.lobbyScoreboardDisplay(player);
     exp.confirmMessage(player, "§7Teleporting back to lobby...");
   }
 };

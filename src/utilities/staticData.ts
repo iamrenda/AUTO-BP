@@ -66,7 +66,6 @@ const getInvData = function (game: GameID): ItemInfo[] {
 /**
  * locationData: lcoation to teleport when player joining to a game
  */
-
 const locationData: LocationDataIF = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
@@ -117,6 +116,7 @@ const formBlocks: DisplayBlockIF[] = [
 ];
 
 /**
+ * for bridger
  * name: name of the structure to display
  * file: file name to load
  */
@@ -131,6 +131,10 @@ const structures: StructureInfo[] = [
   },
 ];
 
+/**
+ * for clutcher
+ * knockback strength with name & texture
+ */
 const clutchStrength: ClutchStrengthIF = {
   1: {
     texture: "minecraft:lime_stained_glass",

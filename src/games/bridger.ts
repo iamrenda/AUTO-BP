@@ -32,6 +32,21 @@ const bridger: Bridger = {
   autoReq: null, // timeOut
 };
 
+type FillAndPlaceIF = {
+  distance: 16 | 21 | 50;
+  isStairCased: boolean;
+};
+
+const BASELOCATION: Record<"straight" | "inclined", mc.Vector3> = {
+  straight: { x: 9993, y: 93, z: 10003 },
+  inclined: { x: 9970, y: 93, z: 10001 },
+};
+
+const HEIGHTDIFF = {
+  16: 1,
+  21: 2,
+  50: 5,
+};
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /**
@@ -151,111 +166,54 @@ const enablePlate = function (cancelTimer: boolean = false): void {
 };
 
 /**
+ * gets the location (start fill, end fill, structure place) based on distance
+ * @returns {mc.Vector3}
+ */
+const getLocation = function (direction: "straight" | "inclined", distance: number, isStairCased: boolean): mc.Vector3 {
+  const baseLocation: mc.Vector3 = BASELOCATION[direction];
+  return {
+    x: direction === "straight" ? baseLocation.x : baseLocation.x - distance,
+    y: isStairCased ? baseLocation.y + HEIGHTDIFF[distance] : baseLocation.y,
+    z: baseLocation.z + distance,
+  };
+};
+
+/**
  * clear previous island and place new island at new location
  * @param {Object} info which filled with air
  * @param {Object} info which new structure will be built
- */ // CHECK
-type FillAndPlaceIF = {
-  distance: 16 | 21 | 50;
-  isStairCased: boolean;
-};
-const fillAndPlaceStraight = function (
+ */
+const fillAndPlace = function (
   structure: StructureInfo,
+  distance: "straight" | "inclined",
   { distance: distance1, isStairCased: isStairCased1 }: FillAndPlaceIF,
   { distance: distance2, isStairCased: isStairCased2 }: FillAndPlaceIF
-): void {
-  const dimension = mc.world.getDimension("overworld");
-  const fillAirLocation = {
-    start: { x: 9993, y: undefined, z: undefined },
-    end: { x: 10005, y: undefined, z: undefined },
-  };
-  const structurePlaceLocation = { x: 9993, y: undefined, z: undefined };
-
-  // fillAirLocation
-  if (distance1 === 16) {
-    fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 1;
-    fillAirLocation.start.z = 10019; // 16 blocks distance
-  }
-  if (distance1 === 21) {
-    fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 2;
-    fillAirLocation.start.z = 10019 + 5;
-  }
-  if (distance1 === 50) {
-    fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 5;
-    fillAirLocation.start.z = 10019 + 34;
-  }
-  fillAirLocation.end.y = fillAirLocation.start.y + 13;
-  fillAirLocation.end.z = fillAirLocation.start.z + 9;
-
-  // structure place location
-  if (distance2 === 16) {
-    structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 1;
-    structurePlaceLocation.z = 10019;
-  }
-  if (distance2 === 21) {
-    structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 2;
-    structurePlaceLocation.z = 10019 + 5;
-  }
-  if (distance2 === 50) {
-    structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 5;
-    structurePlaceLocation.z = 10019 + 34;
-  }
-
-  // filling with air
-  dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
-  mc.world.structureManager.place(structure.file, dimension, structurePlaceLocation);
-};
-
-const fillAndPlaceInclined = function (
-  structure: StructureInfo,
-  { distance: distance1, isStairCased: isStairCased1 }: FillAndPlaceIF,
-  { distance: distance2, isStairCased: isStairCased2 }: FillAndPlaceIF
-): void {
+) {
   const dimension = mc.world.getDimension("overworld");
   const fillAirLocation = {
     start: { x: null, y: null, z: null },
     end: { x: null, y: null, z: null },
   };
-  const structurePlaceLocation = { x: null, y: null, z: null };
+  let structurePlaceLocation = { x: null, y: null, z: null };
 
-  // fillAirLocation
-  if (distance1 === 16) {
-    fillAirLocation.start.x = 9954;
-    fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 1;
-    fillAirLocation.start.z = 10017;
-  }
-  if (distance1 === 21) {
-    fillAirLocation.start.x = 9954 - 5;
-    fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 2;
-    fillAirLocation.start.z = 10017 + 5;
-  }
-  if (distance1 === 50) {
-    fillAirLocation.start.x = 9954 - 34;
-    fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 5;
-    fillAirLocation.start.z = 10017 + 34;
-  }
-  fillAirLocation.end.x = fillAirLocation.start.x + 13;
-  fillAirLocation.end.y = fillAirLocation.start.y + 16;
-  fillAirLocation.end.z = fillAirLocation.start.z + 10;
+  if (distance1 === 16) fillAirLocation.start = getLocation(distance, 16, isStairCased1);
+  if (distance1 === 21) fillAirLocation.start = getLocation(distance, 21, isStairCased1);
+  if (distance1 === 50) fillAirLocation.start = getLocation(distance, 50, isStairCased1);
 
-  // structure place location
-  if (distance2 === 16) {
-    structurePlaceLocation.x = 9954;
-    structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 1;
-    structurePlaceLocation.z = 10017;
-  }
-  if (distance2 === 21) {
-    structurePlaceLocation.x = 9954 - 5;
-    structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 2;
-    structurePlaceLocation.z = 10017 + 5;
-  }
-  if (distance2 === 50) {
-    structurePlaceLocation.x = 9954 - 34;
-    structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 5;
-    structurePlaceLocation.z = 10017 + 34;
+  if (distance === "straight") {
+    fillAirLocation.end.x = fillAirLocation.start.x + 12;
+    fillAirLocation.end.y = fillAirLocation.start.y + 13;
+    fillAirLocation.end.z = fillAirLocation.start.z + 9;
+  } else {
+    fillAirLocation.end.x = fillAirLocation.start.x + 13;
+    fillAirLocation.end.y = fillAirLocation.start.y + 16;
+    fillAirLocation.end.z = fillAirLocation.start.z + 10;
   }
 
-  // filling with air
+  if (distance2 === 16) structurePlaceLocation = getLocation(distance, 16, isStairCased2);
+  if (distance2 === 21) structurePlaceLocation = getLocation(distance, 21, isStairCased2);
+  if (distance2 === 50) structurePlaceLocation = getLocation(distance, 50, isStairCased2);
+
   dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
   mc.world.structureManager.place(structure.file, dimension, structurePlaceLocation);
 };
@@ -269,8 +227,9 @@ const handleDistanceChange = function (player: mc.Player, blocks: IslandDistance
     if (dynamicProperty.getGameData(GameDataID.straightDistance) === String(blocks))
       return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
 
-    fillAndPlaceStraight(
+    fillAndPlace(
       data.structures[0],
+      "straight",
       {
         distance: <IslandDistance>+dynamicProperty.getGameData(GameDataID.straightDistance),
         isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased),
@@ -288,8 +247,9 @@ const handleDistanceChange = function (player: mc.Player, blocks: IslandDistance
     if (dynamicProperty.getGameData(GameDataID.inclinedDistance) === String(blocks))
       return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
 
-    fillAndPlaceInclined(
+    fillAndPlace(
       data.structures[1],
+      "inclined",
       {
         distance: <IslandDistance>+dynamicProperty.getGameData(GameDataID.inclinedDistance),
         isStairCased: dynamicProperty.getGameData(GameDataID.inclinedIsStairCased),
@@ -315,8 +275,9 @@ const handleHeightChange = function (player: mc.Player, isStairCased: boolean): 
     if (dynamicProperty.getGameData(GameDataID.straightIsStairCased) === isStairCased)
       return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
 
-    fillAndPlaceStraight(
+    fillAndPlace(
       data.structures[0],
+      "straight",
       {
         distance: <IslandDistance>+dynamicProperty.getGameData(GameDataID.straightDistance),
         isStairCased: !isStairCased,
@@ -336,8 +297,9 @@ const handleHeightChange = function (player: mc.Player, isStairCased: boolean): 
     if (dynamicProperty.getGameData(GameDataID.inclinedIsStairCased) === isStairCased)
       return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
 
-    fillAndPlaceInclined(
+    fillAndPlace(
       data.structures[1],
+      "inclined",
       {
         distance: <IslandDistance>+dynamicProperty.getGameData(GameDataID.inclinedDistance),
         isStairCased: !isStairCased,
@@ -398,6 +360,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   // bridgerForm: quit bridger
   if (bridgerSelection === 16) {
     dynamicProperty.setGameId("lobby");
+    exp.lobbyScoreboardDisplay(player);
     resetMap(false);
     exp.confirmMessage(player, "§7Teleporting back to lobby...");
   }
@@ -460,7 +423,5 @@ mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
   player.sendMessage("player now defined");
   //////////////////////////////////////////////////
   // debug from here
-  // exp.setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
   console.warn(`${exp.getProperty(DynamicPropertyID.GameDatas)}`);
-  mc.world.structureManager.getWorldStructureIds().map((id) => console.warn(`${id}`));
 });
