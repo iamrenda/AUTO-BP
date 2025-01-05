@@ -43,6 +43,7 @@ const bridgerBlockForm = async function (player) {
     return await form.show(player);
 };
 const bridgerIslandForm = async function (player) {
+    const gameId = dynamicProperty.getGameId();
     const form = new ChestFormData("45")
         .title("Island Customization")
         .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {
@@ -51,35 +52,35 @@ const bridgerIslandForm = async function (player) {
             itemDesc: [],
             texture: "minecraft:sandstone",
             stackAmount: 16,
-            enchanted: +dynamicProperty.getGameData(GameDataID.straightDistance) === 16,
+            enchanted: +dynamicProperty.getGameData(GameDataID[gameId === "straightBridger" ? "straightDistance" : "inclinedDistance"]) === 16,
         },
         m: {
             itemName: "§621 Blocks",
             itemDesc: [],
             texture: "minecraft:sandstone",
             stackAmount: 21,
-            enchanted: +dynamicProperty.getGameData(GameDataID.straightDistance) === 21,
+            enchanted: +dynamicProperty.getGameData(GameDataID[gameId === "straightBridger" ? "straightDistance" : "inclinedDistance"]) === 21,
         },
         l: {
             itemName: "§650 Blocks",
             itemDesc: [],
             texture: "minecraft:sandstone",
             stackAmount: 50,
-            enchanted: +dynamicProperty.getGameData(GameDataID.straightDistance) === 50,
+            enchanted: +dynamicProperty.getGameData(GameDataID[gameId === "straightBridger" ? "straightDistance" : "inclinedDistance"]) === 50,
         },
         c: {
             itemName: "§6StairCased",
             itemDesc: [],
             texture: "minecraft:sandstone_stairs",
             stackAmount: 1,
-            enchanted: dynamicProperty.getGameData(GameDataID.straightIsStairCased),
+            enchanted: dynamicProperty.getGameData(GameDataID[gameId === "straightBridger" ? "straightIsStairCased" : "inclinedIsStairCased"]),
         },
         f: {
             itemName: "§6Flat",
             itemDesc: [],
             texture: "minecraft:sandstone_slab",
             stackAmount: 1,
-            enchanted: !dynamicProperty.getGameData(GameDataID.straightIsStairCased),
+            enchanted: !dynamicProperty.getGameData(GameDataID[gameId === "straightBridger" ? "straightIsStairCased" : "inclinedIsStairCased"]),
         },
     });
     return await form.show(player);

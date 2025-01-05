@@ -4,7 +4,7 @@ import * as data from "../utilities/staticData";
 import * as form from "forms/bridger";
 import dynamicProperty from "../utilities/dynamicProperty";
 import { confirmationForm } from "forms/utility";
-import { BridgerTempID, GameDataID } from "models/DynamicProperty";
+import { BridgerTempID, GameDataID, DynamicPropertyID } from "models/DynamicProperty";
 const bridger = {
     player: null,
     storedLocations: [],
@@ -67,7 +67,7 @@ const updateFloatingText = () => {
         successAttempts: dynamicProperty.getSuccessAttempts(game),
     };
     const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
-    const distance = dynamicProperty.getGameData(GameDataID.straightDistance);
+    const distance = dynamicProperty.getGameData(GameDataID[dynamicProperty.getGameId() === "straightBridger" ? "straightDistance" : "inclinedDistance"]);
     const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${distance} blocks§r
 §6Personal Best:§r §f${info.pb}§r
 §6Bridging Attempts:§r §f${info.attempts}§r
@@ -113,7 +113,7 @@ const enablePlate = function (cancelTimer = false) {
         mc.system.clearRun(bridger.autoReq);
     resetMap();
 };
-const fillAndPlace = function (structure, { distance: distance1, isStairCased: isStairCased1 }, { distance: distance2, isStairCased: isStairCased2 }) {
+const fillAndPlaceStraight = function (structure, { distance: distance1, isStairCased: isStairCased1 }, { distance: distance2, isStairCased: isStairCased2 }) {
     const dimension = mc.world.getDimension("overworld");
     const fillAirLocation = {
         start: { x: 9993, y: undefined, z: undefined },
@@ -122,31 +122,77 @@ const fillAndPlace = function (structure, { distance: distance1, isStairCased: i
     const structurePlaceLocation = { x: 9993, y: undefined, z: undefined };
     // fillAirLocation
     if (distance1 === 16) {
-        fillAirLocation.start.y = !isStairCased1 ? 93 : 94;
-        fillAirLocation.start.z = 10019;
+        fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 1;
+        fillAirLocation.start.z = 10019; // 16 blocks distance
     }
     if (distance1 === 21) {
-        fillAirLocation.start.y = !isStairCased1 ? 93 : 95;
-        fillAirLocation.start.z = 10024;
+        fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 2;
+        fillAirLocation.start.z = 10019 + 5;
     }
     if (distance1 === 50) {
-        fillAirLocation.start.y = !isStairCased1 ? 93 : 98;
-        fillAirLocation.start.z = 10053;
+        fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 5;
+        fillAirLocation.start.z = 10019 + 34;
     }
     fillAirLocation.end.y = fillAirLocation.start.y + 13;
     fillAirLocation.end.z = fillAirLocation.start.z + 9;
     // structure place location
     if (distance2 === 16) {
-        structurePlaceLocation.y = !isStairCased2 ? 93 : 94;
+        structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 1;
         structurePlaceLocation.z = 10019;
     }
     if (distance2 === 21) {
-        structurePlaceLocation.y = !isStairCased2 ? 93 : 95;
-        structurePlaceLocation.z = 10024;
+        structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 2;
+        structurePlaceLocation.z = 10019 + 5;
     }
     if (distance2 === 50) {
-        structurePlaceLocation.y = !isStairCased2 ? 93 : 98;
-        structurePlaceLocation.z = 10053;
+        structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 5;
+        structurePlaceLocation.z = 10019 + 34;
+    }
+    // filling with air
+    dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
+    mc.world.structureManager.place(structure.file, dimension, structurePlaceLocation);
+};
+const fillAndPlaceInclined = function (structure, { distance: distance1, isStairCased: isStairCased1 }, { distance: distance2, isStairCased: isStairCased2 }) {
+    const dimension = mc.world.getDimension("overworld");
+    const fillAirLocation = {
+        start: { x: null, y: null, z: null },
+        end: { x: null, y: null, z: null },
+    };
+    const structurePlaceLocation = { x: null, y: null, z: null };
+    // fillAirLocation
+    if (distance1 === 16) {
+        fillAirLocation.start.x = 9954;
+        fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 1;
+        fillAirLocation.start.z = 10017;
+    }
+    if (distance1 === 21) {
+        fillAirLocation.start.x = 9954 - 5;
+        fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 2;
+        fillAirLocation.start.z = 10017 + 5;
+    }
+    if (distance1 === 50) {
+        fillAirLocation.start.x = 9954 - 34;
+        fillAirLocation.start.y = !isStairCased1 ? 93 : 93 + 5;
+        fillAirLocation.start.z = 10017 + 34;
+    }
+    fillAirLocation.end.x = fillAirLocation.start.x + 13;
+    fillAirLocation.end.y = fillAirLocation.start.y + 16;
+    fillAirLocation.end.z = fillAirLocation.start.z + 10;
+    // structure place location
+    if (distance2 === 16) {
+        structurePlaceLocation.x = 9954;
+        structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 1;
+        structurePlaceLocation.z = 10017;
+    }
+    if (distance2 === 21) {
+        structurePlaceLocation.x = 9954 - 5;
+        structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 2;
+        structurePlaceLocation.z = 10017 + 5;
+    }
+    if (distance2 === 50) {
+        structurePlaceLocation.x = 9954 - 34;
+        structurePlaceLocation.y = !isStairCased2 ? 93 : 93 + 5;
+        structurePlaceLocation.z = 10017 + 34;
     }
     // filling with air
     dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
@@ -157,32 +203,67 @@ const fillAndPlace = function (structure, { distance: distance1, isStairCased: i
  */
 const handleDistanceChange = function (player, blocks) {
     // check whether player clicked on the same distance
-    if (dynamicProperty.getGameData(GameDataID.straightDistance) === String(blocks))
-        return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
-    fillAndPlace(data.structures[0], {
-        distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
-        isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased),
-    }, { distance: blocks, isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased) });
-    // set distance as dynamic property, set bridger mode for temp data
-    dynamicProperty.setGameData(GameDataID.straightDistance, blocks);
-    exp.setBridgerMode(`straight${blocks}b`);
-    exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
-    updateFloatingText();
+    if (dynamicProperty.getGameId() === "straightBridger") {
+        if (dynamicProperty.getGameData(GameDataID.straightDistance) === String(blocks))
+            return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
+        fillAndPlaceStraight(data.structures[0], {
+            distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
+            isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased),
+        }, { distance: blocks, isStairCased: dynamicProperty.getGameData(GameDataID.straightIsStairCased) });
+        // set distance as dynamic property, set bridger mode for temp data
+        dynamicProperty.setGameData(GameDataID.straightDistance, blocks);
+        exp.setBridgerMode(`straight${blocks}b`);
+        exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
+        updateFloatingText();
+    }
+    else if (dynamicProperty.getGameId() === "inclinedBridger") {
+        if (dynamicProperty.getGameData(GameDataID.inclinedDistance) === String(blocks))
+            return exp.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
+        fillAndPlaceInclined(data.structures[1], {
+            distance: +dynamicProperty.getGameData(GameDataID.inclinedDistance),
+            isStairCased: dynamicProperty.getGameData(GameDataID.inclinedIsStairCased),
+        }, { distance: blocks, isStairCased: dynamicProperty.getGameData(GameDataID.inclinedIsStairCased) });
+        // set distance as dynamic property, set bridger mode for temp data
+        dynamicProperty.setGameData(GameDataID.inclinedDistance, blocks);
+        exp.setBridgerMode(`inclined${blocks}b`);
+        exp.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
+        updateFloatingText();
+    }
 };
 /**
  * replace island based on height and save in dynamic property
  */
 const handleHeightChange = function (player, isStairCased) {
-    // check whether player clicked on the same distance
-    if (dynamicProperty.getGameData(GameDataID.straightIsStairCased) === isStairCased)
-        return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
-    fillAndPlace(data.structures[0], {
-        distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
-        isStairCased: !isStairCased,
-    }, { distance: +dynamicProperty.getGameData(GameDataID.straightDistance), isStairCased: isStairCased });
-    // set staircased as dynamic property
-    dynamicProperty.setGameData(GameDataID.straightIsStairCased, isStairCased);
-    exp.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
+    if (dynamicProperty.getGameId() === "straightBridger") {
+        // check whether player clicked on the same distance
+        if (dynamicProperty.getGameData(GameDataID.straightIsStairCased) === isStairCased)
+            return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
+        fillAndPlaceStraight(data.structures[0], {
+            distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
+            isStairCased: !isStairCased,
+        }, {
+            distance: +dynamicProperty.getGameData(GameDataID.straightDistance),
+            isStairCased: isStairCased,
+        });
+        // set staircased as dynamic property
+        dynamicProperty.setGameData(GameDataID.straightIsStairCased, isStairCased);
+        exp.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
+    }
+    else if (dynamicProperty.getGameId() === "inclinedBridger") {
+        // check whether player clicked on the same distance
+        if (dynamicProperty.getGameData(GameDataID.inclinedIsStairCased) === isStairCased)
+            return exp.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
+        fillAndPlaceInclined(data.structures[1], {
+            distance: +dynamicProperty.getGameData(GameDataID.inclinedDistance),
+            isStairCased: !isStairCased,
+        }, {
+            distance: +dynamicProperty.getGameData(GameDataID.inclinedDistance),
+            isStairCased: isStairCased,
+        });
+        // set staircased as dynamic property
+        dynamicProperty.setGameData(GameDataID.inclinedIsStairCased, isStairCased);
+        exp.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
+    }
 };
 /////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
@@ -278,4 +359,7 @@ mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
     player.sendMessage("player now defined");
     //////////////////////////////////////////////////
     // debug from here
+    // exp.setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
+    console.warn(`${exp.getProperty(DynamicPropertyID.GameDatas)}`);
+    mc.world.structureManager.getWorldStructureIds().map((id) => console.warn(`${id}`));
 });

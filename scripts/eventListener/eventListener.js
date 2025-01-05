@@ -18,11 +18,6 @@ const eatGhead = (player) => {
 };
 // player right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }) => {
-    // CHECK
-    if (item.typeId === "minecraft:diamond")
-        mc.world
-            .getDimension("overworld")
-            .runCommand(`setblock ${player.location.x} ${player.location.y} ${player.location.z} minecraft:diamond_block`);
     if (item.typeId === "auto:ghead")
         eatGhead(player);
     switch (dynamicProperty.getGameId()) {
@@ -97,44 +92,6 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
         return;
     }
 });
-// player breaking a block CHECK -----------------------------------------------------------
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
-const airLocation = {
-    firstLocation: undefined,
-    secondLocation: undefined,
-};
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
-    const { itemStack, player, block } = e;
-    if (itemStack.typeId === "minecraft:stick") {
-        if (airLocation.firstLocation === undefined) {
-            airLocation.firstLocation = block.location;
-            exp.confirmMessage(player, "first location saved");
-            return;
-        }
-        else if (airLocation.secondLocation === undefined) {
-            airLocation.secondLocation = block.location;
-            exp.confirmMessage(player, "second location saved");
-            return;
-        }
-        exp.confirmMessage(player, "all location are saved.");
-        return;
-    }
-    if (itemStack.typeId === "minecraft:diamond") {
-        if (airLocation.firstLocation === undefined || airLocation.secondLocation === undefined) {
-            exp.confirmMessage(player, "§cYou have to save two location first!");
-            return;
-        }
-        mc.system.run(() => {
-            mc.world
-                .getDimension("overworld")
-                .runCommand(`fill ${airLocation.firstLocation.x} ${airLocation.firstLocation.y} ${airLocation.firstLocation.z} ${airLocation.secondLocation.x} ${airLocation.secondLocation.y} ${airLocation.secondLocation.z} minecraft:air`);
-            airLocation.firstLocation = undefined;
-            airLocation.secondLocation = undefined;
-        });
-        return;
-    }
-});
-// CHECK ------------------------------------------------------------------------------------
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 /////////////////////////////////////////////////////////////////////////////////

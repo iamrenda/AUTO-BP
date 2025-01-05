@@ -123,7 +123,11 @@ const formBlocks: DisplayBlockIF[] = [
 const structures: StructureInfo[] = [
   {
     name: "default",
-    file: "straightDefault.mcstructure",
+    file: "straightDefault",
+  },
+  {
+    name: "default",
+    file: "inclinedDefault",
   },
 ];
 

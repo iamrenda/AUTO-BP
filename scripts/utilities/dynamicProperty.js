@@ -87,7 +87,7 @@ dynamicProperty.gameDatas = {
     },
     [GameDataID.inclinedDistance]: {
         1: "16",
-        2: "25",
+        2: "21",
         3: "50",
     },
 };

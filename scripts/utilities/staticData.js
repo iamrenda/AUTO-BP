@@ -90,7 +90,11 @@ const formBlocks = [
 const structures = [
     {
         name: "default",
-        file: "straightDefault.mcstructure",
+        file: "straightDefault",
+    },
+    {
+        name: "default",
+        file: "inclinedDefault",
     },
 ];
 const clutchStrength = {
