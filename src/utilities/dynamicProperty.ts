@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { GameID, DynamicPropertyID, BridgerDynamicID, GameDataID } from "models/DynamicProperty";
+import { GameID, DynamicPropertyID, BridgerTempID, GameDataID } from "models/DynamicProperty";
 
 const getProperty = function (dynamicId: DynamicPropertyID): string {
   return world.getDynamicProperty(dynamicId).toString();
@@ -9,15 +9,15 @@ const setProperty = function (dynamicId: DynamicPropertyID, value: any): void {
   world.setDynamicProperty(dynamicId, value);
 };
 
-const getGameValue = function (game: BridgerDynamicID, dynamicId: DynamicPropertyID): number {
+const getGameValue = function (game: BridgerTempID, dynamicId: DynamicPropertyID): number {
   const rawDataArr = getProperty(dynamicId).split("|");
-  const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
+  const gameIndex = Object.values(BridgerTempID).indexOf(game);
   return +rawDataArr[gameIndex];
 };
 
-const setGameValue = function (game: BridgerDynamicID, dynamicId: DynamicPropertyID, value: number): void {
+const setGameValue = function (game: BridgerTempID, dynamicId: DynamicPropertyID, value: number): void {
   const rawDataArr = getProperty(dynamicId).split("|");
-  const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
+  const gameIndex = Object.values(BridgerTempID).indexOf(game);
   rawDataArr[gameIndex] = String(value);
   setProperty(dynamicId, rawDataArr.join("|"));
 };
@@ -54,33 +54,33 @@ class dynamicProperty {
   }
 
   // PERSONAL BEST
-  static getPB(game: BridgerDynamicID): number {
+  static getPB(game: BridgerTempID): number {
     return getGameValue(game, DynamicPropertyID.PB);
   }
 
-  static setPB(game: BridgerDynamicID, ticks: number): void {
+  static setPB(game: BridgerTempID, ticks: number): void {
     setGameValue(game, DynamicPropertyID.PB, ticks);
   }
 
-  static resetPB(game: BridgerDynamicID): void {
+  static resetPB(game: BridgerTempID): void {
     this.setPB(game, -1);
   }
 
   // ATTEMPTS
-  static getAttempts(game: BridgerDynamicID): number {
+  static getAttempts(game: BridgerTempID): number {
     return getGameValue(game, DynamicPropertyID.Attemps);
   }
 
-  static addAttempts(game: BridgerDynamicID): void {
+  static addAttempts(game: BridgerTempID): void {
     setGameValue(game, DynamicPropertyID.Attemps, this.getAttempts(game) + 1);
   }
 
   // SUCCESS ATTEMPTS
-  static getSuccessAttempts(game: BridgerDynamicID): number {
+  static getSuccessAttempts(game: BridgerTempID): number {
     return getGameValue(game, DynamicPropertyID.SuccessAttempts);
   }
 
-  static addSuccessAttempts(game: BridgerDynamicID): void {
+  static addSuccessAttempts(game: BridgerTempID): void {
     setGameValue(game, DynamicPropertyID.SuccessAttempts, this.getSuccessAttempts(game) + 1);
   }
 

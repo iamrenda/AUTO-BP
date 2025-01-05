@@ -4,7 +4,7 @@ import * as data from "../utilities/staticData";
 import * as form from "forms/bridger";
 import dynamicProperty from "../utilities/dynamicProperty";
 import { confirmationForm } from "forms/utility";
-import { GameDataID } from "models/DynamicProperty";
+import { BridgerTempID, GameDataID } from "models/DynamicProperty";
 const bridger = {
     player: null,
     storedLocations: [],
@@ -26,10 +26,23 @@ const tickToSec = function (ticks) {
  * shows the result of the bridging
  */
 const showMessage = function (wasPB) {
-    const game = data.tempData.bridgerMode;
-    wasPB
-        ? bridger.player.sendMessage(`§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Distance:§r §f${dynamicProperty.getGameData(GameDataID.straightDistance)} Blocks\n   §6Your Personal Best:§r §f${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}§f\n   §6Time Recorded:§r §f${tickToSec(bridger.ticks)}§r\n\n   §d§lNEW PERSONAL BEST!!§r\n§7----------------------------`)
-        : bridger.player.sendMessage(`§7----------------------------§r\n   §bBridger§r §8§o- Version 4§r\n\n   §6Distance:§r §f${dynamicProperty.getGameData(GameDataID.straightDistance)} Blocks\n   §6Your Personal Best:§r §f${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}§f\n   §6Time Recorded:§r §f${tickToSec(bridger.ticks)}§r\n§7----------------------------`);
+    const bridgerGame = data.tempData.bridgerMode;
+    const gameId = dynamicProperty.getGameId();
+    const getMessage = (distance, pb, time, newPB = false) => `§7----------------------------§r
+   §bBridger§r §8§o- Version 4§r
+
+   §6Distance:§r §f${distance} Blocks
+   §6Your Personal Best:§r §f${pb === -1 ? "--.--" : tickToSec(pb)}§f
+   §6Time Recorded:§r §f${tickToSec(time)}§r
+   ${newPB ? "§d§lNEW PERSONAL BEST!!§r\n" : ""}
+§7----------------------------`;
+    if (["straightBridger", "inclinedBridger"].includes(gameId)) {
+        const distance = gameId === "straightBridger"
+            ? dynamicProperty.getGameData(GameDataID.straightDistance)
+            : dynamicProperty.getGameData(GameDataID.inclinedDistance);
+        const message = getMessage(distance, dynamicProperty.getPB(bridgerGame), bridger.ticks, wasPB);
+        bridger.player.sendMessage(message);
+    }
 };
 /**
  * floating entity grabber
@@ -45,7 +58,7 @@ const floatingEntity = function () {
 /**
  * updates the floating texts including stats about the player
  */
-const updateFloatingText = function () {
+const updateFloatingText = () => {
     const game = data.tempData.bridgerMode;
     const pbData = dynamicProperty.getPB(game);
     const info = {
@@ -54,7 +67,12 @@ const updateFloatingText = function () {
         successAttempts: dynamicProperty.getSuccessAttempts(game),
     };
     const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
-    const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${dynamicProperty.getGameData(GameDataID.straightDistance)} blocks§r\n§6Personal Best:§r §f${info.pb}§r\n§6Bridging Attempts:§r §f${info.attempts}§r\n§6Successful Attempts:§r §f${info.successAttempts}§r\n§6Success / Fail Ratio:§r §f${successFailRatio}`;
+    const distance = dynamicProperty.getGameData(GameDataID.straightDistance);
+    const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${distance} blocks§r
+§6Personal Best:§r §f${info.pb}§r
+§6Bridging Attempts:§r §f${info.attempts}§r
+§6Successful Attempts:§r §f${info.successAttempts}§r
+§6Success / Fail Ratio:§r §f${successFailRatio}`;
     floatingEntity().nameTag = displayText;
 };
 /**
@@ -239,6 +257,7 @@ export const pressurePlatePushEvt = function () {
     dynamicProperty.addSuccessAttempts(game);
 };
 export const listener = function () {
+    const game = data.tempData.bridgerMode;
     if (bridger.player.location.y <= 88) {
         if (bridger.plateDisabled)
             enablePlate(true);
@@ -247,12 +266,16 @@ export const listener = function () {
                 mc.system.clearRun(bridger.timer);
                 bridger.timer = null; // disabling temp
             }
-            dynamicProperty.addAttempts(data.tempData.bridgerMode);
+            dynamicProperty.addAttempts(game);
             resetMap();
         }
     }
-};
-export const slowListener = function () {
-    const game = data.tempData.bridgerMode;
     bridger.player.onScreenDisplay.setTitle(`      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${bridger.blocks}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`);
 };
+mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+    bridger.player = player;
+    data.tempData.bridgerMode = BridgerTempID.incline16blocks;
+    player.sendMessage("player now defined");
+    //////////////////////////////////////////////////
+    // debug from here
+});

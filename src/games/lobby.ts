@@ -6,15 +6,15 @@ import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { BridgerDynamicID } from "models/DynamicProperty";
+import { BridgerTempID } from "models/DynamicProperty";
 import TeleportationLocation from "models/TeleportationLocation";
 
 const bridgerHandler = function (player: Player, game: "straightBridger" | "inclinedBridger") {
   defineBridger(player);
   exp.giveItems(player, data.getInvData(game));
   dynamicProperty.setGameId(game);
-  if (game === "straightBridger") exp.setBridgerMode(BridgerDynamicID.straight16blocks);
-  else exp.setBridgerMode(BridgerDynamicID.incline16blocks);
+  if (game === "straightBridger") exp.setBridgerMode(BridgerTempID.straight16blocks);
+  else exp.setBridgerMode(BridgerTempID.incline16blocks);
   exp.teleportation(player, <TeleportationLocation>data.locationData[game]);
   exp.confirmMessage(player, "§7Teleporting to bridger...");
 };

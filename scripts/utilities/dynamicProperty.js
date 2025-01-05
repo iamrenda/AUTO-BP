@@ -1,5 +1,5 @@
 import { world } from "@minecraft/server";
-import { DynamicPropertyID, BridgerDynamicID, GameDataID } from "models/DynamicProperty";
+import { DynamicPropertyID, BridgerTempID, GameDataID } from "models/DynamicProperty";
 const getProperty = function (dynamicId) {
     return world.getDynamicProperty(dynamicId).toString();
 };
@@ -8,12 +8,12 @@ const setProperty = function (dynamicId, value) {
 };
 const getGameValue = function (game, dynamicId) {
     const rawDataArr = getProperty(dynamicId).split("|");
-    const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
+    const gameIndex = Object.values(BridgerTempID).indexOf(game);
     return +rawDataArr[gameIndex];
 };
 const setGameValue = function (game, dynamicId, value) {
     const rawDataArr = getProperty(dynamicId).split("|");
-    const gameIndex = Object.values(BridgerDynamicID).indexOf(game);
+    const gameIndex = Object.values(BridgerTempID).indexOf(game);
     rawDataArr[gameIndex] = String(value);
     setProperty(dynamicId, rawDataArr.join("|"));
 };

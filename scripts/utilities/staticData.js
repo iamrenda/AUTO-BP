@@ -1,11 +1,11 @@
-import { BridgerDynamicID } from "models/DynamicProperty";
+import { BridgerTempID } from "models/DynamicProperty";
 ////////////////////
 // EXPORTS
 /**
  * block: minecraft block name to bridge with
  */
 const tempData = {
-    bridgerMode: BridgerDynamicID.straight16blocks,
+    bridgerMode: BridgerTempID.straight16blocks,
     blockBridger: "minecraft:sandstone",
     blockClutcher: "minecraft:sandstone",
     clutch: [1],
@@ -21,13 +21,13 @@ const getInvData = function (game) {
             { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
             { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
         ];
-    if (game === "straightBridger")
+    if (game === "straightBridger" || game === "inclinedBridger")
         return [
             { item: tempData.blockBridger, quantity: 64 },
             { item: tempData.blockBridger, quantity: 64 },
             { item: "minecraft:book", quantity: 1, slot: 8 },
         ];
-    if (game === "clutcher" || game === "inclinedBridger")
+    if (game === "clutcher")
         return [
             { item: tempData.blockClutcher, quantity: 64 },
             { item: "minecraft:book", quantity: 1, slot: 8 },

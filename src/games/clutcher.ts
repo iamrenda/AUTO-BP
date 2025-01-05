@@ -231,11 +231,3 @@ export const slowListener = function () {
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };
-
-// CHECK DEBUGGING PURPOSES
-// mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-//   clutcher.player = player;
-//   player.sendMessage("player now defined");
-//   //////////////////////////////////////////////////
-//   // debug from here
-// });

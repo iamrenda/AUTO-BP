@@ -4,15 +4,15 @@ import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import dynamicProperty from "../utilities/dynamicProperty";
-import { BridgerDynamicID } from "models/DynamicProperty";
+import { BridgerTempID } from "models/DynamicProperty";
 const bridgerHandler = function (player, game) {
     defineBridger(player);
     exp.giveItems(player, data.getInvData(game));
     dynamicProperty.setGameId(game);
     if (game === "straightBridger")
-        exp.setBridgerMode(BridgerDynamicID.straight16blocks);
+        exp.setBridgerMode(BridgerTempID.straight16blocks);
     else
-        exp.setBridgerMode(BridgerDynamicID.incline16blocks);
+        exp.setBridgerMode(BridgerTempID.incline16blocks);
     exp.teleportation(player, data.locationData[game]);
     exp.confirmMessage(player, "§7Teleporting to bridger...");
 };

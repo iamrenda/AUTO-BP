@@ -2,7 +2,7 @@ import { world, ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/serv
 import { tempData } from "./staticData";
 import ItemInfo from "models/ItemInfo";
 import TeleportationLocation from "models/TeleportationLocation";
-import { BridgerDynamicID, DynamicPropertyID } from "models/DynamicProperty";
+import { BridgerTempID, DynamicPropertyID } from "models/DynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -40,7 +40,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
   date.getFullYear()
 ).slice(-2)}`;
 
-const setBridgerMode = function (game: BridgerDynamicID): void {
+const setBridgerMode = function (game: BridgerTempID): void {
   tempData.bridgerMode = game;
 };
 

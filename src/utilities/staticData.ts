@@ -2,12 +2,12 @@ import MinecraftID from "models/minecraftID";
 import TeleportationLocation from "models/TeleportationLocation";
 import ItemInfo from "models/ItemInfo";
 import StructureInfo from "models/StructureInfo";
-import { BridgerDynamicID, GameID } from "models/DynamicProperty";
+import { BridgerTempID, GameID } from "models/DynamicProperty";
 
 ////////////////////
 // INTERFACE
 type TempDataIF = {
-  bridgerMode: BridgerDynamicID;
+  bridgerMode: BridgerTempID;
   blockBridger: MinecraftID.MinecraftBlockIdIF;
   blockClutcher: MinecraftID.MinecraftBlockIdIF;
   clutch: number[];
@@ -33,7 +33,7 @@ type ClutchStrengthIF = {
  * block: minecraft block name to bridge with
  */
 const tempData: TempDataIF = {
-  bridgerMode: BridgerDynamicID.straight16blocks,
+  bridgerMode: BridgerTempID.straight16blocks,
   blockBridger: "minecraft:sandstone",
   blockClutcher: "minecraft:sandstone",
   clutch: [1],
@@ -50,13 +50,13 @@ const getInvData = function (game: GameID): ItemInfo[] {
       { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
       { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
     ];
-  if (game === "straightBridger")
+  if (game === "straightBridger" || game === "inclinedBridger")
     return [
       { item: tempData.blockBridger, quantity: 64 },
       { item: tempData.blockBridger, quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
-  if (game === "clutcher" || game === "inclinedBridger")
+  if (game === "clutcher")
     return [
       { item: tempData.blockClutcher, quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
