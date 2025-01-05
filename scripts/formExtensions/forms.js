@@ -1,7 +1,7 @@
 import { ActionFormData } from "@minecraft/server-ui";
 import { typeIdToDataId, typeIdToID } from "./typeIds.js";
 
-const number_of_1_16_100_items = 0;
+const number_of_1_16_100_items = 1;
 // Add custom sizes defined in UI:
 const sizes = new Map([
   ["single", ["§c§h§e§s§t§2§7§r", 27]],
