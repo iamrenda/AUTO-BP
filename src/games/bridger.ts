@@ -417,11 +417,10 @@ export const listener = function () {
   );
 };
 
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-  bridger.player = player;
-  data.tempData.bridgerMode = BridgerTempID.incline16blocks;
-  player.sendMessage("player now defined");
-  //////////////////////////////////////////////////
-  // debug from here
-  console.warn(`${exp.getProperty(DynamicPropertyID.GameDatas)}`);
-});
+// mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+//   bridger.player = player;
+//   data.tempData.bridgerMode = BridgerTempID.incline16blocks;
+//   player.sendMessage("player now defined");
+//   //////////////////////////////////////////////////
+//   // debug from here
+// });

@@ -64,7 +64,7 @@ class dynamicProperty {
         world.setDynamicProperty("auto:gameDatas", newRawData);
     }
     static resetdynamicProperties() {
-        setProperty(DynamicPropertyID.GameID, "lobby");
+        // setProperty(DynamicPropertyID.GameID, "lobby");
         setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
         setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
         setProperty(DynamicPropertyID.Attemps, "0|0|0|0|0|0");

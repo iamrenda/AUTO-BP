@@ -4,7 +4,7 @@ import * as data from "../utilities/staticData";
 import * as form from "forms/bridger";
 import dynamicProperty from "../utilities/dynamicProperty";
 import { confirmationForm } from "forms/utility";
-import { BridgerTempID, GameDataID, DynamicPropertyID } from "models/DynamicProperty";
+import { GameDataID } from "models/DynamicProperty";
 const bridger = {
     player: null,
     storedLocations: [],
@@ -327,11 +327,10 @@ export const listener = function () {
     }
     bridger.player.onScreenDisplay.setTitle(`      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${dynamicProperty.getPB(game) === -1 ? "--.--" : tickToSec(dynamicProperty.getPB(game))}\n\n §7- §6Time:§r\n   ${tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${bridger.blocks}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`);
 };
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-    bridger.player = player;
-    data.tempData.bridgerMode = BridgerTempID.incline16blocks;
-    player.sendMessage("player now defined");
-    //////////////////////////////////////////////////
-    // debug from here
-    console.warn(`${exp.getProperty(DynamicPropertyID.GameDatas)}`);
-});
+// mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
+//   bridger.player = player;
+//   data.tempData.bridgerMode = BridgerTempID.incline16blocks;
+//   player.sendMessage("player now defined");
+//   //////////////////////////////////////////////////
+//   // debug from here
+// });
