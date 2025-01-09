@@ -1,5 +1,12 @@
 import { world } from "@minecraft/server";
-import { GameID, DynamicPropertyID, BridgerTempID, GameDataID } from "models/DynamicProperty";
+import { DynamicPropertyID, BridgerTempID, GameDataID } from "models/DynamicProperty";
+
+type GameDataMap = {
+  [GameDataID.straightIsStairCased]: boolean;
+  [GameDataID.straightDistance]: number;
+  [GameDataID.inclinedIsStairCased]: boolean;
+  [GameDataID.inclinedDistance]: number;
+};
 
 const getProperty = function (dynamicId: DynamicPropertyID): string {
   return world.getDynamicProperty(dynamicId).toString();
@@ -29,29 +36,20 @@ class dynamicProperty {
       F: false,
     },
     [GameDataID.straightDistance]: {
-      1: "16",
-      2: "21",
-      3: "50",
+      1: 16,
+      2: 21,
+      3: 50,
     },
     [GameDataID.inclinedIsStairCased]: {
       T: true,
       F: false,
     },
     [GameDataID.inclinedDistance]: {
-      1: "16",
-      2: "21",
-      3: "50",
+      1: 16,
+      2: 21,
+      3: 50,
     },
   };
-
-  // GAME ID
-  static getGameId(): GameID {
-    return <GameID>getProperty(DynamicPropertyID.GameID);
-  }
-
-  static setGameId(gameId: GameID): void {
-    setProperty(DynamicPropertyID.GameID, gameId);
-  }
 
   // PERSONAL BEST
   static getPB(game: BridgerTempID): number {
@@ -68,11 +66,11 @@ class dynamicProperty {
 
   // ATTEMPTS
   static getAttempts(game: BridgerTempID): number {
-    return getGameValue(game, DynamicPropertyID.Attemps);
+    return getGameValue(game, DynamicPropertyID.Attempts);
   }
 
   static addAttempts(game: BridgerTempID): void {
-    setGameValue(game, DynamicPropertyID.Attemps, this.getAttempts(game) + 1);
+    setGameValue(game, DynamicPropertyID.Attempts, this.getAttempts(game) + 1);
   }
 
   // SUCCESS ATTEMPTS
@@ -85,14 +83,14 @@ class dynamicProperty {
   }
 
   // GAME DATA
-  static getGameData(gameData: GameDataID): any {
+  static getGameData<T extends GameDataID>(gameData: T): GameDataMap[T] {
     const rawDataArr = getProperty(DynamicPropertyID.GameDatas).toString().split("|");
     const dataIndex = Object.values(GameDataID).indexOf(gameData);
     const rawValue = rawDataArr[dataIndex];
     return this.gameDatas[gameData][rawValue];
   }
 
-  static setGameData(gameData: GameDataID, data: any): void {
+  static setGameData<T extends GameDataID>(gameData: T, data: GameDataMap[T]): void {
     const rawDataArr = getProperty(DynamicPropertyID.GameDatas).toString().split("|");
     const dataIndex = Object.values(GameDataID).indexOf(gameData);
     rawDataArr[dataIndex] = Object.keys(this.gameDatas[gameData]).find(
@@ -103,11 +101,9 @@ class dynamicProperty {
   }
 
   static resetdynamicProperties(): void {
-    // setProperty(DynamicPropertyID.GameID, "lobby");
     setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
-
     setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
-    setProperty(DynamicPropertyID.Attemps, "0|0|0|0|0|0");
+    setProperty(DynamicPropertyID.Attempts, "0|0|0|0|0|0");
     setProperty(DynamicPropertyID.SuccessAttempts, "0|0|0|0|0|0");
   }
 }

@@ -1,8 +1,9 @@
 import { world, ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
-import { tempData } from "./staticData";
+import tempData from "./tempData";
 import ItemInfo from "models/ItemInfo";
 import TeleportationLocation from "models/TeleportationLocation";
 import { BridgerTempID, DynamicPropertyID } from "models/DynamicProperty";
+import { getInvData, locationData } from "./staticData";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -70,6 +71,17 @@ const lobbyScoreboardDisplay = function (player: Player): void {
   player.onScreenDisplay.setTitle(scoreboard);
 };
 
+/**
+ * back to lobby
+ */
+const backToLobbyKit = function (player: Player) {
+  tempData.gameID = "lobby";
+  lobbyScoreboardDisplay(player);
+  confirmMessage(player, "§7Teleporting back to lobby...");
+  giveItems(player, getInvData("lobby"));
+  teleportation(player, <TeleportationLocation>locationData.lobby);
+};
+
 export {
   giveItems,
   teleportation,
@@ -80,4 +92,5 @@ export {
   setProperty,
   calculateDistance,
   lobbyScoreboardDisplay,
+  backToLobbyKit,
 };

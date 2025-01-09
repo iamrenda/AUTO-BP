@@ -1,8 +1,6 @@
 import { world, ItemLockMode, ItemStack } from "@minecraft/server";
-import { tempData } from "./staticData";
-/**
- * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
- */
+import tempData from "./tempData";
+import { getInvData, locationData } from "./staticData";
 const giveItems = function (player, itemArr) {
     const container = player.getComponent("inventory").container;
     container.clearAll();
@@ -14,15 +12,9 @@ const giveItems = function (player, itemArr) {
         slot ? container.setItem(slot, i) : container.addItem(i);
     }
 };
-/**
- * teleportation: teleport player
- */
 const teleportation = function (player, loc) {
     player.teleport(loc.position, { facingLocation: loc.facing });
 };
-/**
- * confirmMessage: show message with sound
- */
 const confirmMessage = function (player, message, sound = "") {
     player.sendMessage(message);
     if (sound)
@@ -39,9 +31,6 @@ const getProperty = function (dynamicId) {
 const setProperty = function (dynamicId, value) {
     world.setDynamicProperty(dynamicId, value);
 };
-/**
- * get the distance (rounded) between 2 location vector3 (ignoring y vector)
- */
 const calculateDistance = function (location1, location2) {
     if (!location1 || !location2)
         return 0;
@@ -49,11 +38,15 @@ const calculateDistance = function (location1, location2) {
     const dz = location2.z - location1.z;
     return Math.round(Math.sqrt(dx * dx + dz * dz));
 };
-/**
- * display lobby scoreboard
- */
 const lobbyScoreboardDisplay = function (player) {
     const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion 4 | ${today}`;
     player.onScreenDisplay.setTitle(scoreboard);
 };
-export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty, calculateDistance, lobbyScoreboardDisplay, };
+const backToLobbyKit = function (player) {
+    tempData.gameID = "lobby";
+    lobbyScoreboardDisplay(player);
+    confirmMessage(player, "§7Teleporting back to lobby...");
+    giveItems(player, getInvData("lobby"));
+    teleportation(player, locationData.lobby);
+};
+export { giveItems, teleportation, confirmMessage, today, setBridgerMode, getProperty, setProperty, calculateDistance, lobbyScoreboardDisplay, backToLobbyKit, };

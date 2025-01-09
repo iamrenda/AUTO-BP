@@ -1,19 +1,4 @@
-import { BridgerTempID } from "models/DynamicProperty";
-////////////////////
-// EXPORTS
-/**
- * block: minecraft block name to bridge with
- */
-const tempData = {
-    bridgerMode: BridgerTempID.straight16blocks,
-    blockBridger: "minecraft:sandstone",
-    blockClutcher: "minecraft:sandstone",
-    clutch: [1],
-    clutchShiftStart: true,
-};
-/**
- * getInvData: get inventory data for giveItems
- */
+import tempData from "./tempData";
 const getInvData = function (game) {
     if (game === "lobby")
         return [
@@ -33,9 +18,6 @@ const getInvData = function (game) {
             { item: "minecraft:book", quantity: 1, slot: 8 },
         ];
 };
-/**
- * locationData: lcoation to teleport when player joining to a game
- */
 const locationData = {
     lobby: {
         position: { x: 91.5, y: 262.0, z: 63.5 },
@@ -68,10 +50,6 @@ const locationData = {
         },
     ],
 };
-/**
- * blockName: block's name to display
- * texture: block's texture's name
- */
 const formBlocks = [
     { blockName: "Sandstone", texture: "minecraft:sandstone" },
     { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
@@ -83,11 +61,6 @@ const formBlocks = [
     { blockName: "Crying Obsidian", texture: "minecraft:crying_obsidian" },
     { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
-/**
- * for bridger
- * name: name of the structure to display
- * file: file name to load
- */
 const structures = [
     {
         name: "default",
@@ -98,10 +71,6 @@ const structures = [
         file: "inclinedDefault",
     },
 ];
-/**
- * for clutcher
- * knockback strength with name & texture
- */
 const clutchStrength = {
     1: {
         texture: "minecraft:lime_stained_glass",
@@ -119,4 +88,4 @@ const clutchStrength = {
         strength: 5,
     },
 };
-export { getInvData, locationData, tempData, structures, formBlocks, clutchStrength };
+export { getInvData, locationData, structures, formBlocks, clutchStrength };

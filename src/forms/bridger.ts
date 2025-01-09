@@ -1,9 +1,10 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
-import { tempData, formBlocks } from "utilities/staticData";
+import { formBlocks } from "utilities/staticData";
 import dynamicProperty from "utilities/dynamicProperty";
 import { GameDataID } from "models/DynamicProperty";
+import tempData from "utilities/tempData";
 
 const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
@@ -51,7 +52,7 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
 };
 
 const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
-  const gameId = dynamicProperty.getGameId();
+  const gameId = tempData.gameID;
   const form = new ChestFormData("45")
     .title("Island Customization")
     .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {

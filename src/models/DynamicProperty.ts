@@ -1,12 +1,9 @@
 export enum DynamicPropertyID {
-  GameID = "auto:gameId",
   GameDatas = "auto:gameDatas",
   PB = "auto:pb",
-  Attemps = "auto:atmps",
+  Attempts = "auto:atmps",
   SuccessAttempts = "auto:successAtmps",
 }
-
-export type GameID = "lobby" | "straightBridger" | "inclinedBridger" | "clutcher";
 
 // only for setter / getter dynamic property purposes
 export enum BridgerTempID {

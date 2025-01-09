@@ -1,12 +1,10 @@
 export var DynamicPropertyID;
 (function (DynamicPropertyID) {
-    DynamicPropertyID["GameID"] = "auto:gameId";
     DynamicPropertyID["GameDatas"] = "auto:gameDatas";
     DynamicPropertyID["PB"] = "auto:pb";
-    DynamicPropertyID["Attemps"] = "auto:atmps";
+    DynamicPropertyID["Attempts"] = "auto:atmps";
     DynamicPropertyID["SuccessAttempts"] = "auto:successAtmps";
 })(DynamicPropertyID || (DynamicPropertyID = {}));
-// only for setter / getter dynamic property purposes
 export var BridgerTempID;
 (function (BridgerTempID) {
     BridgerTempID["straight16blocks"] = "straight16b";

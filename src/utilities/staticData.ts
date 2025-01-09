@@ -2,18 +2,11 @@ import MinecraftID from "models/minecraftID";
 import TeleportationLocation from "models/TeleportationLocation";
 import ItemInfo from "models/ItemInfo";
 import StructureInfo from "models/StructureInfo";
-import { BridgerTempID, GameID } from "models/DynamicProperty";
+import GameID from "models/GameID";
+import tempData from "./tempData";
 
 ////////////////////
 // INTERFACE
-type TempDataIF = {
-  bridgerMode: BridgerTempID;
-  blockBridger: MinecraftID.MinecraftBlockIdIF;
-  blockClutcher: MinecraftID.MinecraftBlockIdIF;
-  clutch: number[];
-  clutchShiftStart: boolean;
-};
-
 type LocationDataIF = {
   [key in GameID]: TeleportationLocation | TeleportationLocation[];
 };
@@ -29,17 +22,6 @@ type ClutchStrengthIF = {
 
 ////////////////////
 // EXPORTS
-/**
- * block: minecraft block name to bridge with
- */
-const tempData: TempDataIF = {
-  bridgerMode: BridgerTempID.straight16blocks,
-  blockBridger: "minecraft:sandstone",
-  blockClutcher: "minecraft:sandstone",
-  clutch: [1],
-  clutchShiftStart: true,
-};
-
 /**
  * getInvData: get inventory data for giveItems
  */
@@ -153,4 +135,4 @@ const clutchStrength: ClutchStrengthIF = {
   },
 };
 
-export { getInvData, locationData, tempData, structures, formBlocks, clutchStrength };
+export { getInvData, locationData, structures, formBlocks, clutchStrength };

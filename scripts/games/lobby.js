@@ -3,12 +3,12 @@ import { defineBridger } from "./bridger";
 import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import dynamicProperty from "../utilities/dynamicProperty";
 import { BridgerTempID } from "models/DynamicProperty";
+import tempData from "utilities/tempData";
 const bridgerHandler = function (player, game) {
     defineBridger(player);
     exp.giveItems(player, data.getInvData(game));
-    dynamicProperty.setGameId(game);
+    tempData.gameID = game;
     if (game === "straightBridger")
         exp.setBridgerMode(BridgerTempID.straight16blocks);
     else
@@ -18,24 +18,20 @@ const bridgerHandler = function (player, game) {
 };
 export const nagivatorFormHandler = async function (player) {
     const { selection } = await form.lobbyForm(player);
-    // bridger
     if (selection === 1) {
-        // bridger direction
         const { selection: bridgerDirSelection } = await form.formBridgerDirForm(player);
         if (bridgerDirSelection === 2)
             bridgerHandler(player, "straightBridger");
         else if (bridgerDirSelection === 6)
             bridgerHandler(player, "inclinedBridger");
     }
-    // clutcher
     if (selection === 3) {
         defineClutcher(player);
         exp.giveItems(player, data.getInvData("clutcher"));
-        dynamicProperty.setGameId("clutcher");
+        tempData.gameID = "clutcher";
         exp.confirmMessage(player, "§7Teleporting to bridger...");
         exp.teleportation(player, data.locationData.clutcher[0]);
     }
-    // back to lobby
     if (selection === 7)
         exp.teleportation(player, data.locationData.lobby);
 };

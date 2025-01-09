@@ -18,14 +18,6 @@ const setGameValue = function (game, dynamicId, value) {
     setProperty(dynamicId, rawDataArr.join("|"));
 };
 class dynamicProperty {
-    // GAME ID
-    static getGameId() {
-        return getProperty(DynamicPropertyID.GameID);
-    }
-    static setGameId(gameId) {
-        setProperty(DynamicPropertyID.GameID, gameId);
-    }
-    // PERSONAL BEST
     static getPB(game) {
         return getGameValue(game, DynamicPropertyID.PB);
     }
@@ -35,21 +27,18 @@ class dynamicProperty {
     static resetPB(game) {
         this.setPB(game, -1);
     }
-    // ATTEMPTS
     static getAttempts(game) {
-        return getGameValue(game, DynamicPropertyID.Attemps);
+        return getGameValue(game, DynamicPropertyID.Attempts);
     }
     static addAttempts(game) {
-        setGameValue(game, DynamicPropertyID.Attemps, this.getAttempts(game) + 1);
+        setGameValue(game, DynamicPropertyID.Attempts, this.getAttempts(game) + 1);
     }
-    // SUCCESS ATTEMPTS
     static getSuccessAttempts(game) {
         return getGameValue(game, DynamicPropertyID.SuccessAttempts);
     }
     static addSuccessAttempts(game) {
         setGameValue(game, DynamicPropertyID.SuccessAttempts, this.getSuccessAttempts(game) + 1);
     }
-    // GAME DATA
     static getGameData(gameData) {
         const rawDataArr = getProperty(DynamicPropertyID.GameDatas).toString().split("|");
         const dataIndex = Object.values(GameDataID).indexOf(gameData);
@@ -64,10 +53,9 @@ class dynamicProperty {
         world.setDynamicProperty("auto:gameDatas", newRawData);
     }
     static resetdynamicProperties() {
-        // setProperty(DynamicPropertyID.GameID, "lobby");
         setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
         setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
-        setProperty(DynamicPropertyID.Attemps, "0|0|0|0|0|0");
+        setProperty(DynamicPropertyID.Attempts, "0|0|0|0|0|0");
         setProperty(DynamicPropertyID.SuccessAttempts, "0|0|0|0|0|0");
     }
 }
@@ -77,18 +65,18 @@ dynamicProperty.gameDatas = {
         F: false,
     },
     [GameDataID.straightDistance]: {
-        1: "16",
-        2: "21",
-        3: "50",
+        1: 16,
+        2: 21,
+        3: 50,
     },
     [GameDataID.inclinedIsStairCased]: {
         T: true,
         F: false,
     },
     [GameDataID.inclinedDistance]: {
-        1: "16",
-        2: "21",
-        3: "50",
+        1: 16,
+        2: 21,
+        3: 50,
     },
 };
 export default dynamicProperty;

@@ -1,9 +1,8 @@
 import * as mc from "@minecraft/server";
 import * as form from "../forms/clutcher";
-import dynamicProperty from "../utilities/dynamicProperty";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import TeleportationLocation from "models/TeleportationLocation";
+import tempData from "utilities/tempData";
 
 type Clutcher = {
   player: mc.Player;
@@ -53,7 +52,7 @@ const teleportToCounterClockwise = function (player: mc.Player) {
  */
 const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
   const clutchForm = form.clutchSettingsForm();
-  data.tempData.clutch.map((power, index) => {
+  tempData.clutch.map((power, index) => {
     clutchForm.button(
       index + 9,
       `Hit #${index + 1}: ${data.clutchStrength[power].name}`,
@@ -65,9 +64,9 @@ const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
   });
   const { selection, canceled } = await clutchForm.show(player);
   const clutchSelection = selection - 9;
-  const prevStrength = data.tempData.clutch[clutchSelection];
+  const prevStrength = tempData.clutch[clutchSelection];
 
-  data.tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
+  tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
   if (canceled) return exp.confirmMessage(player, "§aThe clutcher settings is now saved!", "random.orb");
   await updateKnockBackForm(player, numHit);
@@ -131,11 +130,11 @@ const startClutch = function (player: mc.Player) {
   clutcher.sec = 3;
 
   const { x: viewX, z: viewZ } = player.getViewDirection();
-  const powerSetting: number[] = data.tempData.clutch;
+  const powerSetting: number[] = tempData.clutch;
 
   applyKnockback(player, { viewX, viewZ }, powerSetting[clutcher.hitIndex]);
   clutcher.hitTimer = mc.system.runInterval(() => {
-    if (clutcher.hitIndex === data.tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
+    if (clutcher.hitIndex === tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
     applyKnockback(player, { viewX, viewZ }, powerSetting[clutcher.hitIndex]);
   }, 10);
 };
@@ -169,7 +168,7 @@ export const defineClutcher = function (player: mc.Player) {
 
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
-  if (player.isSneaking && data.tempData.clutchShiftStart) return readyForClutch(player);
+  if (player.isSneaking && tempData.clutchShiftStart) return readyForClutch(player);
 
   const { selection } = await form.clutcherForm(player);
   // clutch start
@@ -180,7 +179,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
     const { selection: clutchNum } = await form.clutchNumForm(player);
     const numHit = clutchNum - 8;
 
-    data.tempData.clutch = new Array(numHit).fill(1);
+    tempData.clutch = new Array(numHit).fill(1);
     updateKnockBackForm(player, numHit);
   }
 
@@ -189,23 +188,17 @@ export const clutcherFormHandler = async function (player: mc.Player) {
     const { selection: generalSelection } = await form.clutchGeneralForm(player);
 
     if (generalSelection === 10) {
-      data.tempData.clutchShiftStart = !data.tempData.clutchShiftStart;
+      tempData.clutchShiftStart = !tempData.clutchShiftStart;
       exp.confirmMessage(
         player,
-        `§a"Shift + Right Click" to start is now §6${data.tempData.clutchShiftStart ? "Enabled" : "Disabled"}§a!`,
+        `§a"Shift + Right Click" to start is now §6${tempData.clutchShiftStart ? "Enabled" : "Disabled"}§a!`,
         "random.orb"
       );
     }
   }
 
   // quit
-  if (selection === 16) {
-    dynamicProperty.setGameId("lobby");
-    exp.giveItems(player, data.getInvData("lobby"));
-    exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
-    exp.lobbyScoreboardDisplay(player);
-    exp.confirmMessage(player, "§7Teleporting back to lobby...");
-  }
+  if (selection === 16) exp.backToLobbyKit(player);
 };
 
 export const placingBlockEvt = function ({ location }) {
@@ -229,6 +222,6 @@ export const listener = async function () {
 export const slowListener = function () {
   clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${data.tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
   );
 };

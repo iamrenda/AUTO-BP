@@ -1,5 +1,5 @@
 import ChestFormData from "../formExtensions/forms";
-import { tempData } from "../utilities/staticData";
+import tempData from "utilities/tempData";
 const clutcherForm = async function (player) {
     const form = new ChestFormData("27").title("Clutcher Selector").pattern(["_________", "_r_s_b_q_", "_________"], {
         r: {
