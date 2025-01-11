@@ -41,9 +41,13 @@ const showMessage = function (wasPB) {
 const floatingEntity = function () {
     switch (tempData.gameID) {
         case "straightBridger":
-            return mc.world.getDimension("overworld").getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 } })[0];
+            return mc.world
+                .getDimension("overworld")
+                .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 }, excludeFamilies: ["player"] })[0];
         case "inclinedBridger":
-            return mc.world.getDimension("overworld").getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 } })[0];
+            return mc.world
+                .getDimension("overworld")
+                .getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 }, excludeFamilies: ["player"] })[0];
     }
 };
 const updateFloatingText = () => {
@@ -248,8 +252,4 @@ export const listener = function () {
 mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
     bridger.player = player;
     player.sendMessage("player now defined");
-    mc.world.sendMessage(util.getProperty(DynamicPropertyID.GameDatas));
-    mc.world.sendMessage(util.getProperty(DynamicPropertyID.PB));
-    mc.world.sendMessage(util.getProperty(DynamicPropertyID.Attempts));
-    mc.world.sendMessage(util.getProperty(DynamicPropertyID.SuccessAttempts));
 });
