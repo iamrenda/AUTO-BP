@@ -1,7 +1,8 @@
-import { BridgerTempID } from "models/DynamicProperty";
+import { BridgerTicksID } from "models/DynamicProperty";
 const tempData = {
     gameID: "lobby",
-    bridgerMode: BridgerTempID.straight16blocks,
+    bridgerMode: BridgerTicksID.straight16blocks,
+    bridgerDirection: "straight",
     blockBridger: "minecraft:sandstone",
     blockClutcher: "minecraft:sandstone",
     clutch: [1],

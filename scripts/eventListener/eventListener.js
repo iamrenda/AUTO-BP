@@ -5,6 +5,7 @@ import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import tempData from "utilities/tempData";
+import DynamicProperty from "utilities/dynamicProperty";
 const eatGhead = (player) => {
     player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
     player.addEffect("minecraft:absorption", 2400, { amplifier: 1 });
@@ -69,6 +70,14 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }) => {
     exp.teleportation(player, data.locationData.lobby);
     exp.giveItems(player, data.getInvData("lobby"));
     exp.lobbyScoreboardDisplay(player);
+});
+mc.world.beforeEvents.playerLeave.subscribe(() => {
+    switch (tempData.gameID) {
+        case "straightBridger":
+        case "inclinedBridger":
+            DynamicProperty.postData();
+            break;
+    }
 });
 mc.world.beforeEvents.chatSend.subscribe((event) => {
     const { message, sender: player } = event;

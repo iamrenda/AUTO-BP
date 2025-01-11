@@ -1,9 +1,10 @@
-import { BridgerTempID } from "models/DynamicProperty";
+import { BridgerTicksID } from "models/DynamicProperty";
 import GameID from "models/GameID";
 import MinecraftID from "models/minecraftID";
 type TempDataIF = {
   gameID: GameID;
-  bridgerMode: BridgerTempID;
+  bridgerMode: BridgerTicksID;
+  bridgerDirection: "straight" | "inclined";
   blockBridger: MinecraftID.MinecraftBlockIdIF;
   blockClutcher: MinecraftID.MinecraftBlockIdIF;
   clutch: number[];
@@ -13,7 +14,8 @@ type TempDataIF = {
 //////////
 const tempData: TempDataIF = {
   gameID: "lobby",
-  bridgerMode: BridgerTempID.straight16blocks,
+  bridgerMode: BridgerTicksID.straight16blocks,
+  bridgerDirection: "straight",
   blockBridger: "minecraft:sandstone",
   blockClutcher: "minecraft:sandstone",
   clutch: [1],

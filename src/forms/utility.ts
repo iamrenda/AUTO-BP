@@ -1,12 +1,13 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
-import dynamicProperty from "utilities/dynamicProperty";
-import { GameDataID } from "models/DynamicProperty";
+import { DynamicPropertyID } from "models/DynamicProperty";
+import DynamicProperty from "utilities/dynamicProperty";
 
 const confirmationForm = async function (player: Player): Promise<ActionFormResponse> {
+  const currentDistance = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
   const form = new ChestFormData("27")
-    .title(`§4§lReset PB for ${dynamicProperty.getGameData(GameDataID.straightDistance)} Blocks`)
+    .title(`§4§lReset PB for ${currentDistance} Blocks`)
     .pattern(["_________", "__n___y__", "_________"], {
       n: {
         itemName: "§7Cancel",

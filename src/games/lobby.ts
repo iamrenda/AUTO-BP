@@ -1,23 +1,12 @@
 import { Player } from "@minecraft/server";
 
 import * as form from "../forms/lobby";
-import { defineBridger } from "./bridger";
+import { bridgerHandler } from "./bridger";
 import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import { BridgerTempID } from "models/DynamicProperty";
 import TeleportationLocation from "models/TeleportationLocation";
 import tempData from "utilities/tempData";
-
-const bridgerHandler = function (player: Player, game: "straightBridger" | "inclinedBridger") {
-  defineBridger(player);
-  exp.giveItems(player, data.getInvData(game));
-  tempData.gameID = game;
-  if (game === "straightBridger") exp.setBridgerMode(BridgerTempID.straight16blocks);
-  else exp.setBridgerMode(BridgerTempID.incline16blocks);
-  exp.teleportation(player, <TeleportationLocation>data.locationData[game]);
-  exp.confirmMessage(player, "§7Teleporting to bridger...");
-};
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);

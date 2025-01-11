@@ -9,6 +9,7 @@ import * as clutcher from "../games/clutcher";
 import tempData from "utilities/tempData";
 
 import TeleportationLocation from "models/TeleportationLocation";
+import DynamicProperty from "utilities/dynamicProperty";
 
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
@@ -89,6 +90,14 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
 });
 
 // player leaving the worlds
+mc.world.beforeEvents.playerLeave.subscribe(() => {
+  switch (tempData.gameID) {
+    case "straightBridger":
+    case "inclinedBridger":
+      DynamicProperty.postData();
+      break;
+  }
+});
 
 // chat message
 mc.world.beforeEvents.chatSend.subscribe((event) => {

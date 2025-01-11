@@ -5,14 +5,13 @@ export enum DynamicPropertyID {
   SuccessAttempts = "auto:successAtmps",
 }
 
-// only for setter / getter dynamic property purposes
-export enum BridgerTempID {
+export enum BridgerTicksID {
   straight16blocks = "straight16b",
   straight21blocks = "straight21b",
   straight50blocks = "straight50b",
-  incline16blocks = "inclined16b",
-  incline25blocks = "inclined21b",
-  incline50blocks = "inclined50b",
+  inclined16blocks = "inclined16b",
+  inclined21blocks = "inclined21b",
+  inclined50blocks = "inclined50b",
 }
 
 export enum GameDataID {

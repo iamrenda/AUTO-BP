@@ -1,82 +1,99 @@
-import { world } from "@minecraft/server";
-import { DynamicPropertyID, BridgerTempID, GameDataID } from "models/DynamicProperty";
-const getProperty = function (dynamicId) {
-    return world.getDynamicProperty(dynamicId).toString();
-};
-const setProperty = function (dynamicId, value) {
-    world.setDynamicProperty(dynamicId, value);
-};
-const getGameValue = function (game, dynamicId) {
-    const rawDataArr = getProperty(dynamicId).split("|");
-    const gameIndex = Object.values(BridgerTempID).indexOf(game);
-    return +rawDataArr[gameIndex];
-};
-const setGameValue = function (game, dynamicId, value) {
-    const rawDataArr = getProperty(dynamicId).split("|");
-    const gameIndex = Object.values(BridgerTempID).indexOf(game);
-    rawDataArr[gameIndex] = String(value);
-    setProperty(dynamicId, rawDataArr.join("|"));
-};
-class dynamicProperty {
-    static getPB(game) {
-        return getGameValue(game, DynamicPropertyID.PB);
+import { DynamicPropertyID, BridgerTicksID, GameDataID } from "models/DynamicProperty";
+import tempData from "./tempData";
+import { getProperty, setProperty } from "./utilities";
+class DynamicProperty {
+    static makeRawData(arr) {
+        return arr.reduce((accumulator, current, index) => {
+            if (typeof current === "boolean")
+                current = current ? "T" : "F";
+            return index === 0 ? `${current}` : `${accumulator}|${current}`;
+        }, "");
     }
-    static setPB(game, ticks) {
-        setGameValue(game, DynamicPropertyID.PB, ticks);
+    static postData() {
+        Object.keys(this.dynamicBridgerData).map((data) => {
+            const rawData = this.makeRawData(Object.values(this.dynamicBridgerData[data]));
+            setProperty(data, rawData);
+        });
     }
-    static resetPB(game) {
-        this.setPB(game, -1);
+    static fetchData() {
+        const rawDynamicProperties = {
+            [DynamicPropertyID.GameDatas]: getProperty(DynamicPropertyID.GameDatas).toString().split("|"),
+            [DynamicPropertyID.PB]: getProperty(DynamicPropertyID.PB).toString().split("|"),
+            [DynamicPropertyID.Attempts]: getProperty(DynamicPropertyID.Attempts).toString().split("|"),
+            [DynamicPropertyID.SuccessAttempts]: getProperty(DynamicPropertyID.SuccessAttempts).toString().split("|"),
+        };
+        Object.keys(this.dynamicBridgerData).map((dynamicId) => {
+            if (dynamicId === DynamicPropertyID.GameDatas) {
+                Object.keys(this.dynamicBridgerData[dynamicId]).map((gameData, index) => {
+                    const fetchData = rawDynamicProperties[dynamicId][index];
+                    if (fetchData === "T" || fetchData === "F")
+                        this.dynamicBridgerData[dynamicId][gameData] = fetchData === "T" ? true : false;
+                    else
+                        this.dynamicBridgerData[dynamicId][gameData] = +fetchData;
+                });
+            }
+            else {
+                Object.keys(this.dynamicBridgerData[dynamicId]).map((gameData, index) => {
+                    const fetchData = rawDynamicProperties[dynamicId][index];
+                    this.dynamicBridgerData[dynamicId][gameData] = +fetchData;
+                });
+            }
+        });
     }
-    static getAttempts(game) {
-        return getGameValue(game, DynamicPropertyID.Attempts);
+    static getDynamicBridgerData(id, gameDataType) {
+        return id === DynamicPropertyID.GameDatas
+            ? this.dynamicBridgerData[id][`${tempData.bridgerDirection}${gameDataType}`]
+            : +this.dynamicBridgerData[id][tempData.bridgerMode];
     }
-    static addAttempts(game) {
-        setGameValue(game, DynamicPropertyID.Attempts, this.getAttempts(game) + 1);
+    static addDynamicBridgerData(id) {
+        this.dynamicBridgerData[id][tempData.bridgerMode]++;
     }
-    static getSuccessAttempts(game) {
-        return getGameValue(game, DynamicPropertyID.SuccessAttempts);
+    static setDynamicBridgerData(id, data, gameDataType) {
+        if (id === DynamicPropertyID.GameDatas)
+            this.dynamicBridgerData[id][`${tempData.bridgerDirection}${gameDataType}`] = data;
+        else
+            this.dynamicBridgerData[id][tempData.bridgerMode] = data;
     }
-    static addSuccessAttempts(game) {
-        setGameValue(game, DynamicPropertyID.SuccessAttempts, this.getSuccessAttempts(game) + 1);
+    static resetDynamicBridgerData(id) {
+        this.dynamicBridgerData[id][tempData.bridgerMode] = -1;
     }
-    static getGameData(gameData) {
-        const rawDataArr = getProperty(DynamicPropertyID.GameDatas).toString().split("|");
-        const dataIndex = Object.values(GameDataID).indexOf(gameData);
-        const rawValue = rawDataArr[dataIndex];
-        return this.gameDatas[gameData][rawValue];
-    }
-    static setGameData(gameData, data) {
-        const rawDataArr = getProperty(DynamicPropertyID.GameDatas).toString().split("|");
-        const dataIndex = Object.values(GameDataID).indexOf(gameData);
-        rawDataArr[dataIndex] = Object.keys(this.gameDatas[gameData]).find((key) => String(this.gameDatas[gameData][key]) === String(data));
-        const newRawData = rawDataArr.join("|");
-        world.setDynamicProperty("auto:gameDatas", newRawData);
-    }
-    static resetdynamicProperties() {
-        setProperty(DynamicPropertyID.GameDatas, "F|1|F|1");
+    static RESETDYNAMICPROPERTY() {
+        setProperty(DynamicPropertyID.GameDatas, "F|16|F|16");
         setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
         setProperty(DynamicPropertyID.Attempts, "0|0|0|0|0|0");
         setProperty(DynamicPropertyID.SuccessAttempts, "0|0|0|0|0|0");
     }
 }
-dynamicProperty.gameDatas = {
-    [GameDataID.straightIsStairCased]: {
-        T: true,
-        F: false,
+DynamicProperty.dynamicBridgerData = {
+    [DynamicPropertyID.GameDatas]: {
+        [GameDataID.straightIsStairCased]: undefined,
+        [GameDataID.straightDistance]: undefined,
+        [GameDataID.inclinedIsStairCased]: undefined,
+        [GameDataID.inclinedDistance]: undefined,
     },
-    [GameDataID.straightDistance]: {
-        1: 16,
-        2: 21,
-        3: 50,
+    [DynamicPropertyID.PB]: {
+        [BridgerTicksID.straight16blocks]: undefined,
+        [BridgerTicksID.straight21blocks]: undefined,
+        [BridgerTicksID.straight50blocks]: undefined,
+        [BridgerTicksID.inclined16blocks]: undefined,
+        [BridgerTicksID.inclined21blocks]: undefined,
+        [BridgerTicksID.inclined50blocks]: undefined,
     },
-    [GameDataID.inclinedIsStairCased]: {
-        T: true,
-        F: false,
+    [DynamicPropertyID.Attempts]: {
+        [BridgerTicksID.straight16blocks]: undefined,
+        [BridgerTicksID.straight21blocks]: undefined,
+        [BridgerTicksID.straight50blocks]: undefined,
+        [BridgerTicksID.inclined16blocks]: undefined,
+        [BridgerTicksID.inclined21blocks]: undefined,
+        [BridgerTicksID.inclined50blocks]: undefined,
     },
-    [GameDataID.inclinedDistance]: {
-        1: 16,
-        2: 21,
-        3: 50,
+    [DynamicPropertyID.SuccessAttempts]: {
+        [BridgerTicksID.straight16blocks]: undefined,
+        [BridgerTicksID.straight21blocks]: undefined,
+        [BridgerTicksID.straight50blocks]: undefined,
+        [BridgerTicksID.inclined16blocks]: undefined,
+        [BridgerTicksID.inclined21blocks]: undefined,
+        [BridgerTicksID.inclined50blocks]: undefined,
     },
 };
-export default dynamicProperty;
+export default DynamicProperty;

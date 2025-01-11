@@ -2,7 +2,7 @@ import { world, ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/serv
 import tempData from "./tempData";
 import ItemInfo from "models/ItemInfo";
 import TeleportationLocation from "models/TeleportationLocation";
-import { BridgerTempID, DynamicPropertyID } from "models/DynamicProperty";
+import { BridgerTicksID, DynamicPropertyID } from "models/DynamicProperty";
 import { getInvData, locationData } from "./staticData";
 
 /**
@@ -41,7 +41,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
   date.getFullYear()
 ).slice(-2)}`;
 
-const setBridgerMode = function (game: BridgerTempID): void {
+const setBridgerMode = function (game: BridgerTicksID): void {
   tempData.bridgerMode = game;
 };
 
@@ -61,6 +61,13 @@ const calculateDistance = function (location1: Vector3, location2: Vector3): num
   const dx = location2.x - location1.x;
   const dz = location2.z - location1.z;
   return Math.round(Math.sqrt(dx * dx + dz * dz));
+};
+
+/**
+ * converts from tick to seconds
+ */
+const tickToSec = function (ticks: number): string {
+  return (ticks / 20).toFixed(2);
 };
 
 /**
@@ -93,4 +100,5 @@ export {
   calculateDistance,
   lobbyScoreboardDisplay,
   backToLobbyKit,
+  tickToSec,
 };
