@@ -24,8 +24,8 @@ const locationData = {
         facing: { x: 91.5, y: 262.0, z: 64 },
     },
     straightBridger: {
-        position: { x: 10000.5, y: 100, z: 10000.5 },
-        facing: { x: 10000.5, y: 100, z: 10001 },
+        position: { x: 10000.5, y: 100, z: 10001.5 },
+        facing: { x: 10000.5, y: 100, z: 10002 },
     },
     inclinedBridger: {
         position: { x: 9978.5, y: 100, z: 10002.5 },
@@ -61,16 +61,10 @@ const formBlocks = [
     { blockName: "Crying Obsidian", texture: "minecraft:crying_obsidian" },
     { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
-const structures = [
-    {
-        name: "default",
-        file: "straightDefault",
-    },
-    {
-        name: "default",
-        file: "inclinedDefault",
-    },
-];
+const structures = {
+    straight: "straightDefault",
+    inclined: "inclinedDefault",
+};
 const clutchStrength = {
     1: {
         texture: "minecraft:lime_stained_glass",

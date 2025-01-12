@@ -1,7 +1,6 @@
 import MinecraftID from "models/minecraftID";
 import TeleportationLocation from "models/TeleportationLocation";
 import ItemInfo from "models/ItemInfo";
-import StructureInfo from "models/StructureInfo";
 import GameID from "models/GameID";
 import tempData from "./tempData";
 
@@ -54,8 +53,8 @@ const locationData: LocationDataIF = {
     facing: { x: 91.5, y: 262.0, z: 64 },
   },
   straightBridger: {
-    position: { x: 10000.5, y: 100, z: 10000.5 },
-    facing: { x: 10000.5, y: 100, z: 10001 },
+    position: { x: 10000.5, y: 100, z: 10001.5 },
+    facing: { x: 10000.5, y: 100, z: 10002 },
   },
   inclinedBridger: {
     position: { x: 9978.5, y: 100, z: 10002.5 },
@@ -102,16 +101,10 @@ const formBlocks: DisplayBlockIF[] = [
  * name: name of the structure to display
  * file: file name to load
  */
-const structures: StructureInfo[] = [
-  {
-    name: "default",
-    file: "straightDefault",
-  },
-  {
-    name: "default",
-    file: "inclinedDefault",
-  },
-];
+const structures = {
+  straight: "straightDefault",
+  inclined: "inclinedDefault",
+};
 
 /**
  * for clutcher
