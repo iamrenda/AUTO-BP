@@ -408,14 +408,8 @@ export const listener = function () {
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-  bridger.player = player;
-  player.sendMessage("player now defined");
+  player.sendMessage("chat detected");
   //////////////////////////////////////////////////
   // make sure to go back to lobby before reloading
   // debug from here
-  player.sendMessage(util.getProperty(DynamicPropertyID.PB));
-  player.sendMessage(util.getProperty(DynamicPropertyID.Attempts));
-  player.sendMessage(util.getProperty(DynamicPropertyID.SuccessAttempts));
-  player.sendMessage(util.getProperty(DynamicPropertyID.GameDatas));
-  player.sendMessage(util.getProperty(DynamicPropertyID.AverageTime));
 });

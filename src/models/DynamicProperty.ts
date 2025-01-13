@@ -1,9 +1,9 @@
 export enum DynamicPropertyID {
-  GameDatas = "auto:gameDatas",
-  PB = "auto:pb",
-  Attempts = "auto:atmps",
-  SuccessAttempts = "auto:successAtmps",
-  AverageTime = "auto:avg",
+  GameDatas = "gameDatas",
+  PB = "pb",
+  Attempts = "atmps",
+  SuccessAttempts = "successAtmps",
+  AverageTime = "avg",
 }
 
 export enum BridgerTicksID {

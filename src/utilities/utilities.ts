@@ -1,8 +1,8 @@
-import { world, ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
+import { ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
 import tempData from "./tempData";
 import ItemInfo from "../models/ItemInfo";
 import TeleportationLocation from "../models/TeleportationLocation";
-import { BridgerTicksID, DynamicPropertyID } from "../models/DynamicProperty";
+import { BridgerTicksID } from "../models/DynamicProperty";
 import { getInvData, locationData, VERSION } from "./staticData";
 
 /**
@@ -43,14 +43,6 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
 
 const setBridgerMode = function (game: BridgerTicksID): void {
   tempData.bridgerMode = game;
-};
-
-const getProperty = function (dynamicId: DynamicPropertyID): string {
-  return world.getDynamicProperty(dynamicId).toString();
-};
-
-const setProperty = function (dynamicId: DynamicPropertyID, value: any): void {
-  world.setDynamicProperty(dynamicId, value);
 };
 
 /**
@@ -95,8 +87,6 @@ export {
   confirmMessage,
   today,
   setBridgerMode,
-  getProperty,
-  setProperty,
   calculateDistance,
   lobbyScoreboardDisplay,
   backToLobbyKit,
