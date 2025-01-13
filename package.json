@@ -2,16 +2,22 @@
   "dependencies": {
     "@minecraft/server": "^1.18.0-beta.1.21.60-preview.24",
     "@minecraft/server-ui": "^1.3.0",
-    "@minecraft/vanilla-data": "^1.21.50",
-    "typescript": "^5.7.2"
+    "@minecraft/vanilla-data": "^1.21.50"
   },
   "name": "auto-bp",
   "version": "1.0.0",
   "main": "dist/main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack",
+    "watch": "tsc -w"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "ts-loader": "^9.5.2",
+    "typescript": "^5.7.3",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1"
+  }
 }

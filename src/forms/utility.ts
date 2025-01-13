@@ -1,8 +1,8 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
-import { DynamicPropertyID } from "models/DynamicProperty";
-import DynamicProperty from "utilities/dynamicProperty";
+import { DynamicPropertyID } from "../models/DynamicProperty";
+import DynamicProperty from "../utilities/dynamicProperty";
 
 const confirmationForm = async function (player: Player): Promise<ActionFormResponse> {
   const currentDistance = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");

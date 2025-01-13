@@ -1,5 +1,5 @@
 import { ActionFormData } from "@minecraft/server-ui";
-import { typeIdToDataId, typeIdToID } from "./typeIds.js";
+import { typeIdToDataId, typeIdToID } from "./typeIds";
 
 const number_of_1_16_100_items = 1;
 

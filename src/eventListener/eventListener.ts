@@ -6,10 +6,10 @@ import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 
-import tempData from "utilities/tempData";
+import tempData from "../utilities/tempData";
 
-import TeleportationLocation from "models/TeleportationLocation";
-import DynamicProperty from "utilities/dynamicProperty";
+import TeleportationLocation from "../models/TeleportationLocation";
+import DynamicProperty from "../utilities/dynamicProperty";
 
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });

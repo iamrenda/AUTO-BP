@@ -1,6 +1,7 @@
-import { BridgerTicksID } from "models/DynamicProperty";
-import GameID from "models/GameID";
-import MinecraftID from "models/minecraftID";
+import { BridgerTicksID } from "../models/DynamicProperty";
+import GameID from "../models/GameID";
+import MinecraftID from "../models/minecraftID";
+
 type TempDataIF = {
   gameID: GameID;
   bridgerMode: BridgerTicksID;

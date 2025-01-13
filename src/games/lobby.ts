@@ -5,8 +5,8 @@ import { bridgerHandler } from "./bridger";
 import { defineClutcher } from "./clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import TeleportationLocation from "models/TeleportationLocation";
-import tempData from "utilities/tempData";
+import TeleportationLocation from "../models/TeleportationLocation";
+import tempData from "../utilities/tempData";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);

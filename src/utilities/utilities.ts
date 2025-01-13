@@ -1,9 +1,9 @@
 import { world, ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
 import tempData from "./tempData";
-import ItemInfo from "models/ItemInfo";
-import TeleportationLocation from "models/TeleportationLocation";
-import { BridgerTicksID, DynamicPropertyID } from "models/DynamicProperty";
-import { getInvData, locationData } from "./staticData";
+import ItemInfo from "../models/ItemInfo";
+import TeleportationLocation from "../models/TeleportationLocation";
+import { BridgerTicksID, DynamicPropertyID } from "../models/DynamicProperty";
+import { getInvData, locationData, VERSION } from "./staticData";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -74,7 +74,7 @@ const tickToSec = function (ticks: number): string {
  * display lobby scoreboard
  */
 const lobbyScoreboardDisplay = function (player: Player): void {
-  const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion 4 | ${today}`;
+  const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion ${VERSION} | ${today}`;
   player.onScreenDisplay.setTitle(scoreboard);
 };
 

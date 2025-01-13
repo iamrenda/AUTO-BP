@@ -1,15 +1,16 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import * as form from "forms/bridger";
-import { confirmationForm } from "forms/utility";
+import * as form from "../forms/bridger";
+import { confirmationForm } from "../forms/utility";
 
 import DynamicProperty from "../utilities/dynamicProperty";
-import { BridgerTicksID } from "models/DynamicProperty";
-import TeleportationLocation from "models/TeleportationLocation";
-import tempData from "utilities/tempData";
-import { DynamicPropertyID } from "models/DynamicProperty";
-import GameID from "models/GameID";
+import { BridgerTicksID } from "../models/DynamicProperty";
+import TeleportationLocation from "../models/TeleportationLocation";
+import tempData from "../utilities/tempData";
+import { DynamicPropertyID } from "../models/DynamicProperty";
+import GameID from "../models/GameID";
+import { VERSION } from "../utilities/staticData";
 
 type Bridger = {
   player: mc.Player;
@@ -59,7 +60,7 @@ const HEIGHT_DIFF = {
  */
 const showMessage = function (wasPB: boolean): void {
   const getMessage = (distance: number, pb: number, time: number, newPB = false) => `§7----------------------------§r
-   §bBridger§r §8§o- Version 4§r
+   §bBridger§r §8§o- Version ${VERSION}§r
 
    §6Distance:§r §f${distance} Blocks
    §6Your Personal Best:§r §f${pb === -1 ? "--.--" : util.tickToSec(pb)}§f
@@ -68,7 +69,6 @@ const showMessage = function (wasPB: boolean): void {
 §7----------------------------`;
 
   const distance = +DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
-  // const distance = tempBridgerDynamicData[DynamicPropertyID.GameDatas][1];
   const message = getMessage(
     distance,
     DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB),
@@ -386,7 +386,7 @@ export const listener = function () {
         : util.tickToSec(DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB))
     }\n\n §7- §6Time:§r\n   ${util.tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${
       bridger.blocks
-    }\n§7-------------------§r\n §8§oVersion 4 | ${util.today}`
+    }\n§7-------------------§r\n §8§oVersion ${VERSION} | ${util.today}`
   );
 };
 

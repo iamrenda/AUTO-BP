@@ -1,4 +1,4 @@
-import { DynamicPropertyID, BridgerTicksID, GameDataID } from "models/DynamicProperty";
+import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
 import tempData from "./tempData";
 import { getProperty, setProperty } from "./utilities";
 

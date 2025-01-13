@@ -2,16 +2,15 @@
   "compilerOptions": {
     "module": "ES2020",
     "target": "ES2021",
-    "baseUrl": "./src",
-    "rootDir": "./src" /* Specify the root folder within your source files. */,
+    // "baseUrl": "./src",
+    // "rootDir": "./src" /* Specify the root folder within your source files. */,
     "outDir": "./scripts" /* Specify an output folder for all emitted files. */,
     "removeComments": true /* Disable emitting comments. */,
     "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
     "noUnusedLocals": true /* Enable error reporting when local variables aren't read. */,
     "noUnusedParameters": true /* Raise an error when a function parameter isn't read. */,
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
-    "moduleResolution": "Node",
-    "allowSyntheticDefaultImports": true
+    "moduleResolution": "Node"
   },
   "exclude": ["node_modules"]
 }

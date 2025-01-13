@@ -1,7 +1,7 @@
-import MinecraftID from "models/minecraftID";
-import TeleportationLocation from "models/TeleportationLocation";
-import ItemInfo from "models/ItemInfo";
-import GameID from "models/GameID";
+import MinecraftID from "../models/minecraftID";
+import TeleportationLocation from "../models/TeleportationLocation";
+import ItemInfo from "../models/ItemInfo";
+import GameID from "../models/GameID";
 import tempData from "./tempData";
 
 ////////////////////
@@ -128,4 +128,6 @@ const clutchStrength: ClutchStrengthIF = {
   },
 };
 
-export { getInvData, locationData, structures, formBlocks, clutchStrength };
+const VERSION = 5;
+
+export { getInvData, locationData, structures, formBlocks, clutchStrength, VERSION };

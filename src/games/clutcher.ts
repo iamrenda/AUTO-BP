@@ -2,7 +2,7 @@ import * as mc from "@minecraft/server";
 import * as form from "../forms/clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import tempData from "utilities/tempData";
+import tempData from "../utilities/tempData";
 
 type Clutcher = {
   player: mc.Player;
@@ -222,6 +222,6 @@ export const listener = async function () {
 export const slowListener = function () {
   clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
   clutcher.player.onScreenDisplay.setTitle(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${tempData.clutch.length}\n§7-------------------§r\n §8§oVersion 4 | ${exp.today}`
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${tempData.clutch.length}\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${exp.today}`
   );
 };
