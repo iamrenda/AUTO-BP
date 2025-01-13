@@ -95,23 +95,35 @@ const floatingEntity = function (): mc.Entity {
 };
 
 /**
+ * sets a new average time
+ */
+const setAverageTime = function (newTime: number) {
+  const prevAvgTime = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.AverageTime);
+  const attempts = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.SuccessAttempts);
+  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+
+  DynamicProperty.setDynamicBridgerData(DynamicPropertyID.AverageTime, Math.round(newAvgTime * 100) / 100);
+};
+
+/**
  * updates the floating texts including stats about the player
  */
-const updateFloatingText = () => {
+const updateFloatingText = function () {
   const pbData = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB);
+  const avgTimeData = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.AverageTime);
   const info = {
     pb: pbData === -1 ? "--.--" : util.tickToSec(pbData),
+    avgTime: avgTimeData === -1 ? "--.--" : util.tickToSec(avgTimeData),
     attempts: DynamicProperty.getDynamicBridgerData(DynamicPropertyID.Attempts),
     successAttempts: DynamicProperty.getDynamicBridgerData(DynamicPropertyID.SuccessAttempts),
   };
-  const successFailRatio = (info.successAttempts / info.attempts).toFixed(2);
   const distance = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
 
   const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${distance} blocks§r
 §6Personal Best:§r §f${info.pb}§r
+§6Average Time:§r §f${info.avgTime}§r
 §6Bridging Attempts:§r §f${info.attempts}§r
-§6Successful Attempts:§r §f${info.successAttempts}§r
-§6Success / Fail Ratio:§r §f${successFailRatio}`;
+§6Successful Attempts:§r §f${info.successAttempts}§r`;
 
   floatingEntity().nameTag = displayText;
 };
@@ -346,7 +358,6 @@ export const pressurePlatePushEvt = function () {
     bridger.timer = null;
   }
   bridger.plateDisabled = true;
-  bridger.autoReq = mc.system.runTimeout(enablePlate, 80);
 
   // checking whether personal best
   if (
@@ -355,11 +366,14 @@ export const pressurePlatePushEvt = function () {
   ) {
     // new personal best
     DynamicProperty.setDynamicBridgerData(DynamicPropertyID.PB, bridger.ticks);
+    bridger.player.playSound("random.levelup");
     showMessage(true);
   } else showMessage(false);
 
+  setAverageTime(bridger.ticks);
+
   mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", bridger.player.location);
-  bridger.player.playSound("random.levelup");
+  bridger.autoReq = mc.system.runTimeout(enablePlate, 80);
 
   DynamicProperty.addDynamicBridgerData(DynamicPropertyID.Attempts);
   DynamicProperty.addDynamicBridgerData(DynamicPropertyID.SuccessAttempts);
@@ -403,4 +417,5 @@ mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
   player.sendMessage(util.getProperty(DynamicPropertyID.Attempts));
   player.sendMessage(util.getProperty(DynamicPropertyID.SuccessAttempts));
   player.sendMessage(util.getProperty(DynamicPropertyID.GameDatas));
+  player.sendMessage(util.getProperty(DynamicPropertyID.AverageTime));
 });

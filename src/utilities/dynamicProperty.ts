@@ -9,6 +9,7 @@ type DynamicBridgerDataType = {
   [DynamicPropertyID.PB]: number;
   [DynamicPropertyID.Attempts]: number;
   [DynamicPropertyID.SuccessAttempts]: number;
+  [DynamicPropertyID.AverageTime]: number;
 };
 
 class DynamicProperty {
@@ -50,6 +51,14 @@ class DynamicProperty {
       [BridgerTicksID.inclined21blocks]: undefined,
       [BridgerTicksID.inclined50blocks]: undefined,
     },
+    [DynamicPropertyID.AverageTime]: {
+      [BridgerTicksID.straight16blocks]: undefined,
+      [BridgerTicksID.straight21blocks]: undefined,
+      [BridgerTicksID.straight50blocks]: undefined,
+      [BridgerTicksID.inclined16blocks]: undefined,
+      [BridgerTicksID.inclined21blocks]: undefined,
+      [BridgerTicksID.inclined50blocks]: undefined,
+    },
   };
 
   static postData() {
@@ -65,6 +74,7 @@ class DynamicProperty {
       [DynamicPropertyID.PB]: getProperty(DynamicPropertyID.PB).toString().split("|"),
       [DynamicPropertyID.Attempts]: getProperty(DynamicPropertyID.Attempts).toString().split("|"),
       [DynamicPropertyID.SuccessAttempts]: getProperty(DynamicPropertyID.SuccessAttempts).toString().split("|"),
+      [DynamicPropertyID.AverageTime]: getProperty(DynamicPropertyID.AverageTime).toString().split("|"),
     };
     Object.keys(this.dynamicBridgerData).map((dynamicId: DynamicPropertyID) => {
       if (dynamicId === DynamicPropertyID.GameDatas) {
@@ -115,6 +125,7 @@ class DynamicProperty {
     setProperty(DynamicPropertyID.PB, "-1|-1|-1|-1|-1|-1");
     setProperty(DynamicPropertyID.Attempts, "0|0|0|0|0|0");
     setProperty(DynamicPropertyID.SuccessAttempts, "0|0|0|0|0|0");
+    setProperty(DynamicPropertyID.AverageTime, "-1|-1|-1|-1|-1|-1");
   }
 }
 

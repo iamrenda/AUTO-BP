@@ -3,6 +3,7 @@ export enum DynamicPropertyID {
   PB = "auto:pb",
   Attempts = "auto:atmps",
   SuccessAttempts = "auto:successAtmps",
+  AverageTime = "auto:avg",
 }
 
 export enum BridgerTicksID {
