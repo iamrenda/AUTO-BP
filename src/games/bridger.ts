@@ -358,6 +358,9 @@ export const pressurePlatePushEvt = function () {
     showMessage(true);
   } else showMessage(false);
 
+  mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", bridger.player.location);
+  bridger.player.playSound("random.levelup");
+
   DynamicProperty.addDynamicBridgerData(DynamicPropertyID.Attempts);
   DynamicProperty.addDynamicBridgerData(DynamicPropertyID.SuccessAttempts);
 };
