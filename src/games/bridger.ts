@@ -56,18 +56,34 @@ const HEIGHT_DIFF = {
 
 /////////////////////////////////////////////////////////
 /**
+ * takes the difference in ms and returns it in seconds (string format)
+ */
+const differenceMs = function (ms1: number, ms2: number): string {
+  const difference = ms1 - ms2;
+  if (difference === 0) return "±0.00";
+  return difference < 0 ? `§c+${util.tickToSec(Math.abs(difference))}` : `§a-${util.tickToSec(difference)}`;
+};
+
+/**
  * shows the result of the bridging
  */
-const showMessage = function (wasPB: boolean): void {
-  const getMessage = (distance: number, pb: number, time: number, newPB = false) => `§7----------------------------§r
-   §bBridger§r §8§o- Version ${VERSION}§r
+const showMessage = function (wasPB: boolean, prevPB?: number): void {
+  const getMessage = (distance: number, pb: number, time: number, waspb = false) => {
+    const baseMessage = `
+§7----------------------------§r 
+  §bBridger§r §8§o- Version ${VERSION}§r
 
-   §6Distance:§r §f${distance} Blocks
-   §6Your Personal Best:§r §f${pb === -1 ? "--.--" : util.tickToSec(pb)}§f
-   §6Time Recorded:§r §f${util.tickToSec(time)}§r
-   ${newPB ? "§d§lNEW PERSONAL BEST!!§r\n" : ""}
-§7----------------------------`;
+  §6Distance:§r §f${distance} Blocks
+  §6${waspb ? "Your Previous Best" : "Your Personal Best"}:§r §f${
+      pb === -1 ? "--.--" : util.tickToSec(waspb ? prevPB : pb)
+    }§f
+  §6Time Recorded:§r §f${util.tickToSec(time)}§r ${
+      pb !== -1 ? "§f(" + (wasPB ? differenceMs(prevPB, time) : differenceMs(pb, time)) + "§f)" : ""
+    }§r`;
 
+    const pbMessage = waspb ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
+    return `${baseMessage}\n${pbMessage}§7----------------------------`;
+  };
   const distance = +DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
   const message = getMessage(
     distance,
@@ -367,9 +383,9 @@ export const pressurePlatePushEvt = function () {
     bridger.ticks < DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB)
   ) {
     // new personal best
+    showMessage(true, DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB));
     DynamicProperty.setDynamicBridgerData(DynamicPropertyID.PB, bridger.ticks);
     bridger.player.playSound("random.levelup");
-    showMessage(true);
     bridger.player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
   } else showMessage(false);
 
