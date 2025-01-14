@@ -12,6 +12,8 @@ type Clutcher = {
   startLocation: mc.Vector3;
   endLocation: mc.Vector3;
 
+  storedLocations: Set<mc.Vector3>;
+
   countDown?: number;
   hitTimer?: number;
   sec: number;
@@ -27,6 +29,8 @@ const clutcher: Clutcher = {
   distance: 0,
   startLocation: null,
   endLocation: null,
+
+  storedLocations: new Set(),
 
   countDown: null, // countdown before knockbacks
   hitTimer: null, // interval between hits
@@ -198,7 +202,13 @@ export const clutcherFormHandler = async function (player: mc.Player) {
   }
 
   // quit
-  if (selection === 16) exp.backToLobbyKit(player);
+  if (selection === 16) {
+    if (clutcher.storedLocations.size)
+      [...clutcher.storedLocations].map((location) =>
+        mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
+      );
+    exp.backToLobbyKit(player);
+  }
 };
 
 export const placingBlockEvt = function ({ location }) {
@@ -209,10 +219,13 @@ export const placingBlockEvt = function ({ location }) {
 
   if (clutcher.hitTimer) clutcher.endLocation = location;
 
-  mc.system.runTimeout(
-    () => mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock"),
-    60
-  );
+  clutcher.storedLocations.add(location);
+  mc.system.runTimeout(() => {
+    try {
+      mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock");
+      clutcher.storedLocations.delete(location);
+    } catch (e) {}
+  }, 60);
 };
 
 export const listener = async function () {
