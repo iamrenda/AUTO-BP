@@ -125,7 +125,7 @@ const applyKnockback = function (player: mc.Player, { viewX, viewZ }, horizontal
 const startClutch = function (player: mc.Player) {
   mc.system.clearRun(clutcher.countDown);
   clutcher.isListening = true;
-  player.onScreenDisplay.setActionBar("§aGO!");
+  player.onScreenDisplay.setTitle("§aGO!");
   player.playSound("note.pling");
   clutcher.sec = 3;
 
@@ -144,7 +144,7 @@ const startClutch = function (player: mc.Player) {
  */
 const countDownDisplay = function (player: mc.Player) {
   player.playSound("note.hat");
-  player.onScreenDisplay.setActionBar(`§6Count Down:§r §f${clutcher.sec}`);
+  player.onScreenDisplay.setTitle(`§6${clutcher.sec}`);
   clutcher.sec--;
 };
 
@@ -221,7 +221,7 @@ export const listener = async function () {
 
 export const slowListener = function () {
   clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
-  clutcher.player.onScreenDisplay.setTitle(
+  clutcher.player.onScreenDisplay.setActionBar(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${tempData.clutch.length}\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${exp.today}`
   );
 };

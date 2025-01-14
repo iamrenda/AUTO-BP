@@ -67,7 +67,7 @@ const tickToSec = function (ticks: number): string {
  */
 const lobbyScoreboardDisplay = function (player: Player): void {
   const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion ${VERSION} | ${today}`;
-  player.onScreenDisplay.setTitle(scoreboard);
+  player.onScreenDisplay.setActionBar(scoreboard);
 };
 
 /**

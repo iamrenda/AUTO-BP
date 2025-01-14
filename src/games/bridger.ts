@@ -359,6 +359,8 @@ export const pressurePlatePushEvt = function () {
   }
   bridger.plateDisabled = true;
 
+  bridger.player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(bridger.ticks)}§r`);
+
   // checking whether personal best
   if (
     DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB) === -1 ||
@@ -368,6 +370,7 @@ export const pressurePlatePushEvt = function () {
     DynamicProperty.setDynamicBridgerData(DynamicPropertyID.PB, bridger.ticks);
     bridger.player.playSound("random.levelup");
     showMessage(true);
+    bridger.player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
   } else showMessage(false);
 
   setAverageTime(bridger.ticks);
@@ -393,7 +396,7 @@ export const listener = function () {
     }
   }
 
-  bridger.player.onScreenDisplay.setTitle(
+  bridger.player.onScreenDisplay.setActionBar(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
       DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB) === -1
         ? "--.--"
