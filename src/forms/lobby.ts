@@ -4,7 +4,7 @@ import ChestFormData from "../formExtensions/forms";
 import { VERSION } from "../utilities/staticData";
 
 const lobbyForm = async function (player: Player): Promise<ActionFormResponse> {
-  const form = new ChestFormData("9").title("Lobby Selector").pattern(["_a_b___s_"], {
+  const form = new ChestFormData("9").title("Lobby Selector").pattern(["_a_b_c_s_"], {
     a: {
       itemName: "§6§lBridger",
       itemDesc: ["§7Practice bridging across the", "§7other island as fast as you can!", "", "§eClick to Play!"],
@@ -22,6 +22,19 @@ const lobbyForm = async function (player: Player): Promise<ActionFormResponse> {
         "§eClick to Play!",
       ],
       texture: "minecraft:slime",
+      stackAmount: 1,
+      enchanted: false,
+    },
+    c: {
+      itemName: "§6§lWall Run",
+      itemDesc: [
+        "§7Place blocks quickly along the",
+        "§7wall to reach the goal as fast",
+        "§7as you can!",
+        "",
+        "§eClick to Play!",
+      ],
+      texture: "minecraft:mud_brick_wall",
       stackAmount: 1,
       enchanted: false,
     },

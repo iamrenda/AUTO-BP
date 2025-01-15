@@ -1,13 +1,11 @@
 import * as mc from "@minecraft/server";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-
 import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
-
+import * as wallRun from "../games/wallrun";
 import tempData from "../utilities/tempData";
-
 import TeleportationLocation from "../models/TeleportationLocation";
 import DynamicProperty from "../utilities/dynamicProperty";
 
@@ -27,7 +25,7 @@ const eatGhead = (player: mc.Player): void => {
   container.setItem(slot, undefined);
 };
 
-// player right-click an item
+// right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
   if (item.typeId === "auto:ghead") eatGhead(player);
 
@@ -49,7 +47,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
   }
 });
 
-// player placing a block
+// placing a block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   switch (tempData.gameID) {
     case "straightBridger":
@@ -62,12 +60,15 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   }
 });
 
-// player pushed a pressureplate
-mc.world.afterEvents.pressurePlatePush.subscribe((): void => {
+// pushed a pressureplate
+mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player }): void => {
   switch (tempData.gameID) {
     case "straightBridger":
     case "inclinedBridger":
-      bridger.pressurePlatePushEvt();
+      bridger.pressurePlatePushEvt(<mc.Player>player);
+      break;
+    case "wallRun":
+      wallRun.pressurePlatePushEvt();
       break;
   }
 });
@@ -82,19 +83,23 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
   });
 });
 
-// player joining the world
+// joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
   exp.giveItems(player, data.getInvData("lobby"));
   exp.lobbyScoreboardDisplay(player);
+  tempData.player = player;
 });
 
-// player leaving the worlds
+// leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
   switch (tempData.gameID) {
     case "straightBridger":
     case "inclinedBridger":
       DynamicProperty.postData();
+      break;
+    case "clutcher":
+      clutcher.leaveWorldEnt();
       break;
   }
 });
@@ -120,7 +125,7 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
 // breaking a block
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

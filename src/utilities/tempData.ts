@@ -1,8 +1,10 @@
+import { Player } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import GameID from "../models/GameID";
 import MinecraftID from "../models/minecraftID";
 
 type TempDataIF = {
+  player: Player;
   gameID: GameID;
   bridgerMode: BridgerTicksID;
   bridgerDirection: "straight" | "inclined";
@@ -14,6 +16,7 @@ type TempDataIF = {
 
 //////////
 const tempData: TempDataIF = {
+  player: undefined,
   gameID: "lobby",
   bridgerMode: BridgerTicksID.straight16blocks,
   bridgerDirection: "straight",

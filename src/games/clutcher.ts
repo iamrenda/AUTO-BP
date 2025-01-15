@@ -5,8 +5,6 @@ import * as data from "../utilities/staticData";
 import tempData from "../utilities/tempData";
 
 type Clutcher = {
-  player: mc.Player;
-
   isListening: boolean;
   distance: number;
   startLocation: mc.Vector3;
@@ -23,8 +21,6 @@ type Clutcher = {
 };
 
 const clutcher: Clutcher = {
-  player: null,
-
   isListening: false, // weather listening for the first block detection
   distance: 0,
   startLocation: null,
@@ -40,7 +36,6 @@ const clutcher: Clutcher = {
   teleportationIndex: 1,
 };
 
-/////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////
 /**
  * teleport player to counter clockwise location
@@ -79,7 +74,7 @@ const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
 /**
  * reset clutcher data
  */
-const resetClutcherData = function () {
+const resetClutcher = function () {
   clutcher.hitTimer = null;
   clutcher.countDown = null;
   clutcher.hitIndex = 0;
@@ -99,14 +94,10 @@ const restartClutch = function (player: mc.Player) {
     clutcher.sec = 3;
   }
 
-  // cancelling countdown & hitTimer
   if (clutcher.countDown) mc.system.clearRun(clutcher.countDown);
   if (clutcher.hitTimer) mc.system.clearRun(clutcher.hitTimer);
 
-  // reset clutcher data
-  resetClutcherData();
-
-  // teleport and give item
+  resetClutcher();
 
   teleportToCounterClockwise(player);
   exp.giveItems(player, data.getInvData("clutcher"));
@@ -165,16 +156,12 @@ const readyForClutch = function (player: mc.Player) {
   }, 20);
 };
 ///////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////
-export const defineClutcher = function (player: mc.Player) {
-  clutcher.player = player;
-};
-
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
   if (player.isSneaking && tempData.clutchShiftStart) return readyForClutch(player);
 
   const { selection } = await form.clutcherForm(player);
+
   // clutch start
   if (selection === 10) readyForClutch(player);
 
@@ -229,12 +216,19 @@ export const placingBlockEvt = function ({ location }) {
 };
 
 export const listener = async function () {
-  if (clutcher.player.location.y <= 88) restartClutch(clutcher.player);
+  if (tempData.player.location.y <= 88) restartClutch(tempData.player);
 };
 
 export const slowListener = function () {
   clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
-  clutcher.player.onScreenDisplay.setActionBar(
+  tempData.player.onScreenDisplay.setActionBar(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${tempData.clutch.length}\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${exp.today}`
   );
+};
+
+export const leaveWorldEnt = function () {
+  if (clutcher.storedLocations.size)
+    [...clutcher.storedLocations].map((location) =>
+      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
+    );
 };

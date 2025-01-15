@@ -42,6 +42,11 @@ const getInvData = function (game: GameID): ItemInfo[] {
       { item: tempData.blockClutcher, quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
+  if (game === "wallRun")
+    return [
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ];
 };
 
 /**
@@ -78,6 +83,10 @@ const locationData: LocationDataIF = {
       facing: { x: 20027, y: 104, z: 20023.5 },
     },
   ],
+  wallRun: {
+    position: { x: 30000.5, y: 105, z: 30013.5 },
+    facing: { x: 30000.5, y: 105, z: 30014 },
+  },
 };
 
 /**

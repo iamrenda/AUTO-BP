@@ -9,16 +9,14 @@ import { BridgerTicksID } from "../models/DynamicProperty";
 import TeleportationLocation from "../models/TeleportationLocation";
 import tempData from "../utilities/tempData";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import GameID from "../models/GameID";
 import { VERSION } from "../utilities/staticData";
 
 type Bridger = {
-  player: mc.Player;
   storedLocations: mc.Vector3[];
   blocks: number;
   ticks: number;
 
-  plateDisabled: boolean;
+  isPlateDisabled: boolean;
   timer?: number;
   autoReq?: number;
 };
@@ -32,13 +30,11 @@ type FillAndPlaceIF = {
 
 /////////////////////////////////////////////////////////
 const bridger: Partial<Bridger> = {
-  player: undefined,
-
   storedLocations: [],
   blocks: 0,
   ticks: 0,
 
-  plateDisabled: false,
+  isPlateDisabled: false,
   timer: undefined, // interval
   autoReq: undefined, // timeOut
 };
@@ -91,13 +87,13 @@ const showMessage = function (wasPB: boolean, prevPB?: number): void {
     bridger.ticks,
     wasPB
   );
-  bridger.player.sendMessage(message);
+  tempData.player.sendMessage(message);
 };
 
 /**
  * floating entity grabber
  */
-const floatingEntity = function (): mc.Entity {
+const getFloatingEntity = function (): mc.Entity {
   switch (tempData.gameID) {
     case "straightBridger":
       return mc.world
@@ -135,19 +131,19 @@ const updateFloatingText = function () {
   };
   const distance = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
 
-  const displayText = `§b${bridger.player.nameTag}§r §7-§r §o§7${distance} blocks§r
+  const displayText = `§b${tempData.player.nameTag}§r §7-§r §o§7${distance} blocks§r
 §6Personal Best:§r §f${info.pb}§r
 §6Average Time:§r §f${info.avgTime}§r
 §6Bridging Attempts:§r §f${info.attempts}§r
 §6Successful Attempts:§r §f${info.successAttempts}§r`;
 
-  floatingEntity().nameTag = displayText;
+  getFloatingEntity().nameTag = displayText;
 };
 
 /**
  * reset bridger data
  */
-const resetBridgerData = function (): void {
+const resetBridger = function (): void {
   bridger.blocks = 0;
   bridger.ticks = 0;
   bridger.storedLocations = [];
@@ -161,8 +157,8 @@ const resetMap = function (wasAttempt: boolean = true): void {
 
   // teleport player
   wasAttempt
-    ? util.teleportation(bridger.player, <TeleportationLocation>data.locationData[gameId])
-    : util.teleportation(bridger.player, <TeleportationLocation>data.locationData.lobby);
+    ? util.teleportation(tempData.player, <TeleportationLocation>data.locationData[gameId])
+    : util.teleportation(tempData.player, <TeleportationLocation>data.locationData.lobby);
 
   // update floating text
   if (wasAttempt) updateFloatingText();
@@ -174,7 +170,7 @@ const resetMap = function (wasAttempt: boolean = true): void {
     );
 
   // reset blocks and ticks
-  resetBridgerData();
+  resetBridger();
 };
 
 /**
@@ -182,10 +178,23 @@ const resetMap = function (wasAttempt: boolean = true): void {
  * @param {Boolean} cancelTimer - whether canceling timer to resetMap is necessary or not
  */
 const enablePlate = function (cancelTimer: boolean = false): void {
-  bridger.plateDisabled = false;
+  bridger.isPlateDisabled = false;
   if (cancelTimer) mc.system.clearRun(bridger.autoReq);
   resetMap();
-  util.giveItems(bridger.player, data.getInvData(tempData.gameID));
+  util.giveItems(tempData.player, data.getInvData(tempData.gameID));
+};
+
+const stopTimer = function () {
+  if (!bridger.timer) return;
+  mc.system.clearRun(bridger.timer);
+  bridger.timer = null;
+};
+
+const isPB = function (): boolean {
+  return (
+    DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB) === -1 ||
+    bridger.ticks < DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB)
+  );
 };
 
 /**
@@ -298,29 +307,10 @@ const handleHeightChange = function (player: mc.Player, isStairCased: boolean): 
 };
 
 /////////////////////////////////////////////////////////
-/**
- * when player joins bridger from lobby
- */
-export const bridgerHandler = async function (player: mc.Player, game: GameID) {
-  util.confirmMessage(player, "§7Teleporting to bridger...");
-  util.teleportation(player, <TeleportationLocation>data.locationData[game]);
-  tempData.gameID = game;
-  tempData.bridgerDirection = game === "straightBridger" ? "straight" : "inclined";
-  defineBridger(player);
-  DynamicProperty.fetchData();
-  util.setBridgerMode(BridgerTicksID[`${tempData.bridgerDirection}16blocks`]);
-  util.giveItems(player, data.getInvData(game));
-};
-
-export const defineBridger = function (pl: mc.Player) {
-  bridger.player = pl;
-};
-
-////////
 export const bridgerFormHandler = async function (player: mc.Player) {
   const { selection: bridgerSelection } = await form.bridgerForm(player);
 
-  // bridgerForm: general
+  // general
   if (bridgerSelection === 10) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
 
@@ -331,7 +321,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     if (islandSelection === 21) handleHeightChange(player, false);
   }
 
-  // bridgerForm: block
+  // block
   if (bridgerSelection === 12) {
     const { selection: blockSelection } = await form.bridgerBlockForm(player);
     const blockObj = data.formBlocks[blockSelection - 9];
@@ -341,7 +331,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     util.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
-  // bridgerForm: reset pb
+  // reset pb
   if (bridgerSelection === 14) {
     const { selection: confirmSelection } = await confirmationForm(player);
     if (confirmSelection !== 15) return;
@@ -350,7 +340,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     updateFloatingText();
   }
 
-  // bridgerForm: quit bridger
+  // quit bridger
   if (bridgerSelection === 16) {
     DynamicProperty.postData();
     resetMap(false);
@@ -365,33 +355,24 @@ export const placingBlockEvt = function (block: mc.Block) {
   bridger.storedLocations.push(block.location);
 };
 
-export const pressurePlatePushEvt = function () {
-  if (bridger.plateDisabled) return;
+export const pressurePlatePushEvt = function (player: mc.Player) {
+  if (bridger.isPlateDisabled) return;
+  bridger.isPlateDisabled = true;
 
-  // stop the timer, disable plate, and start auto-req
-  if (bridger.timer) {
-    mc.system.clearRun(bridger.timer);
-    bridger.timer = null;
-  }
-  bridger.plateDisabled = true;
+  stopTimer();
 
-  bridger.player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(bridger.ticks)}§r`);
+  player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(bridger.ticks)}§r`);
 
-  // checking whether personal best
-  if (
-    DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB) === -1 ||
-    bridger.ticks < DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB)
-  ) {
-    // new personal best
-    showMessage(true, DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB));
+  if (isPB()) {
     DynamicProperty.setDynamicBridgerData(DynamicPropertyID.PB, bridger.ticks);
-    bridger.player.playSound("random.levelup");
-    bridger.player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
+    showMessage(true, DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB));
+    player.playSound("random.levelup");
+    player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
   } else showMessage(false);
 
   setAverageTime(bridger.ticks);
 
-  mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", bridger.player.location);
+  mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", player.location);
   bridger.autoReq = mc.system.runTimeout(enablePlate, 80);
 
   DynamicProperty.addDynamicBridgerData(DynamicPropertyID.Attempts);
@@ -399,20 +380,7 @@ export const pressurePlatePushEvt = function () {
 };
 
 export const listener = function () {
-  if (bridger.player.location.y <= 95) {
-    if (bridger.plateDisabled) enablePlate(true);
-    else {
-      if (bridger.timer) {
-        mc.system.clearRun(bridger.timer);
-        bridger.timer = null; // disabling temp
-      }
-      DynamicProperty.addDynamicBridgerData(DynamicPropertyID.Attempts);
-      resetMap();
-      util.giveItems(bridger.player, data.getInvData(tempData.gameID));
-    }
-  }
-
-  bridger.player.onScreenDisplay.setActionBar(
+  tempData.player.onScreenDisplay.setActionBar(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
       DynamicProperty.getDynamicBridgerData(DynamicPropertyID.PB) === -1
         ? "--.--"
@@ -421,14 +389,24 @@ export const listener = function () {
       bridger.blocks
     }\n§7-------------------§r\n §8§oVersion ${VERSION} | ${util.today}`
   );
+
+  if (!(tempData.player.location.y <= 95)) return;
+  if (bridger.isPlateDisabled) enablePlate(true);
+  else {
+    stopTimer();
+    resetMap();
+    util.giveItems(tempData.player, data.getInvData(tempData.gameID));
+    DynamicProperty.addDynamicBridgerData(DynamicPropertyID.Attempts);
+  }
 };
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-  player.sendMessage("chat detected");
+  player.sendMessage("player defined");
   //////////////////////////////////////////////////
   // make sure to go back to lobby before reloading
   // debug from here
+  tempData.player = player;
 });
