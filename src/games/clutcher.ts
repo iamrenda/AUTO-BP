@@ -2,7 +2,7 @@ import * as mc from "@minecraft/server";
 import * as form from "../forms/clutcher";
 import * as exp from "../utilities/utilities";
 import * as data from "../utilities/staticData";
-import tempData from "../utilities/tempData";
+import ts from "../utilities/tempStorage";
 
 type Clutcher = {
   isListening: boolean;
@@ -51,7 +51,7 @@ const teleportToCounterClockwise = function (player: mc.Player) {
  */
 const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
   const clutchForm = form.clutchSettingsForm();
-  tempData.clutch.map((power, index) => {
+  ts.getData("clutchHits").map((power, index) => {
     clutchForm.button(
       index + 9,
       `Hit #${index + 1}: ${data.clutchStrength[power].name}`,
@@ -63,9 +63,9 @@ const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
   });
   const { selection, canceled } = await clutchForm.show(player);
   const clutchSelection = selection - 9;
-  const prevStrength = tempData.clutch[clutchSelection];
+  const prevStrength = ts.getData("clutchHits")[clutchSelection];
 
-  tempData.clutch[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
+  ts.getData("clutchHits")[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
   if (canceled) return exp.confirmMessage(player, "§aThe clutcher settings is now saved!", "random.orb");
   await updateKnockBackForm(player, numHit);
@@ -100,7 +100,7 @@ const restartClutch = function (player: mc.Player) {
   resetClutcher();
 
   teleportToCounterClockwise(player);
-  exp.giveItems(player, data.getInvData("clutcher"));
+  exp.giveItems("clutcher");
 };
 
 /**
@@ -125,11 +125,11 @@ const startClutch = function (player: mc.Player) {
   clutcher.sec = 3;
 
   const { x: viewX, z: viewZ } = player.getViewDirection();
-  const powerSetting: number[] = tempData.clutch;
+  const powerSetting: number[] = ts.getData("clutchHits");
 
   applyKnockback(player, { viewX, viewZ }, powerSetting[clutcher.hitIndex]);
   clutcher.hitTimer = mc.system.runInterval(() => {
-    if (clutcher.hitIndex === tempData.clutch.length) return mc.system.clearRun(clutcher.hitTimer);
+    if (clutcher.hitIndex === ts.getData("clutchHits").length) return mc.system.clearRun(clutcher.hitTimer);
     applyKnockback(player, { viewX, viewZ }, powerSetting[clutcher.hitIndex]);
   }, 10);
 };
@@ -158,7 +158,7 @@ const readyForClutch = function (player: mc.Player) {
 ///////////////////////////////////////////////////////////////////
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
-  if (player.isSneaking && tempData.clutchShiftStart) return readyForClutch(player);
+  if (player.isSneaking && ts.getData("clutchShiftStart")) return readyForClutch(player);
 
   const { selection } = await form.clutcherForm(player);
 
@@ -170,7 +170,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
     const { selection: clutchNum } = await form.clutchNumForm(player);
     const numHit = clutchNum - 8;
 
-    tempData.clutch = new Array(numHit).fill(1);
+    ts.setData("clutchHits", new Array(numHit).fill(1));
     updateKnockBackForm(player, numHit);
   }
 
@@ -179,10 +179,10 @@ export const clutcherFormHandler = async function (player: mc.Player) {
     const { selection: generalSelection } = await form.clutchGeneralForm(player);
 
     if (generalSelection === 10) {
-      tempData.clutchShiftStart = !tempData.clutchShiftStart;
+      ts.setData("clutchShiftStart", !ts.getData("clutchShiftStart"));
       exp.confirmMessage(
         player,
-        `§a"Shift + Right Click" to start is now §6${tempData.clutchShiftStart ? "Enabled" : "Disabled"}§a!`,
+        `§a"Shift + Right Click" to start is now §6${ts.getData("clutchShiftStart") ? "Enabled" : "Disabled"}§a!`,
         "random.orb"
       );
     }
@@ -216,13 +216,17 @@ export const placingBlockEvt = function ({ location }) {
 };
 
 export const listener = async function () {
-  if (tempData.player.location.y <= 88) restartClutch(tempData.player);
+  if (ts.getData("player").location.y <= 88) restartClutch(ts.getData("player"));
 };
 
 export const slowListener = function () {
   clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
-  tempData.player.onScreenDisplay.setActionBar(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcher.distance} blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${tempData.clutch.length}\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${exp.today}`
+  ts.getData("player").onScreenDisplay.setActionBar(
+    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${
+      clutcher.distance
+    } blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${
+      ts.getData("clutchHits").length
+    }\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${exp.today}`
   );
 };
 

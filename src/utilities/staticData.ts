@@ -2,7 +2,7 @@ import MinecraftID from "../models/minecraftID";
 import TeleportationLocation from "../models/TeleportationLocation";
 import ItemInfo from "../models/ItemInfo";
 import GameID from "../models/GameID";
-import tempData from "./tempData";
+import ts from "./tempStorage";
 
 ////////////////////
 // INTERFACE
@@ -33,13 +33,13 @@ const getInvData = function (game: GameID): ItemInfo[] {
     ];
   if (game === "straightBridger" || game === "inclinedBridger")
     return [
-      { item: tempData.blockBridger, quantity: 64 },
-      { item: tempData.blockBridger, quantity: 64 },
+      { item: ts.getData("blockBridger"), quantity: 64 },
+      { item: ts.getData("blockBridger"), quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
   if (game === "clutcher")
     return [
-      { item: tempData.blockClutcher, quantity: 64 },
+      { item: ts.getData("clutcherBlock"), quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
   if (game === "wallRun")

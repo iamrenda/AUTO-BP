@@ -1,15 +1,17 @@
 import { ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
-import tempData from "./tempData";
-import ItemInfo from "../models/ItemInfo";
-import TeleportationLocation from "../models/TeleportationLocation";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { getInvData, locationData, VERSION } from "./staticData";
+import TeleportationLocation from "../models/TeleportationLocation";
+import GameID from "../models/GameID";
+import ts from "./tempStorage";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  */
-const giveItems = function (player: Player, itemArr: ItemInfo[]): void {
+const giveItems = function (gameid: GameID): void {
+  const player = ts.getData("player");
   const container = player.getComponent("inventory").container;
+  const itemArr = getInvData(gameid);
 
   container.clearAll();
 
@@ -42,7 +44,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
 ).slice(-2)}`;
 
 const setBridgerMode = function (game: BridgerTicksID): void {
-  tempData.bridgerMode = game;
+  ts.setData("bridgerMode", game);
 };
 
 /**
@@ -74,10 +76,10 @@ const lobbyScoreboardDisplay = function (player: Player): void {
  * back to lobby
  */
 const backToLobbyKit = function (player: Player) {
-  tempData.gameID = "lobby";
+  ts.setData("gameID", "lobby");
   lobbyScoreboardDisplay(player);
   confirmMessage(player, "§7Teleporting back to lobby...");
-  giveItems(player, getInvData("lobby"));
+  giveItems("lobby");
   teleportation(player, <TeleportationLocation>locationData.lobby);
 };
 

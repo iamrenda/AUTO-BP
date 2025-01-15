@@ -1,7 +1,7 @@
 import { Player } from "@minecraft/server";
 import { ActionFormData, ActionFormResponse } from "@minecraft/server-ui";
-import ChestFormData from "../formExtensions/forms";
 import { VERSION } from "../utilities/staticData";
+import ChestFormData from "../formExtensions/forms";
 
 const lobbyForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("9").title("Lobby Selector").pattern(["_a_b_c_s_"], {

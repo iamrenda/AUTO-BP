@@ -1,7 +1,7 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
-import tempData from "../utilities/tempData";
+import ts from "../utilities/tempStorage";
 
 const clutcherForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Clutcher Selector").pattern(["_________", "_r_s_b_q_", "_________"], {
@@ -44,8 +44,8 @@ const clutchGeneralForm = async function (player: Player): Promise<ActionFormRes
     .pattern(["_________", "_s_______", "_________"], {
       s: {
         itemName: '§6"Shift + Right Click" to start',
-        itemDesc: ["", tempData.clutchShiftStart ? "§aEnabled" : "§cDisabled"],
-        texture: tempData.clutchShiftStart ? "minecraft:redstone_torch" : "minecraft:unlit_redstone_torch",
+        itemDesc: ["", ts.getData("clutchShiftStart") ? "§aEnabled" : "§cDisabled"],
+        texture: ts.getData("clutchShiftStart") ? "minecraft:redstone_torch" : "minecraft:unlit_redstone_torch",
         stackAmount: 1,
         enchanted: false,
       },

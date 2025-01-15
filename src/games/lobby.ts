@@ -3,9 +3,9 @@ import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
-import tempData from "../utilities/tempData";
+import td from "../utilities/tempStorage";
+import dp from "../utilities/dynamicProperty";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import DynamicProperty from "../utilities/dynamicProperty";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);
@@ -15,31 +15,31 @@ export const nagivatorFormHandler = async function (player: Player) {
     const { selection: bridgerDirSelection } = await form.formBridgerDirForm(player);
 
     if (bridgerDirSelection === 2) {
-      tempData.gameID = "straightBridger";
-      tempData.bridgerDirection = "straight";
+      td.setData("gameID", "straightBridger");
+      td.setData("bridgerDirection", "straight");
     } else if (bridgerDirSelection === 6) {
-      tempData.gameID = "inclinedBridger";
-      tempData.bridgerDirection = "inclined";
+      td.setData("gameID", "inclinedBridger");
+      td.setData("bridgerDirection", "inclined");
     }
-    DynamicProperty.fetchData();
+    dp.fetchData();
     util.confirmMessage(player, "§7Teleporting to bridger...");
-    util.giveItems(player, data.getInvData(tempData.gameID));
-    util.setBridgerMode(BridgerTicksID[`${tempData.bridgerDirection}16blocks`]);
-    util.teleportation(player, <TeleportationLocation>data.locationData[tempData.gameID]);
+    util.giveItems("straightBridger");
+    util.setBridgerMode(BridgerTicksID[`${td.getData("bridgerDirection")}16blocks`]);
+    util.teleportation(player, <TeleportationLocation>data.locationData[td.getData("gameID")]);
   }
 
   // clutcher
   if (selection === 3) {
-    tempData.gameID = "clutcher";
-    util.giveItems(player, data.getInvData("clutcher"));
+    td.setData("gameID", "clutcher");
+    util.giveItems("clutcher");
     util.confirmMessage(player, "§7Teleporting to bridger...");
     util.teleportation(player, data.locationData.clutcher[0]);
   }
 
   // wall run
   if (selection === 5) {
-    tempData.gameID = "wallRun";
-    util.giveItems(player, data.getInvData("wallRun"));
+    td.setData("gameID", "wallRun");
+    util.giveItems("wallRun");
     util.confirmMessage(player, "§7Teleporting to bridger...");
     util.teleportation(player, <TeleportationLocation>data.locationData.wallRun);
   }

@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
-import tempData from "./tempData";
+import ts from "./tempStorage";
 
 type IslandDistance = 16 | 21 | 50;
 
@@ -12,8 +12,16 @@ type DynamicBridgerDataType = {
   [DynamicPropertyID.AverageTime]: number;
 };
 
-class DynamicProperty {
-  private static dynamicData = {
+class dynamicProperty {
+  private static instance: dynamicProperty;
+  private constructor() {}
+
+  public static getInstance(): dynamicProperty {
+    if (!dynamicProperty.instance) dynamicProperty.instance = new dynamicProperty();
+    return dynamicProperty.instance;
+  }
+
+  private dynamicData = {
     [DynamicPropertyID.GameDatas]: {
       [GameDataID.straightIsStairCased]: undefined,
       [GameDataID.straightDistance]: undefined,
@@ -54,43 +62,46 @@ class DynamicProperty {
     },
   };
 
-  static postData() {
+  public postData() {
     const json = JSON.stringify(this.dynamicData);
     world.setDynamicProperty("auto:dynamicData", json);
   }
 
-  static fetchData() {
+  public fetchData() {
     const json = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
     this.dynamicData = json;
   }
 
-  static getDynamicBridgerData<T extends DynamicPropertyID>(
+  public getDynamicBridgerData<T extends DynamicPropertyID>(
     id: T,
     gameDataType?: "Distance" | "IsStairCased"
   ): DynamicBridgerDataType[T] {
     return id === DynamicPropertyID.GameDatas
-      ? this.dynamicData[id][`${tempData.bridgerDirection}${gameDataType}`]
-      : +this.dynamicData[id][tempData.bridgerMode];
+      ? this.dynamicData[id][`${ts.getData("bridgerDirection")}${gameDataType}`]
+      : +this.dynamicData[id][ts.getData("bridgerMode")];
   }
 
-  static addDynamicBridgerData(id: DynamicPropertyID) {
-    this.dynamicData[id][tempData.bridgerMode]++;
+  public addDynamicBridgerData(id: DynamicPropertyID) {
+    this.dynamicData[id][ts.getData("bridgerMode")]++;
   }
 
-  static setDynamicBridgerData<T extends DynamicPropertyID>(
+  public setDynamicBridgerData<T extends DynamicPropertyID>(
     id: T,
     data: DynamicBridgerDataType[T],
     gameDataType?: "Distance" | "IsStairCased"
   ) {
-    if (id === DynamicPropertyID.GameDatas) this.dynamicData[id][`${tempData.bridgerDirection}${gameDataType}`] = data;
-    else this.dynamicData[id][tempData.bridgerMode] = data;
+    if (id === DynamicPropertyID.GameDatas) {
+      this.dynamicData[id][`${ts.getData("bridgerDirection")}${gameDataType}`] = data;
+    } else {
+      this.dynamicData[id][ts.getData("bridgerMode")] = data;
+    }
   }
 
-  static resetDynamicBridgerData(id: DynamicPropertyID) {
-    this.dynamicData[id][tempData.bridgerMode] = -1;
+  public resetDynamicBridgerData(id: DynamicPropertyID) {
+    this.dynamicData[id][ts.getData("bridgerMode")] = -1;
   }
 
-  static resetDynamicData(): void {
+  public resetDynamicData(): void {
     const defaultData = {
       [DynamicPropertyID.GameDatas]: {
         [GameDataID.straightIsStairCased]: false,
@@ -131,8 +142,10 @@ class DynamicProperty {
         [BridgerTicksID.inclined50blocks]: -1,
       },
     };
+    this.dynamicData = defaultData;
     world.setDynamicProperty("auto:dynamicData", JSON.stringify(defaultData));
   }
 }
 
+const DynamicProperty = dynamicProperty.getInstance();
 export default DynamicProperty;

@@ -1,10 +1,10 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
-import ChestFormData from "../formExtensions/forms";
 import { formBlocks } from "../utilities/staticData";
-import tempData from "../utilities/tempData";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import DynamicProperty from "../utilities/dynamicProperty";
+import ChestFormData from "../formExtensions/forms";
+import ts from "../utilities/tempStorage";
+import dp from "../utilities/dynamicProperty";
 
 const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
@@ -18,7 +18,7 @@ const bridgerForm = async function (player: Player): Promise<ActionFormResponse>
     b: {
       itemName: "§2Blocks",
       itemDesc: [],
-      texture: tempData.blockBridger,
+      texture: ts.getData("blockBridger"),
       stackAmount: 1,
       enchanted: false,
     },
@@ -44,7 +44,7 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
   const form = new ChestFormData("27").title("Block Selection");
 
   formBlocks.map(({ blockName, texture }, index) =>
-    texture === tempData.blockBridger
+    texture === ts.getData("blockBridger")
       ? form.button(index + 9, blockName, ["", "§eSelected"], texture, 1, true)
       : form.button(index + 9, blockName, [], texture, 1, false)
   );
@@ -52,8 +52,8 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
 };
 
 const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
-  const distance = DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
-  const isStairCased = <boolean>DynamicProperty.getDynamicBridgerData(DynamicPropertyID.GameDatas, "IsStairCased");
+  const distance = dp.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
+  const isStairCased = <boolean>dp.getDynamicBridgerData(DynamicPropertyID.GameDatas, "IsStairCased");
 
   const form = new ChestFormData("45")
     .title("Island Customization")
