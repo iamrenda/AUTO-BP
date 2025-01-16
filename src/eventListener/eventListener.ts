@@ -6,8 +6,8 @@ import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
 import ts from "../utilities/tempStorage";
-import dp from "../utilities/dynamicProperty";
 import TeleportationLocation from "../models/TeleportationLocation";
+import { DynamicProperty } from "../utilities/dynamicProperty";
 
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
@@ -44,6 +44,10 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
     case "clutcher":
       if (item.typeId === "minecraft:book") clutcher.clutcherFormHandler(player);
       break;
+
+    case "wallRun":
+      if (item.typeId === "minecraft:book") wallRun.wallRunFormHandler(player);
+      break;
   }
 });
 
@@ -61,14 +65,14 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
 });
 
 // pushed a pressureplate
-mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player }): void => {
+mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
   switch (ts.getData("gameID")) {
     case "straightBridger":
     case "inclinedBridger":
       bridger.pressurePlatePushEvt(<mc.Player>player);
       break;
     case "wallRun":
-      wallRun.pressurePlatePushEvt();
+      wallRun.pressurePlatePushEvt(block);
       break;
   }
 });
@@ -85,10 +89,10 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
 
 // joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
-  exp.teleportation(player, <TeleportationLocation>data.locationData.lobby);
+  ts.setData("player", player);
+  exp.teleportation(<TeleportationLocation>data.locationData.lobby);
   exp.giveItems("lobby");
   exp.lobbyScoreboardDisplay(player);
-  ts.setData("player", player);
 });
 
 // leaving the world
@@ -96,10 +100,14 @@ mc.world.beforeEvents.playerLeave.subscribe(() => {
   switch (ts.getData("gameID")) {
     case "straightBridger":
     case "inclinedBridger":
-      dp.postData();
+      DynamicProperty.postData();
       break;
     case "clutcher":
       clutcher.leaveWorldEnt();
+      break;
+
+    case "wallRun":
+      DynamicProperty.postData();
       break;
   }
 });
@@ -125,7 +133,7 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
 // breaking a block
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
@@ -137,6 +145,9 @@ mc.system.runInterval((): void => {
       break;
     case "clutcher":
       clutcher.listener();
+      break;
+    case "wallRun":
+      wallRun.listener();
       break;
   }
 });

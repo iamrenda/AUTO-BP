@@ -2,33 +2,25 @@ import { world } from "@minecraft/server";
 import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
 import ts from "./tempStorage";
 
-type IslandDistance = 16 | 21 | 50;
+/////////////////////////////////////////////////////////////////
+class DynamicPropertyClass {
+  private static instance: DynamicPropertyClass;
 
-type DynamicBridgerDataType = {
-  [DynamicPropertyID.GameDatas]: boolean | IslandDistance;
-  [DynamicPropertyID.PB]: number;
-  [DynamicPropertyID.Attempts]: number;
-  [DynamicPropertyID.SuccessAttempts]: number;
-  [DynamicPropertyID.AverageTime]: number;
-};
+  protected constructor() {}
 
-class dynamicProperty {
-  private static instance: dynamicProperty;
-  private constructor() {}
-
-  public static getInstance(): dynamicProperty {
-    if (!dynamicProperty.instance) dynamicProperty.instance = new dynamicProperty();
-    return dynamicProperty.instance;
+  public static getInstance(): DynamicPropertyClass {
+    if (!DynamicPropertyClass.instance) DynamicPropertyClass.instance = new DynamicPropertyClass();
+    return DynamicPropertyClass.instance;
   }
 
-  private dynamicData = {
+  protected dynamicData = {
     [DynamicPropertyID.GameDatas]: {
       [GameDataID.straightIsStairCased]: undefined,
       [GameDataID.straightDistance]: undefined,
       [GameDataID.inclinedIsStairCased]: undefined,
       [GameDataID.inclinedDistance]: undefined,
     },
-    [DynamicPropertyID.PB]: {
+    [DynamicPropertyID.Bridger_PB]: {
       [BridgerTicksID.straight16blocks]: undefined,
       [BridgerTicksID.straight21blocks]: undefined,
       [BridgerTicksID.straight50blocks]: undefined,
@@ -36,7 +28,7 @@ class dynamicProperty {
       [BridgerTicksID.inclined21blocks]: undefined,
       [BridgerTicksID.inclined50blocks]: undefined,
     },
-    [DynamicPropertyID.Attempts]: {
+    [DynamicPropertyID.Bridger_Attempts]: {
       [BridgerTicksID.straight16blocks]: undefined,
       [BridgerTicksID.straight21blocks]: undefined,
       [BridgerTicksID.straight50blocks]: undefined,
@@ -44,7 +36,7 @@ class dynamicProperty {
       [BridgerTicksID.inclined21blocks]: undefined,
       [BridgerTicksID.inclined50blocks]: undefined,
     },
-    [DynamicPropertyID.SuccessAttempts]: {
+    [DynamicPropertyID.Bridger_SuccessAttempts]: {
       [BridgerTicksID.straight16blocks]: undefined,
       [BridgerTicksID.straight21blocks]: undefined,
       [BridgerTicksID.straight50blocks]: undefined,
@@ -52,7 +44,7 @@ class dynamicProperty {
       [BridgerTicksID.inclined21blocks]: undefined,
       [BridgerTicksID.inclined50blocks]: undefined,
     },
-    [DynamicPropertyID.AverageTime]: {
+    [DynamicPropertyID.Bridger_AverageTime]: {
       [BridgerTicksID.straight16blocks]: undefined,
       [BridgerTicksID.straight21blocks]: undefined,
       [BridgerTicksID.straight50blocks]: undefined,
@@ -60,45 +52,20 @@ class dynamicProperty {
       [BridgerTicksID.inclined21blocks]: undefined,
       [BridgerTicksID.inclined50blocks]: undefined,
     },
+    [DynamicPropertyID.WallRunner_PB]: undefined,
+    [DynamicPropertyID.WallRunner_Attempts]: undefined,
+    [DynamicPropertyID.WallRunner_SuccessAttempts]: undefined,
+    [DynamicPropertyID.WallRunner_AverageTime]: undefined,
   };
 
-  public postData() {
+  public postData(): void {
     const json = JSON.stringify(this.dynamicData);
     world.setDynamicProperty("auto:dynamicData", json);
   }
 
-  public fetchData() {
+  public fetchData(): void {
     const json = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
     this.dynamicData = json;
-  }
-
-  public getDynamicBridgerData<T extends DynamicPropertyID>(
-    id: T,
-    gameDataType?: "Distance" | "IsStairCased"
-  ): DynamicBridgerDataType[T] {
-    return id === DynamicPropertyID.GameDatas
-      ? this.dynamicData[id][`${ts.getData("bridgerDirection")}${gameDataType}`]
-      : +this.dynamicData[id][ts.getData("bridgerMode")];
-  }
-
-  public addDynamicBridgerData(id: DynamicPropertyID) {
-    this.dynamicData[id][ts.getData("bridgerMode")]++;
-  }
-
-  public setDynamicBridgerData<T extends DynamicPropertyID>(
-    id: T,
-    data: DynamicBridgerDataType[T],
-    gameDataType?: "Distance" | "IsStairCased"
-  ) {
-    if (id === DynamicPropertyID.GameDatas) {
-      this.dynamicData[id][`${ts.getData("bridgerDirection")}${gameDataType}`] = data;
-    } else {
-      this.dynamicData[id][ts.getData("bridgerMode")] = data;
-    }
-  }
-
-  public resetDynamicBridgerData(id: DynamicPropertyID) {
-    this.dynamicData[id][ts.getData("bridgerMode")] = -1;
   }
 
   public resetDynamicData(): void {
@@ -109,7 +76,8 @@ class dynamicProperty {
         [GameDataID.inclinedIsStairCased]: false,
         [GameDataID.inclinedDistance]: 16,
       },
-      [DynamicPropertyID.PB]: {
+
+      [DynamicPropertyID.Bridger_PB]: {
         [BridgerTicksID.straight16blocks]: -1,
         [BridgerTicksID.straight21blocks]: -1,
         [BridgerTicksID.straight50blocks]: -1,
@@ -117,7 +85,7 @@ class dynamicProperty {
         [BridgerTicksID.inclined21blocks]: -1,
         [BridgerTicksID.inclined50blocks]: -1,
       },
-      [DynamicPropertyID.Attempts]: {
+      [DynamicPropertyID.Bridger_Attempts]: {
         [BridgerTicksID.straight16blocks]: 0,
         [BridgerTicksID.straight21blocks]: 0,
         [BridgerTicksID.straight50blocks]: 0,
@@ -125,7 +93,7 @@ class dynamicProperty {
         [BridgerTicksID.inclined21blocks]: 0,
         [BridgerTicksID.inclined50blocks]: 0,
       },
-      [DynamicPropertyID.SuccessAttempts]: {
+      [DynamicPropertyID.Bridger_SuccessAttempts]: {
         [BridgerTicksID.straight16blocks]: 0,
         [BridgerTicksID.straight21blocks]: 0,
         [BridgerTicksID.straight50blocks]: 0,
@@ -133,7 +101,7 @@ class dynamicProperty {
         [BridgerTicksID.inclined21blocks]: 0,
         [BridgerTicksID.inclined50blocks]: 0,
       },
-      [DynamicPropertyID.AverageTime]: {
+      [DynamicPropertyID.Bridger_AverageTime]: {
         [BridgerTicksID.straight16blocks]: -1,
         [BridgerTicksID.straight21blocks]: -1,
         [BridgerTicksID.straight50blocks]: -1,
@@ -141,11 +109,80 @@ class dynamicProperty {
         [BridgerTicksID.inclined21blocks]: -1,
         [BridgerTicksID.inclined50blocks]: -1,
       },
+
+      [DynamicPropertyID.WallRunner_PB]: -1,
+      [DynamicPropertyID.WallRunner_Attempts]: 0,
+      [DynamicPropertyID.WallRunner_SuccessAttempts]: 0,
+      [DynamicPropertyID.WallRunner_AverageTime]: -1,
     };
     this.dynamicData = defaultData;
     world.setDynamicProperty("auto:dynamicData", JSON.stringify(defaultData));
   }
 }
 
-const DynamicProperty = dynamicProperty.getInstance();
-export default DynamicProperty;
+class GameDataClass extends DynamicPropertyClass {
+  private constructor() {
+    super();
+  }
+
+  public static getInstance() {
+    return DynamicPropertyClass.getInstance() as GameDataClass;
+  }
+
+  public getData(gameDataType: "IsStairCased" | "Distance") {
+    const direction = ts.getData("bridgerDirection");
+    return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
+  }
+
+  public setData(gameDataType: "IsStairCased" | "Distance", data: boolean | number): void {
+    const direction = ts.getData("bridgerDirection");
+    this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`] = data;
+  }
+}
+
+class BridgerDataClass extends DynamicPropertyClass {
+  private constructor() {
+    super();
+  }
+
+  public static getInstance() {
+    return DynamicPropertyClass.getInstance() as BridgerDataClass;
+  }
+
+  public getData(id: DynamicPropertyID): number {
+    return this.dynamicData[id][ts.getData("bridgerMode")];
+  }
+
+  public setData(id: DynamicPropertyID, data: number): void {
+    this.dynamicData[id][ts.getData("bridgerMode")] = data;
+  }
+
+  public addData(id: DynamicPropertyID): void {
+    this.dynamicData[id][ts.getData("bridgerMode")]++;
+  }
+}
+
+class WallRunDataClass extends DynamicPropertyClass {
+  private constructor() {
+    super();
+  }
+
+  public static getInstance() {
+    return DynamicPropertyClass.getInstance() as WallRunDataClass;
+  }
+
+  public getData(id: DynamicPropertyID): number {
+    return this.dynamicData[id];
+  }
+
+  public setData(id: DynamicPropertyID, data: number): void {
+    this.dynamicData[id] = data;
+  }
+}
+
+const DynamicProperty = DynamicPropertyClass.getInstance();
+const GameData = GameDataClass.getInstance();
+const BridgerData = BridgerDataClass.getInstance();
+const WallRunData = WallRunDataClass.getInstance();
+
+export { DynamicProperty, GameData, BridgerData, WallRunData };

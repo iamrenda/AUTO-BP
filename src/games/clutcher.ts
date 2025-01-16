@@ -40,9 +40,9 @@ const clutcher: Clutcher = {
 /**
  * teleport player to counter clockwise location
  */
-const teleportToCounterClockwise = function (player: mc.Player) {
+const teleportToCounterClockwise = function () {
   const location = data.locationData.clutcher[clutcher.teleportationIndex];
-  exp.teleportation(player, location);
+  exp.teleportation(location);
   clutcher.teleportationIndex = clutcher.teleportationIndex === 3 ? 0 : clutcher.teleportationIndex + 1;
 };
 
@@ -99,7 +99,7 @@ const restartClutch = function (player: mc.Player) {
 
   resetClutcher();
 
-  teleportToCounterClockwise(player);
+  teleportToCounterClockwise();
   exp.giveItems("clutcher");
 };
 

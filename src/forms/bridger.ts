@@ -1,10 +1,9 @@
+import ChestFormData from "../formExtensions/forms";
+import ts from "../utilities/tempStorage";
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import { formBlocks } from "../utilities/staticData";
-import { DynamicPropertyID } from "../models/DynamicProperty";
-import ChestFormData from "../formExtensions/forms";
-import ts from "../utilities/tempStorage";
-import dp from "../utilities/dynamicProperty";
+import { GameData } from "../utilities/dynamicProperty";
 
 const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
@@ -52,8 +51,8 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
 };
 
 const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
-  const distance = dp.getDynamicBridgerData(DynamicPropertyID.GameDatas, "Distance");
-  const isStairCased = <boolean>dp.getDynamicBridgerData(DynamicPropertyID.GameDatas, "IsStairCased");
+  const distance = GameData.getData("Distance");
+  const isStairCased = GameData.getData("IsStairCased");
 
   const form = new ChestFormData("45")
     .title("Island Customization")

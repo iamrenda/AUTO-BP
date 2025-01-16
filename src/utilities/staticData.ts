@@ -44,7 +44,7 @@ const getInvData = function (game: GameID): ItemInfo[] {
     ];
   if (game === "wallRun")
     return [
-      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:white_wool", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
 };
@@ -84,8 +84,8 @@ const locationData: LocationDataIF = {
     },
   ],
   wallRun: {
-    position: { x: 30000.5, y: 105, z: 30013.5 },
-    facing: { x: 30000.5, y: 105, z: 30014 },
+    position: { x: 30009.5, y: 105, z: 30013.5 },
+    facing: { x: 30009.5, y: 105, z: 30014 },
   },
 };
 

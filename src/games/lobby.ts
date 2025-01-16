@@ -1,11 +1,11 @@
-import { Player } from "@minecraft/server";
 import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import td from "../utilities/tempStorage";
-import dp from "../utilities/dynamicProperty";
+import { Player } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
+import { DynamicProperty } from "../utilities/dynamicProperty";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);
@@ -21,11 +21,11 @@ export const nagivatorFormHandler = async function (player: Player) {
       td.setData("gameID", "inclinedBridger");
       td.setData("bridgerDirection", "inclined");
     }
-    dp.fetchData();
+    DynamicProperty.postData();
     util.confirmMessage(player, "§7Teleporting to bridger...");
     util.giveItems("straightBridger");
     util.setBridgerMode(BridgerTicksID[`${td.getData("bridgerDirection")}16blocks`]);
-    util.teleportation(player, <TeleportationLocation>data.locationData[td.getData("gameID")]);
+    util.teleportation(<TeleportationLocation>data.locationData[td.getData("gameID")]);
   }
 
   // clutcher
@@ -33,7 +33,7 @@ export const nagivatorFormHandler = async function (player: Player) {
     td.setData("gameID", "clutcher");
     util.giveItems("clutcher");
     util.confirmMessage(player, "§7Teleporting to bridger...");
-    util.teleportation(player, data.locationData.clutcher[0]);
+    util.teleportation(data.locationData.clutcher[0]);
   }
 
   // wall run
@@ -41,11 +41,11 @@ export const nagivatorFormHandler = async function (player: Player) {
     td.setData("gameID", "wallRun");
     util.giveItems("wallRun");
     util.confirmMessage(player, "§7Teleporting to bridger...");
-    util.teleportation(player, <TeleportationLocation>data.locationData.wallRun);
+    util.teleportation(<TeleportationLocation>data.locationData.wallRun);
   }
 
   // back to lobby
-  if (selection === 7) util.teleportation(player, <TeleportationLocation>data.locationData.lobby);
+  if (selection === 7) util.teleportation(<TeleportationLocation>data.locationData.lobby);
 };
 
 export const launchingHandler = function (player: Player) {

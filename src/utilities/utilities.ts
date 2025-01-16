@@ -26,8 +26,8 @@ const giveItems = function (gameid: GameID): void {
 /**
  * teleportation: teleport player
  */
-const teleportation = function (player: Player, loc: TeleportationLocation): void {
-  player.teleport(loc.position, { facingLocation: loc.facing });
+const teleportation = function (loc: TeleportationLocation): void {
+  ts.getData("player").teleport(loc.position, { facingLocation: loc.facing });
 };
 
 /**
@@ -80,7 +80,7 @@ const backToLobbyKit = function (player: Player) {
   lobbyScoreboardDisplay(player);
   confirmMessage(player, "§7Teleporting back to lobby...");
   giveItems("lobby");
-  teleportation(player, <TeleportationLocation>locationData.lobby);
+  teleportation(<TeleportationLocation>locationData.lobby);
 };
 
 export {

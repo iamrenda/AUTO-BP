@@ -14,8 +14,8 @@ type TempDataIF = {
   clutchShiftStart: boolean;
 };
 
-class tempData {
-  private static instance: tempData;
+class tempStorage {
+  private static instance: tempStorage;
   private constructor() {}
   private data: TempDataIF = {
     player: undefined,
@@ -30,9 +30,9 @@ class tempData {
     clutchShiftStart: true,
   };
 
-  public static getInstance(): tempData {
-    if (!tempData.instance) tempData.instance = new tempData();
-    return tempData.instance;
+  public static getInstance(): tempStorage {
+    if (!tempStorage.instance) tempStorage.instance = new tempStorage();
+    return tempStorage.instance;
   }
 
   public getData<T extends keyof TempDataIF>(dataType: T): TempDataIF[T] {
@@ -44,5 +44,5 @@ class tempData {
   }
 }
 
-const TempData = tempData.getInstance();
-export default TempData;
+const TempStorage = tempStorage.getInstance();
+export default TempStorage;

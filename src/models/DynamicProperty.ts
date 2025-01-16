@@ -1,9 +1,15 @@
 export enum DynamicPropertyID {
   GameDatas = "gameDatas",
-  PB = "pb",
-  Attempts = "atmps",
-  SuccessAttempts = "successAtmps",
-  AverageTime = "avg",
+
+  Bridger_PB = "Bridger_PB",
+  Bridger_Attempts = "Bridger_Attempts",
+  Bridger_SuccessAttempts = "Bridger_SuccessAttempts",
+  Bridger_AverageTime = "Bridger_AverageTime",
+
+  WallRunner_PB = "WallRunner_PB",
+  WallRunner_Attempts = "WallRunner_Attempts",
+  WallRunner_SuccessAttempts = "WallRunner_SuccessAttempts",
+  WallRunner_AverageTime = "WallRunner_AverageTime",
 }
 
 export enum BridgerTicksID {
