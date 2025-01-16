@@ -97,17 +97,10 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
 
 // leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
+  DynamicProperty.postData();
   switch (ts.getData("gameID")) {
-    case "straightBridger":
-    case "inclinedBridger":
-      DynamicProperty.postData();
-      break;
     case "clutcher":
       clutcher.leaveWorldEnt();
-      break;
-
-    case "wallRun":
-      DynamicProperty.postData();
       break;
   }
 });

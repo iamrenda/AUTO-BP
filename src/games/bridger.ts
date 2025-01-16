@@ -102,7 +102,7 @@ const getFloatingEntity = function (): mc.Entity {
 };
 
 /**
- * sets a new average time
+ * sets a new average time for dynamic property
  */
 const setAverageTime = function (newTime: number) {
   const prevAvgTime = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
@@ -150,21 +150,17 @@ const resetBridger = function (): void {
 const resetMap = function (wasAttempt: boolean = true): void {
   const gameId = ts.getData("gameID");
 
-  // teleport player
   wasAttempt
     ? util.teleportation(<TeleportationLocation>data.locationData[gameId])
     : util.teleportation(<TeleportationLocation>data.locationData.lobby);
 
-  // update floating text
   if (wasAttempt) updateFloatingText();
 
-  // clear bridged blocks
   if (bridger.storedLocations.length)
     bridger.storedLocations.map((location) =>
       mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
     );
 
-  // reset blocks and ticks
   resetBridger();
 };
 
@@ -390,8 +386,8 @@ export const listener = function () {
   if (bridger.isPlateDisabled) enablePlate(true);
   else {
     stopTimer();
-    resetMap();
-    util.giveItems("straightBridger");
     BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
+    util.giveItems("straightBridger");
+    resetMap();
   }
 };

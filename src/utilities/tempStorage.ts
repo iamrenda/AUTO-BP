@@ -14,11 +14,9 @@ type TempDataIF = {
   clutchShiftStart: boolean;
 };
 
-class tempStorage {
-  private static instance: tempStorage;
-  private constructor() {}
-  private data: TempDataIF = {
-    player: undefined,
+class TempStorage {
+  private static data: TempDataIF = {
+    player: null,
     gameID: "lobby",
 
     bridgerMode: BridgerTicksID.straight16blocks,
@@ -30,19 +28,13 @@ class tempStorage {
     clutchShiftStart: true,
   };
 
-  public static getInstance(): tempStorage {
-    if (!tempStorage.instance) tempStorage.instance = new tempStorage();
-    return tempStorage.instance;
+  public static getData<T extends keyof TempDataIF>(dataType: T): TempDataIF[T] {
+    return TempStorage.data[dataType];
   }
 
-  public getData<T extends keyof TempDataIF>(dataType: T): TempDataIF[T] {
-    return this.data[dataType];
-  }
-
-  public setData<K extends keyof TempDataIF>(key: K, value: TempDataIF[K]): void {
-    this.data[key] = value;
+  public static setData<K extends keyof TempDataIF>(key: K, value: TempDataIF[K]): void {
+    TempStorage.data[key] = value;
   }
 }
 
-const TempStorage = tempStorage.getInstance();
 export default TempStorage;

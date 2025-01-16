@@ -4,7 +4,6 @@ import * as form from "../forms/wallrun";
 import ts from "../utilities/tempStorage";
 import TeleportationLocation from "../models/TeleportationLocation";
 import { locationData, VERSION } from "../utilities/staticData";
-import { DynamicProperty } from "../utilities/dynamicProperty";
 
 type WallRunner = {
   timer: number;
@@ -118,12 +117,13 @@ export const listener = function () {
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
 //////////////////////////////////////////////////
+// import { DynamicProperty } from "../utilities/dynamicProperty";
+
 mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
   player.sendMessage("player defined");
   //////////////////////////////////////////////////
   // make sure to go back to lobby before reloading
   // debug from here
   ts.setData("player", player);
-  DynamicProperty.resetDynamicData();
   mc.world.sendMessage(String(mc.world.getDynamicProperty("auto:dynamicData")));
 });
