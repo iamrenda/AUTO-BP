@@ -12,6 +12,7 @@ type TempDataIF = {
   clutcherBlock: MinecraftID.MinecraftBlockIdIF;
   clutchHits: number[];
   clutchShiftStart: boolean;
+  wallRunIsCheckPointEnabled: boolean;
 };
 
 class TempStorage {
@@ -26,6 +27,8 @@ class TempStorage {
     clutcherBlock: "minecraft:sandstone",
     clutchHits: [1],
     clutchShiftStart: true,
+
+    wallRunIsCheckPointEnabled: true,
   };
 
   public static getData<T extends keyof TempDataIF>(dataType: T): TempDataIF[T] {

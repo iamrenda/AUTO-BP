@@ -1,6 +1,6 @@
 import * as mc from "@minecraft/server";
 import * as form from "../forms/clutcher";
-import * as exp from "../utilities/utilities";
+import * as util from "../utilities/utilities";
 import * as data from "../utilities/staticData";
 import ts from "../utilities/tempStorage";
 
@@ -42,7 +42,7 @@ const clutcher: Clutcher = {
  */
 const teleportToCounterClockwise = function () {
   const location = data.locationData.clutcher[clutcher.teleportationIndex];
-  exp.teleportation(location);
+  util.teleportation(location);
   clutcher.teleportationIndex = clutcher.teleportationIndex === 3 ? 0 : clutcher.teleportationIndex + 1;
 };
 
@@ -67,7 +67,7 @@ const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
 
   ts.getData("clutchHits")[clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
-  if (canceled) return exp.confirmMessage(player, "§aThe clutcher settings is now saved!", "random.orb");
+  if (canceled) return util.confirmMessage("§aThe clutcher settings is now saved!", "random.orb");
   await updateKnockBackForm(player, numHit);
 };
 
@@ -87,10 +87,10 @@ const resetClutcher = function () {
 /**
  * when player fails
  */
-const restartClutch = function (player: mc.Player) {
+const restartClutch = function () {
   // if fail during countdown
   if (!clutcher.hitTimer && clutcher.countDown) {
-    exp.confirmMessage(player, "§8Count down canceled", "note.guitar");
+    util.confirmMessage("§8Count down canceled", "note.guitar");
     clutcher.sec = 3;
   }
 
@@ -100,7 +100,7 @@ const restartClutch = function (player: mc.Player) {
   resetClutcher();
 
   teleportToCounterClockwise();
-  exp.giveItems("clutcher");
+  util.giveItems("clutcher");
 };
 
 /**
@@ -155,6 +155,14 @@ const readyForClutch = function (player: mc.Player) {
     countDownDisplay(player);
   }, 20);
 };
+
+const clearBlocks = function () {
+  if (clutcher.storedLocations.size)
+    [...clutcher.storedLocations].map((location) =>
+      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
+    );
+  util.backToLobbyKit();
+};
 ///////////////////////////////////////////////////////////////////
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
@@ -180,8 +188,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
 
     if (generalSelection === 10) {
       ts.setData("clutchShiftStart", !ts.getData("clutchShiftStart"));
-      exp.confirmMessage(
-        player,
+      util.confirmMessage(
         `§a"Shift + Right Click" to start is now §6${ts.getData("clutchShiftStart") ? "Enabled" : "Disabled"}§a!`,
         "random.orb"
       );
@@ -189,13 +196,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
   }
 
   // quit
-  if (selection === 16) {
-    if (clutcher.storedLocations.size)
-      [...clutcher.storedLocations].map((location) =>
-        mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
-      );
-    exp.backToLobbyKit(player);
-  }
+  if (selection === 16) clearBlocks();
 };
 
 export const placingBlockEvt = function ({ location }) {
@@ -216,23 +217,18 @@ export const placingBlockEvt = function ({ location }) {
 };
 
 export const listener = async function () {
-  if (ts.getData("player").location.y <= 88) restartClutch(ts.getData("player"));
+  if (ts.getData("player").location.y <= 88) restartClutch();
 };
 
 export const slowListener = function () {
-  clutcher.distance = exp.calculateDistance(clutcher.startLocation, clutcher.endLocation);
+  clutcher.distance = util.calculateDistance(clutcher.startLocation, clutcher.endLocation);
   ts.getData("player").onScreenDisplay.setActionBar(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${
       clutcher.distance
     } blocks\n\n §7- §6Hits:§r\n   ${clutcher.hitIndex}/${
       ts.getData("clutchHits").length
-    }\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${exp.today}`
+    }\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${util.today}`
   );
 };
 
-export const leaveWorldEnt = function () {
-  if (clutcher.storedLocations.size)
-    [...clutcher.storedLocations].map((location) =>
-      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
-    );
-};
+export const leaveWorldEnt = clearBlocks;

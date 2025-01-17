@@ -103,6 +103,10 @@ class WallRunData extends DynamicProperty {
   public static setData(id: DynamicPropertyID, data: number): void {
     this.dynamicData[id] = data;
   }
+
+  public static addData(id: DynamicPropertyID): void {
+    this.dynamicData[id]++;
+  }
 }
 
 export { DynamicProperty, GameData, BridgerData, WallRunData };

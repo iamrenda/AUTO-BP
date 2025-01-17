@@ -4,6 +4,7 @@ import { getInvData, locationData, VERSION } from "./staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
 import ts from "./tempStorage";
+import TempStorage from "./tempStorage";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -33,7 +34,8 @@ const teleportation = function (loc: TeleportationLocation): void {
 /**
  * confirmMessage: show message with sound
  */
-const confirmMessage = function (player: Player, message: string, sound: string = ""): void {
+const confirmMessage = function (message: string, sound: string = ""): void {
+  const player = TempStorage.getData("player");
   player.sendMessage(message);
   if (sound) player.playSound(sound);
 };
@@ -68,17 +70,18 @@ const tickToSec = function (ticks: number): string {
  * display lobby scoreboard
  */
 const lobbyScoreboardDisplay = function (player: Player): void {
-  const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion ${VERSION} | ${today}`;
+  const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n   Wallrun\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion ${VERSION} | ${today}`;
   player.onScreenDisplay.setActionBar(scoreboard);
 };
 
 /**
  * back to lobby
  */
-const backToLobbyKit = function (player: Player) {
+const backToLobbyKit = function () {
+  const player = TempStorage.getData("player");
   ts.setData("gameID", "lobby");
   lobbyScoreboardDisplay(player);
-  confirmMessage(player, "§7Teleporting back to lobby...");
+  confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");
   teleportation(<TeleportationLocation>locationData.lobby);
 };

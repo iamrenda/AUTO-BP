@@ -86,6 +86,17 @@ const showMessage = function (wasPB: boolean, prevPB?: number): void {
 };
 
 /**
+ * sets a new average time for dynamic property
+ */
+const setAverageTime = function (newTime: number) {
+  const prevAvgTime = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
+  const attempts = BridgerData.getData(DynamicPropertyID.Bridger_Attempts);
+  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+
+  BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
+};
+
+/**
  * floating entity grabber
  */
 const getFloatingEntity = function (): mc.Entity {
@@ -99,17 +110,6 @@ const getFloatingEntity = function (): mc.Entity {
         .getDimension("overworld")
         .getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 }, excludeFamilies: ["player"] })[0];
   }
-};
-
-/**
- * sets a new average time for dynamic property
- */
-const setAverageTime = function (newTime: number) {
-  const prevAvgTime = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
-  const attempts = BridgerData.getData(DynamicPropertyID.Bridger_Attempts);
-  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
-
-  BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
 };
 
 /**
@@ -245,10 +245,10 @@ const fillAndPlace = function (
 /**
  * replace island based on distance and save in dynamic property
  */
-const handleDistanceChange = function (player: mc.Player, blocks: IslandDistance): void {
+const handleDistanceChange = function (blocks: IslandDistance): void {
   // check whether player clicked on the same distance
   if (GameData.getData("Distance") === blocks)
-    return util.confirmMessage(player, "§4The distance is already has been changed!", "random.anvil_land");
+    return util.confirmMessage("§4The distance is already has been changed!", "random.anvil_land");
 
   fillAndPlace(
     data.structures[ts.getData("bridgerDirection")],
@@ -267,17 +267,17 @@ const handleDistanceChange = function (player: mc.Player, blocks: IslandDistance
   GameData.setData("Distance", blocks);
   util.setBridgerMode(<BridgerTicksID>`${ts.getData("bridgerDirection")}${blocks}b`);
 
-  util.confirmMessage(player, `§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
+  util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   updateFloatingText();
 };
 
 /**
  * replace island based on height and save in dynamic property
  */
-const handleHeightChange = function (player: mc.Player, isStairCased: boolean): void {
+const handleHeightChange = function (isStairCased: boolean): void {
   // check whether player clicked on the same distance
   if (GameData.getData("IsStairCased") === isStairCased)
-    return util.confirmMessage(player, "§4The height is already has been changed!", "random.anvil_land");
+    return util.confirmMessage("§4The height is already has been changed!", "random.anvil_land");
 
   fillAndPlace(
     data.structures[ts.getData("bridgerDirection")],
@@ -295,7 +295,7 @@ const handleHeightChange = function (player: mc.Player, isStairCased: boolean): 
   // set staircased as dynamic property
   GameData.setData("IsStairCased", isStairCased);
 
-  util.confirmMessage(player, `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
+  util.confirmMessage(`§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
 };
 
 /////////////////////////////////////////////////////////
@@ -306,11 +306,11 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   if (bridgerSelection === 10) {
     const { selection: islandSelection } = await form.bridgerIslandForm(player);
 
-    if (islandSelection === 10) handleDistanceChange(player, 16);
-    if (islandSelection === 19) handleDistanceChange(player, 21);
-    if (islandSelection === 28) handleDistanceChange(player, 50);
-    if (islandSelection === 12) handleHeightChange(player, true);
-    if (islandSelection === 21) handleHeightChange(player, false);
+    if (islandSelection === 10) handleDistanceChange(16);
+    if (islandSelection === 19) handleDistanceChange(21);
+    if (islandSelection === 28) handleDistanceChange(50);
+    if (islandSelection === 12) handleHeightChange(true);
+    if (islandSelection === 21) handleHeightChange(false);
   }
 
   // block
@@ -320,7 +320,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
     ts.setData("blockBridger", blockObj.texture);
     util.giveItems(`straightBridger`);
-    util.confirmMessage(player, `§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
+    util.confirmMessage(`§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
   // reset pb
@@ -329,7 +329,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     if (confirmSelection !== 15) return;
 
     BridgerData.setData(DynamicPropertyID.Bridger_PB, -1);
-    util.confirmMessage(player, "§aSuccess! Your personal best score has been reset!", "random.orb");
+    util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
     updateFloatingText();
   }
 
@@ -337,7 +337,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   if (bridgerSelection === 16) {
     DynamicProperty.postData();
     resetMap(false);
-    util.backToLobbyKit(player);
+    util.backToLobbyKit();
   }
 };
 

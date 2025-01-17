@@ -22,7 +22,7 @@ export const nagivatorFormHandler = async function (player: Player) {
       td.setData("bridgerDirection", "inclined");
     }
     DynamicProperty.postData();
-    util.confirmMessage(player, "§7Teleporting to bridger...");
+    util.confirmMessage("§7Teleporting to bridger...");
     util.giveItems("straightBridger");
     util.setBridgerMode(BridgerTicksID[`${td.getData("bridgerDirection")}16blocks`]);
     util.teleportation(<TeleportationLocation>data.locationData[td.getData("gameID")]);
@@ -32,7 +32,7 @@ export const nagivatorFormHandler = async function (player: Player) {
   if (selection === 3) {
     td.setData("gameID", "clutcher");
     util.giveItems("clutcher");
-    util.confirmMessage(player, "§7Teleporting to bridger...");
+    util.confirmMessage("§7Teleporting to bridger...");
     util.teleportation(data.locationData.clutcher[0]);
   }
 
@@ -40,7 +40,7 @@ export const nagivatorFormHandler = async function (player: Player) {
   if (selection === 5) {
     td.setData("gameID", "wallRun");
     util.giveItems("wallRun");
-    util.confirmMessage(player, "§7Teleporting to bridger...");
+    util.confirmMessage("§7Teleporting to bridger...");
     util.teleportation(<TeleportationLocation>data.locationData.wallRun);
   }
 
