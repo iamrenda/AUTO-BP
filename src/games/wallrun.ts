@@ -1,12 +1,12 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as form from "../forms/wallrun";
-import ts from "../utilities/tempStorage";
+import ts from "../data/tempStorage";
 import TeleportationLocation from "../models/TeleportationLocation";
-import TempStorage from "../utilities/tempStorage";
+import TempStorage from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { locationData, VERSION } from "../utilities/staticData";
-import { WallRunData } from "../utilities/dynamicProperty";
+import { locationData, VERSION } from "../data/staticData";
+import { WallRunData } from "../data/dynamicProperty";
 
 type WallRunner = {
   timer: number;

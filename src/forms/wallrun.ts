@@ -1,7 +1,7 @@
 import { ActionFormResponse } from "@minecraft/server-ui";
 import { Player } from "@minecraft/server";
 import ChestFormData from "../formExtensions/forms";
-import TempStorage from "../utilities/tempStorage";
+import TempStorage from "../data/tempStorage";
 
 const wallRunForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_a___c_o_", "_________"], {

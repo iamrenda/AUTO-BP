@@ -1,6 +1,6 @@
 import { Player } from "@minecraft/server";
 import { ActionFormData, ActionFormResponse } from "@minecraft/server-ui";
-import { VERSION } from "../utilities/staticData";
+import { VERSION } from "../data/staticData";
 import ChestFormData from "../formExtensions/forms";
 
 const lobbyForm = async function (player: Player): Promise<ActionFormResponse> {

@@ -1,10 +1,10 @@
 import { ItemLockMode, ItemStack, Player, Vector3 } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import { getInvData, locationData, VERSION } from "./staticData";
+import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
-import ts from "./tempStorage";
-import TempStorage from "./tempStorage";
+import ts from "../data/tempStorage";
+import TempStorage from "../data/tempStorage";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)

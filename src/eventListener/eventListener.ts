@@ -1,13 +1,13 @@
 import * as mc from "@minecraft/server";
 import * as exp from "../utilities/utilities";
-import * as data from "../utilities/staticData";
+import * as data from "../data/staticData";
 import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
-import ts from "../utilities/tempStorage";
+import ts from "../data/tempStorage";
 import TeleportationLocation from "../models/TeleportationLocation";
-import { DynamicProperty } from "../utilities/dynamicProperty";
+import { DynamicProperty } from "../data/dynamicProperty";
 
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });

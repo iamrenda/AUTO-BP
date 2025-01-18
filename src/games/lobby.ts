@@ -1,11 +1,11 @@
 import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
-import * as data from "../utilities/staticData";
+import * as data from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
-import td from "../utilities/tempStorage";
+import td from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import { DynamicProperty } from "../utilities/dynamicProperty";
+import { DynamicProperty } from "../data/dynamicProperty";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);

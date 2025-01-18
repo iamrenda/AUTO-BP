@@ -1,7 +1,7 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
-import ts from "../utilities/tempStorage";
+import ts from "../data/tempStorage";
 
 const clutcherForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Clutcher Selector").pattern(["_________", "_r_s_b_q_", "_________"], {

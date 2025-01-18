@@ -1,14 +1,14 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
-import * as data from "../utilities/staticData";
+import * as data from "../data/staticData";
 import * as form from "../forms/bridger";
 import TeleportationLocation from "../models/TeleportationLocation";
-import ts from "../utilities/tempStorage";
+import ts from "../data/tempStorage";
 import { confirmationForm } from "../forms/utility";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { VERSION } from "../utilities/staticData";
-import { BridgerData, DynamicProperty, GameData } from "../utilities/dynamicProperty";
+import { VERSION } from "../data/staticData";
+import { BridgerData, DynamicProperty, GameData } from "../data/dynamicProperty";
 
 type Bridger = {
   storedLocations: mc.Vector3[];

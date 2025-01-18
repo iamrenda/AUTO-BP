@@ -1,6 +1,6 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
-import { GameData } from "../utilities/dynamicProperty";
+import { GameData } from "../data/dynamicProperty";
 import ChestFormData from "../formExtensions/forms";
 
 const confirmationForm = async function (player: Player): Promise<ActionFormResponse> {

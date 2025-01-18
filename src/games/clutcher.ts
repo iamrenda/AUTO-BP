@@ -1,8 +1,8 @@
 import * as mc from "@minecraft/server";
 import * as form from "../forms/clutcher";
 import * as util from "../utilities/utilities";
-import * as data from "../utilities/staticData";
-import ts from "../utilities/tempStorage";
+import * as data from "../data/staticData";
+import ts from "../data/tempStorage";
 
 type Clutcher = {
   isListening: boolean;

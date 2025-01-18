@@ -1,9 +1,9 @@
 import ChestFormData from "../formExtensions/forms";
-import ts from "../utilities/tempStorage";
+import ts from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
-import { formBlocks } from "../utilities/staticData";
-import { GameData } from "../utilities/dynamicProperty";
+import { formBlocks } from "../data/staticData";
+import { GameData } from "../data/dynamicProperty";
 
 const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
