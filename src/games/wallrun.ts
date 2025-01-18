@@ -1,33 +1,11 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as form from "../forms/wallrun";
-import ts from "../data/tempStorage";
 import TeleportationLocation from "../models/TeleportationLocation";
-import TempStorage from "../data/tempStorage";
+import { wallRunTs } from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { locationData, VERSION } from "../data/staticData";
 import { WallRunData } from "../data/dynamicProperty";
-
-type WallRunner = {
-  timer: number;
-  ticks: number;
-  storedLocations: Set<mc.Vector3>;
-  isPlateDisabled: { first: boolean; checkpoint: boolean; goal: boolean };
-  isCheckPointSaved: boolean;
-  autoReq?: number;
-};
-
-const wallRunner: WallRunner = {
-  timer: null,
-  ticks: 0,
-  storedLocations: new Set(),
-  isPlateDisabled: {
-    first: false,
-    checkpoint: false,
-    goal: false,
-  },
-  isCheckPointSaved: false,
-};
 
 /**
  * updates the floating texts including stats about the player
@@ -42,7 +20,7 @@ const updateFloatingText = function () {
     successAttempts: WallRunData.getData(DynamicPropertyID.WallRunner_SuccessAttempts),
   };
 
-  const displayText = `§b${ts.getData("player").nameTag}§r
+  const displayText = `§b${wallRunTs.commonData["player"].nameTag}§r
 §6Personal Best:§r §f${info.pb}§r
 §6Average Time:§r §f${info.avgTime}§r
 §6Attempts:§r §f${info.attempts}§r
@@ -55,32 +33,36 @@ const updateFloatingText = function () {
  * stops the timer
  */
 const stopTimer = function () {
-  if (!wallRunner.timer) return;
-  mc.system.clearRun(wallRunner.timer);
-  wallRunner.timer = null;
+  if (!wallRunTs.commonData["timer"]) return;
+  mc.system.clearRun(wallRunTs.commonData["timer"]);
+  wallRunTs.commonData["timer"] = null;
 };
 
 /**
  * disables the plate if not disabled; returns true or false depending on availiability
  */
 const isPlateDisabled = function (plate: "first" | "checkpoint" | "goal"): boolean {
-  if (wallRunner.isPlateDisabled[plate]) return true;
-  wallRunner.isPlateDisabled[plate] = true;
+  if (wallRunTs.tempData["isPlateDisabled"][plate]) return true;
+  wallRunTs.tempData["isPlateDisabled"][plate] = true;
   return false;
 };
 
 const resetWallRunner = function () {
-  wallRunner.ticks = 0;
-  wallRunner.isCheckPointSaved = false;
-  Object.keys(wallRunner.isPlateDisabled).map((plate) => (wallRunner.isPlateDisabled[plate] = false));
+  wallRunTs.commonData["ticks"] = 0;
+  wallRunTs.tempData["isCheckPointSaved"] = false;
+
+  Object.keys(wallRunTs.tempData["isPlateDisabled"]).map(
+    (plate) =>
+      (wallRunTs.tempData["isPlateDisabled"][plate as keyof (typeof wallRunTs.tempData)["isPlateDisabled"]] = false)
+  );
 };
 
 const clearBlocks = function () {
-  if (!wallRunner.storedLocations.size) return;
-  [...wallRunner.storedLocations].map((location) =>
+  if (!wallRunTs.commonData["storedLocations"].size) return;
+  [...wallRunTs.commonData["storedLocations"]].map((location) =>
     mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
   );
-  wallRunner.storedLocations = new Set();
+  wallRunTs.commonData["storedLocations"] = new Set();
 };
 
 /**
@@ -117,8 +99,8 @@ const showMessage = function (wasPB: boolean, prevPB?: number): void {
     return `${baseMessage}\n${pbMessage}§7----------------------------`;
   };
   const pb = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
-  const message = getMessage(pb, wallRunner.ticks, wasPB);
-  ts.getData("player").sendMessage(message);
+  const message = getMessage(pb, wallRunTs.commonData["ticks"], wasPB);
+  wallRunTs.commonData["player"].sendMessage(message);
 };
 
 const setAverageTime = function (newTime: number) {
@@ -134,51 +116,53 @@ const setAverageTime = function (newTime: number) {
  * @param {Boolean} cancelTimer - whether canceling timer to resetMap is necessary or not
  */
 const enablePlate = function (): void {
-  wallRunner.isPlateDisabled.goal = false;
-  TempStorage.getData("player").setGameMode(mc.GameMode.survival);
+  wallRunTs.tempData["isPlateDisabled"].goal = false;
+  wallRunTs.commonData["player"].setGameMode(mc.GameMode.survival);
   util.giveItems("wallRun");
   resetMap();
 };
 
 /////////////////////////////////////////////////////////////////////////
-export const pressurePlatePushEvt = function ({ location }) {
+export const pressurePlatePushEvt = function ({ location }: { location: mc.Vector3 }) {
   switch (location.z) {
     // start
     case 30016:
       if (isPlateDisabled("first")) return;
       WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
-      wallRunner.timer = mc.system.runInterval(() => wallRunner.timer && wallRunner.ticks++);
+      wallRunTs.commonData["timer"] = mc.system.runInterval(
+        () => wallRunTs.commonData["timer"] && wallRunTs.commonData["ticks"]++
+      );
       break;
 
     // checkpoint
     case 30075:
       if (isPlateDisabled("checkpoint")) return;
-      if (!TempStorage.getData("wallRunIsCheckPointEnabled")) return;
+      if (!wallRunTs.tempData["wallRunIsCheckPointEnabled"]) return;
       util.confirmMessage("§aCheckPoint Saved!", "random.orb");
-      wallRunner.isCheckPointSaved = true;
+      wallRunTs.tempData["isCheckPointSaved"] = true;
       break;
 
     // goal
     case 30121:
       if (isPlateDisabled("goal")) return;
-      const player = TempStorage.getData("player");
+      const player = wallRunTs.commonData["player"];
       stopTimer();
       clearBlocks();
 
-      player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(wallRunner.ticks)}§r`);
+      player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(wallRunTs.commonData["ticks"])}§r`);
       player.setGameMode(mc.GameMode.spectator);
 
-      if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), wallRunner.ticks)) {
-        WallRunData.setData(DynamicPropertyID.WallRunner_PB, wallRunner.ticks);
+      if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), wallRunTs.commonData["ticks"])) {
+        WallRunData.setData(DynamicPropertyID.WallRunner_PB, wallRunTs.commonData["ticks"]);
         showMessage(true, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
         player.playSound("random.levelup");
         player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
       } else showMessage(false);
 
-      setAverageTime(wallRunner.ticks);
+      setAverageTime(wallRunTs.commonData["ticks"]);
 
       mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", player.location);
-      wallRunner.autoReq = mc.system.runTimeout(enablePlate, 80);
+      wallRunTs.tempData["autoReq"] = mc.system.runTimeout(enablePlate, 80);
 
       WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
       WallRunData.addData(DynamicPropertyID.WallRunner_SuccessAttempts);
@@ -195,8 +179,8 @@ export const wallRunFormHandler = async function (player: mc.Player) {
 
     // saved checkpoint
     if (generalSelection === 10) {
-      const isCheckPointEnabled = TempStorage.getData("wallRunIsCheckPointEnabled");
-      TempStorage.setData("wallRunIsCheckPointEnabled", !isCheckPointEnabled);
+      const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
+      wallRunTs.tempData["wallRunIsCheckPointEnabled"] = !isCheckPointEnabled;
       util.confirmMessage(`Checkpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`, "random.orb");
     }
   }
@@ -208,12 +192,12 @@ export const wallRunFormHandler = async function (player: mc.Player) {
   }
 };
 
-export const placingBlockEvt = function ({ location }) {
-  wallRunner.storedLocations.add(location);
+export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
+  wallRunTs.commonData["storedLocations"].add(location);
 };
 
 export const listener = function () {
-  const player = ts.getData("player");
+  const player = wallRunTs.commonData["player"];
   const progress = Math.max(0, +(((player.location.z - 30016) / 105) * 100).toFixed(0));
 
   player.onScreenDisplay.setActionBar(
@@ -223,7 +207,7 @@ export const listener = function () {
 §f   69.420
 
 §7 - §6Time:§r
-§f   ${util.tickToSec(wallRunner.ticks)}
+§f   ${util.tickToSec(wallRunTs.commonData["ticks"])}
 
 §7 - §6Progress:§r
 §f   ${progress}%
@@ -232,24 +216,10 @@ export const listener = function () {
   );
 
   if (!(player.location.y < 98) || player.getGameMode() === mc.GameMode.spectator) return;
-  if (wallRunner.isCheckPointSaved) {
+  if (wallRunTs.tempData["isCheckPointSaved"]) {
     util.confirmMessage("§7Teleporting back to the checkpoint...");
     util.teleportation({ position: { x: 30009.5, y: 106, z: 30077.5 }, facing: { x: 30009.5, y: 106, z: 30078 } });
     util.giveItems("wallRun");
     clearBlocks();
   } else resetMap();
 };
-
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-//////////////////////////////////////////////////
-// import { DynamicProperty } from "../utilities/dynamicProperty";
-
-mc.world.afterEvents.chatSend.subscribe(({ sender: player }) => {
-  player.sendMessage("player defined");
-  //////////////////////////////////////////////////
-  // make sure to go back to lobby before reloading
-  // debug from here
-  ts.setData("player", player);
-  mc.world.sendMessage(String(mc.world.getDynamicProperty("auto:dynamicData")));
-});

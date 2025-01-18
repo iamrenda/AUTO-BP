@@ -1,7 +1,7 @@
 import { ActionFormResponse } from "@minecraft/server-ui";
 import { Player } from "@minecraft/server";
 import ChestFormData from "../formExtensions/forms";
-import TempStorage from "../data/tempStorage";
+import { wallRunTs } from "../data/tempStorage";
 
 const wallRunForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Settings").pattern(["_________", "_a___c_o_", "_________"], {
@@ -31,7 +31,7 @@ const wallRunForm = async function (player: Player): Promise<ActionFormResponse>
 };
 
 const wallRunGeneralForm = async function (player: Player): Promise<ActionFormResponse> {
-  const isCheckPointEnabled = TempStorage.getData("wallRunIsCheckPointEnabled");
+  const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
   const form = new ChestFormData("27").title("General Settings").pattern(["_________", "_a_______", "_________"], {
     a: {
       itemName: "§6Save CheckPoint",

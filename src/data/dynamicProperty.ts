@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
-import ts from "./tempStorage";
+import { bridgerTs } from "./tempStorage";
 
 /////////////////////////////////////////////////////////////////
 class DynamicProperty {
@@ -71,27 +71,27 @@ class DynamicProperty {
 
 class GameData extends DynamicProperty {
   public static getData(gameDataType: "IsStairCased" | "Distance") {
-    const direction = ts.getData("bridgerDirection");
+    const direction = bridgerTs.tempData["bridgerDirection"];
     return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
   }
 
   public static setData(gameDataType: "IsStairCased" | "Distance", data: boolean | number): void {
-    const direction = ts.getData("bridgerDirection");
+    const direction = bridgerTs.tempData["bridgerDirection"];
     this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`] = data;
   }
 }
 
 class BridgerData extends DynamicProperty {
   public static getData(id: DynamicPropertyID): number {
-    return this.dynamicData[id][ts.getData("bridgerMode")];
+    return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
   }
 
   public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id][ts.getData("bridgerMode")] = data;
+    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
   }
 
   public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id][ts.getData("bridgerMode")]++;
+    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]]++;
   }
 }
 

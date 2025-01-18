@@ -3,14 +3,13 @@ import { BridgerTicksID } from "../models/DynamicProperty";
 import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
-import ts from "../data/tempStorage";
-import TempStorage from "../data/tempStorage";
+import { bridgerTs, generalTs } from "../data/tempStorage";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  */
 const giveItems = function (gameid: GameID): void {
-  const player = ts.getData("player");
+  const player = generalTs.commonData["player"];
   const container = player.getComponent("inventory").container;
   const itemArr = getInvData(gameid);
 
@@ -28,14 +27,14 @@ const giveItems = function (gameid: GameID): void {
  * teleportation: teleport player
  */
 const teleportation = function (loc: TeleportationLocation): void {
-  ts.getData("player").teleport(loc.position, { facingLocation: loc.facing });
+  generalTs.commonData["player"].teleport(loc.position, { facingLocation: loc.facing });
 };
 
 /**
  * confirmMessage: show message with sound
  */
 const confirmMessage = function (message: string, sound: string = ""): void {
-  const player = TempStorage.getData("player");
+  const player = generalTs.commonData["player"];
   player.sendMessage(message);
   if (sound) player.playSound(sound);
 };
@@ -46,7 +45,7 @@ const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.get
 ).slice(-2)}`;
 
 const setBridgerMode = function (game: BridgerTicksID): void {
-  ts.setData("bridgerMode", game);
+  bridgerTs.tempData["bridgerMode"] = game;
 };
 
 /**
@@ -78,8 +77,8 @@ const lobbyScoreboardDisplay = function (player: mc.Player): void {
  * back to lobby
  */
 const backToLobbyKit = function () {
-  const player = TempStorage.getData("player");
-  ts.setData("gameID", "lobby");
+  const player = generalTs.commonData["player"];
+  generalTs.commonData["gameID"] = "lobby";
   lobbyScoreboardDisplay(player);
   confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");
@@ -90,7 +89,7 @@ const backToLobbyKit = function () {
  * floating entity grabber
  */
 const getFloatingEntity = function (): mc.Entity {
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
       return mc.world
         .getDimension("overworld")

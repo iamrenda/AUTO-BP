@@ -3,22 +3,12 @@ import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import * as form from "../forms/bridger";
 import TeleportationLocation from "../models/TeleportationLocation";
-import ts from "../data/tempStorage";
+import { bridgerTs } from "../data/tempStorage";
 import { confirmationForm } from "../forms/utility";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { VERSION } from "../data/staticData";
 import { BridgerData, DynamicProperty, GameData } from "../data/dynamicProperty";
-
-type Bridger = {
-  storedLocations: mc.Vector3[];
-  blocks: number;
-  ticks: number;
-
-  isPlateDisabled: boolean;
-  timer?: number;
-  autoReq?: number;
-};
 
 type IslandDistance = 16 | 21 | 50;
 
@@ -28,22 +18,13 @@ type FillAndPlaceIF = {
 };
 
 /////////////////////////////////////////////////////////
-const bridger: Partial<Bridger> = {
-  storedLocations: [],
-  blocks: 0,
-  ticks: 0,
-
-  isPlateDisabled: false,
-  timer: undefined, // interval
-  autoReq: undefined, // timeOut
-};
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
   straight: { x: 9993, y: 93, z: 10003 },
   inclined: { x: 9970, y: 93, z: 10001 },
 };
 
-const HEIGHT_DIFF = {
+const HEIGHT_DIFF: Record<number, number> = {
   16: 1,
   21: 2,
   50: 5,
@@ -81,8 +62,8 @@ const showMessage = function (wasPB: boolean, prevPB?: number): void {
   };
   const distance = GameData.getData("Distance");
   const pb = BridgerData.getData(DynamicPropertyID.Bridger_PB);
-  const message = getMessage(distance, pb, bridger.ticks, wasPB);
-  ts.getData("player").sendMessage(message);
+  const message = getMessage(distance, pb, bridgerTs.commonData["ticks"], wasPB);
+  bridgerTs.commonData["player"].sendMessage(message);
 };
 
 /**
@@ -110,7 +91,7 @@ const updateFloatingText = function () {
   };
   const distance = GameData.getData("Distance");
 
-  const displayText = `§b${ts.getData("player").nameTag}§r §7-§r §o§7${distance} blocks§r
+  const displayText = `§b${bridgerTs.commonData["player"].nameTag}§r §7-§r §o§7${distance} blocks§r
 §6Personal Best:§r §f${info.pb}§r
 §6Average Time:§r §f${info.avgTime}§r
 §6Bridging Attempts:§r §f${info.attempts}§r
@@ -123,16 +104,16 @@ const updateFloatingText = function () {
  * reset bridger data
  */
 const resetBridger = function (): void {
-  bridger.blocks = 0;
-  bridger.ticks = 0;
-  bridger.storedLocations = [];
+  bridgerTs.commonData["blocks"] = 0;
+  bridgerTs.commonData["ticks"] = 0;
+  bridgerTs.commonData["storedLocations"] = new Set();
 };
 
 /**
  * resets the map (clearing temp data, blocks, and teleporting)
  */
 const resetMap = function (wasAttempt: boolean = true): void {
-  const gameId = ts.getData("gameID");
+  const gameId = bridgerTs.commonData["gameID"];
 
   wasAttempt
     ? util.teleportation(<TeleportationLocation>data.locationData[gameId])
@@ -140,8 +121,8 @@ const resetMap = function (wasAttempt: boolean = true): void {
 
   if (wasAttempt) updateFloatingText();
 
-  if (bridger.storedLocations.length)
-    bridger.storedLocations.map((location) =>
+  if (bridgerTs.commonData["storedLocations"].size)
+    bridgerTs.commonData["storedLocations"].forEach((location) =>
       mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
     );
 
@@ -153,8 +134,8 @@ const resetMap = function (wasAttempt: boolean = true): void {
  * @param {Boolean} cancelTimer - whether canceling timer to resetMap is necessary or not
  */
 const enablePlate = function (cancelTimer: boolean = false): void {
-  bridger.isPlateDisabled = false;
-  if (cancelTimer) mc.system.clearRun(bridger.autoReq);
+  bridgerTs.tempData["isPlateDisabled"] = false;
+  if (cancelTimer) mc.system.clearRun(bridgerTs.tempData["autoReq"]);
   resetMap();
   util.giveItems("straightBridger");
 };
@@ -163,9 +144,9 @@ const enablePlate = function (cancelTimer: boolean = false): void {
  * stops the timer
  */
 const stopTimer = function () {
-  if (!bridger.timer) return;
-  mc.system.clearRun(bridger.timer);
-  bridger.timer = null;
+  if (!bridgerTs.commonData["timer"]) return;
+  mc.system.clearRun(bridgerTs.commonData["timer"]);
+  bridgerTs.commonData["timer"] = null;
 };
 
 /**
@@ -187,17 +168,17 @@ const getLocation = function (direction: "straight" | "inclined", distance: numb
  * @param {Object} info which new structure will be built
  */
 const fillAndPlace = function (
-  structure,
+  structure: string,
   distance: "straight" | "inclined",
   { distance: distance1, isStairCased: isStairCased1 }: FillAndPlaceIF,
   { distance: distance2, isStairCased: isStairCased2 }: FillAndPlaceIF
 ) {
   const dimension = mc.world.getDimension("overworld");
-  const fillAirLocation = {
+  const fillAirLocation: Record<string, mc.Vector3> = {
     start: { x: undefined, y: undefined, z: undefined },
     end: { x: undefined, y: undefined, z: undefined },
   };
-  let structurePlaceLocation = { x: undefined, y: undefined, z: undefined };
+  let structurePlaceLocation: mc.Vector3 = { x: undefined, y: undefined, z: undefined };
 
   if (distance1 === 16) fillAirLocation.start = getLocation(distance, 16, isStairCased1);
   if (distance1 === 21) fillAirLocation.start = getLocation(distance, 21, isStairCased1);
@@ -230,8 +211,8 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
     return util.confirmMessage("§4The distance is already has been changed!", "random.anvil_land");
 
   fillAndPlace(
-    data.structures[ts.getData("bridgerDirection")],
-    ts.getData("bridgerDirection"),
+    data.structures[bridgerTs.tempData["bridgerDirection"]],
+    bridgerTs.tempData["bridgerDirection"],
     {
       distance: GameData.getData("Distance"),
       isStairCased: GameData.getData("IsStairCased"),
@@ -244,7 +225,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
 
   // set distance as dynamic property, set bridger mode for temp data
   GameData.setData("Distance", blocks);
-  util.setBridgerMode(<BridgerTicksID>`${ts.getData("bridgerDirection")}${blocks}b`);
+  util.setBridgerMode(<BridgerTicksID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}b`);
 
   util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   updateFloatingText();
@@ -259,8 +240,8 @@ const handleHeightChange = function (isStairCased: boolean): void {
     return util.confirmMessage("§4The height is already has been changed!", "random.anvil_land");
 
   fillAndPlace(
-    data.structures[ts.getData("bridgerDirection")],
-    ts.getData("bridgerDirection"),
+    data.structures[bridgerTs.tempData["bridgerDirection"]],
+    bridgerTs.tempData["bridgerDirection"],
     {
       distance: GameData.getData("Distance"),
       isStairCased: !isStairCased,
@@ -297,7 +278,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     const { selection: blockSelection } = await form.bridgerBlockForm(player);
     const blockObj = data.formBlocks[blockSelection - 9];
 
-    ts.setData("blockBridger", blockObj.texture);
+    bridgerTs.tempData["blockBridger"] = blockObj.texture;
     util.giveItems(`straightBridger`);
     util.confirmMessage(`§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
@@ -321,31 +302,40 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 };
 
 export const placingBlockEvt = function (block: mc.Block) {
-  if (!bridger.blocks && !bridger.timer) bridger.timer = mc.system.runInterval(() => bridger.timer && bridger.ticks++);
+  // if (!bridger.blocks && !bridger.timer) bridger.timer = mc.system.runInterval(() => bridger.timer && bridger.ticks++);
 
-  bridger.blocks++;
-  bridger.storedLocations.push(block.location);
+  // bridger.blocks++;
+  // bridger.storedLocations.push(block.location);
+  if (!bridgerTs.commonData["blocks"] && !bridgerTs.commonData["timer"])
+    bridgerTs.commonData["timer"] = mc.system.runInterval(
+      () => bridgerTs.commonData["timer"] && bridgerTs.commonData["ticks"]++
+    );
+
+  bridgerTs.commonData["blocks"]++;
+  bridgerTs.commonData["storedLocations"].add(block.location);
 };
 
 export const pressurePlatePushEvt = function (player: mc.Player) {
-  if (bridger.isPlateDisabled) return;
-  bridger.isPlateDisabled = true;
+  if (bridgerTs.tempData["isPlateDisabled"]) return;
+  const ticks = bridgerTs.commonData["ticks"];
+
+  bridgerTs.tempData["isPlateDisabled"] = true;
 
   stopTimer();
 
-  player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(bridger.ticks)}§r`);
+  player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
 
-  if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), bridger.ticks)) {
-    BridgerData.setData(DynamicPropertyID.Bridger_PB, bridger.ticks);
+  if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), ticks)) {
+    BridgerData.setData(DynamicPropertyID.Bridger_PB, ticks);
     showMessage(true, BridgerData.getData(DynamicPropertyID.Bridger_PB));
     player.playSound("random.levelup");
     player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
   } else showMessage(false);
 
-  setAverageTime(bridger.ticks);
+  setAverageTime(ticks);
 
   mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", player.location);
-  bridger.autoReq = mc.system.runTimeout(enablePlate, 80);
+  bridgerTs.tempData["autoReq"] = mc.system.runTimeout(enablePlate, 80);
 
   BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
   BridgerData.addData(DynamicPropertyID.Bridger_SuccessAttempts);
@@ -353,16 +343,16 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 
 export const listener = function () {
   const pb = BridgerData.getData(DynamicPropertyID.Bridger_PB);
-  ts.getData("player").onScreenDisplay.setActionBar(
+  bridgerTs.commonData["player"].onScreenDisplay.setActionBar(
     `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
       pb === -1 ? "--.--" : util.tickToSec(pb)
-    }\n\n §7- §6Time:§r\n   ${util.tickToSec(bridger.ticks)}\n\n §7- §6Blocks:§r\n   ${
-      bridger.blocks
+    }\n\n §7- §6Time:§r\n   ${util.tickToSec(bridgerTs.commonData["ticks"])}\n\n §7- §6Blocks:§r\n   ${
+      bridgerTs.commonData["blocks"]
     }\n§7-------------------§r\n §8§oVersion ${VERSION} | ${util.today}`
   );
 
-  if (!(ts.getData("player").location.y <= 95)) return;
-  if (bridger.isPlateDisabled) enablePlate(true);
+  if (!(bridgerTs.commonData["player"].location.y <= 95)) return;
+  if (bridgerTs.tempData["isPlateDisabled"]) enablePlate(true);
   else {
     stopTimer();
     BridgerData.addData(DynamicPropertyID.Bridger_Attempts);

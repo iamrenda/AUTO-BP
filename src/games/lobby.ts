@@ -2,7 +2,7 @@ import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
-import td from "../data/tempStorage";
+import { bridgerTs, clutcherTs, wallRunTs } from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { DynamicProperty } from "../data/dynamicProperty";
@@ -15,30 +15,30 @@ export const nagivatorFormHandler = async function (player: Player) {
     const { selection: bridgerDirSelection } = await form.formBridgerDirForm(player);
 
     if (bridgerDirSelection === 2) {
-      td.setData("gameID", "straightBridger");
-      td.setData("bridgerDirection", "straight");
+      bridgerTs.commonData["gameID"] = "straightBridger";
+      bridgerTs.tempData["bridgerDirection"] = "straight";
     } else if (bridgerDirSelection === 6) {
-      td.setData("gameID", "inclinedBridger");
-      td.setData("bridgerDirection", "inclined");
+      bridgerTs.commonData["gameID"] = "inclinedBridger";
+      bridgerTs.tempData["bridgerDirection"] = "inclined";
     }
     DynamicProperty.postData();
     util.confirmMessage("§7Teleporting to bridger...");
     util.giveItems("straightBridger");
-    util.setBridgerMode(BridgerTicksID[`${td.getData("bridgerDirection")}16blocks`]);
-    util.teleportation(<TeleportationLocation>data.locationData[td.getData("gameID")]);
+    util.setBridgerMode(BridgerTicksID[`${bridgerTs.tempData["bridgerDirection"]}16blocks`]);
+    util.teleportation(<TeleportationLocation>data.locationData[bridgerTs.commonData["gameID"]]);
   }
 
   // clutcher
   if (selection === 3) {
-    td.setData("gameID", "clutcher");
+    clutcherTs.commonData["gameID"] = "clutcher";
     util.giveItems("clutcher");
     util.confirmMessage("§7Teleporting to bridger...");
-    util.teleportation(data.locationData.clutcher[0]);
+    util.teleportation(data.locationData.clutcher[0 as keyof typeof data.locationData.clutcher]);
   }
 
   // wall run
   if (selection === 5) {
-    td.setData("gameID", "wallRun");
+    wallRunTs.commonData["gameID"] = "wallRun";
     util.giveItems("wallRun");
     util.confirmMessage("§7Teleporting to bridger...");
     util.teleportation(<TeleportationLocation>data.locationData.wallRun);

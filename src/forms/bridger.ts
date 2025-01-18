@@ -1,5 +1,5 @@
 import ChestFormData from "../formExtensions/forms";
-import ts from "../data/tempStorage";
+import { bridgerTs } from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import { formBlocks } from "../data/staticData";
@@ -17,7 +17,7 @@ const bridgerForm = async function (player: Player): Promise<ActionFormResponse>
     b: {
       itemName: "§2Blocks",
       itemDesc: [],
-      texture: ts.getData("blockBridger"),
+      texture: bridgerTs.tempData["blockBridger"],
       stackAmount: 1,
       enchanted: false,
     },
@@ -43,7 +43,7 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
   const form = new ChestFormData("27").title("Block Selection");
 
   formBlocks.map(({ blockName, texture }, index) =>
-    texture === ts.getData("blockBridger")
+    texture === bridgerTs.tempData["blockBridger"]
       ? form.button(index + 9, blockName, ["", "§eSelected"], texture, 1, true)
       : form.button(index + 9, blockName, [], texture, 1, false)
   );

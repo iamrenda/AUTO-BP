@@ -5,8 +5,8 @@ import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
-import ts from "../data/tempStorage";
 import TeleportationLocation from "../models/TeleportationLocation";
+import { generalTs } from "../data/tempStorage";
 import { DynamicProperty } from "../data/dynamicProperty";
 
 const eatGhead = (player: mc.Player): void => {
@@ -28,7 +28,7 @@ const eatGhead = (player: mc.Player): void => {
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
   if (item.typeId === "auto:ghead") eatGhead(player);
 
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "lobby":
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
       if (item.typeId === "minecraft:stick") lobby.launchingHandler(player);
@@ -52,7 +52,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
 
 // placing a block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
     case "inclinedBridger":
       bridger.placingBlockEvt(block);
@@ -68,7 +68,7 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
 
 // pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
     case "inclinedBridger":
       bridger.pressurePlatePushEvt(<mc.Player>player);
@@ -91,7 +91,7 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
 
 // joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
-  ts.setData("player", player);
+  generalTs.commonData["player"] = player;
   exp.teleportation(<TeleportationLocation>data.locationData.lobby);
   exp.giveItems("lobby");
   exp.lobbyScoreboardDisplay(player);
@@ -100,7 +100,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
 // leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
   DynamicProperty.postData();
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "clutcher":
       clutcher.leaveWorldEnt();
       break;
@@ -133,7 +133,7 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
 mc.system.runInterval((): void => {
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
     case "inclinedBridger":
       bridger.listener();
@@ -149,7 +149,7 @@ mc.system.runInterval((): void => {
 
 // every 10 tick
 mc.system.runInterval((): void => {
-  switch (ts.getData("gameID")) {
+  switch (generalTs.commonData["gameID"]) {
     case "clutcher":
       clutcher.slowListener();
       break;
