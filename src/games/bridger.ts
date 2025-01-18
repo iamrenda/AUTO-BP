@@ -97,22 +97,6 @@ const setAverageTime = function (newTime: number) {
 };
 
 /**
- * floating entity grabber
- */
-const getFloatingEntity = function (): mc.Entity {
-  switch (ts.getData("gameID")) {
-    case "straightBridger":
-      return mc.world
-        .getDimension("overworld")
-        .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 }, excludeFamilies: ["player"] })[0];
-    case "inclinedBridger":
-      return mc.world
-        .getDimension("overworld")
-        .getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 }, excludeFamilies: ["player"] })[0];
-  }
-};
-
-/**
  * updates the floating texts including stats about the player
  */
 const updateFloatingText = function () {
@@ -132,7 +116,7 @@ const updateFloatingText = function () {
 §6Bridging Attempts:§r §f${info.attempts}§r
 §6Successful Attempts:§r §f${info.successAttempts}§r`;
 
-  getFloatingEntity().nameTag = displayText;
+  util.getFloatingEntity().nameTag = displayText;
 };
 
 /**
@@ -182,11 +166,6 @@ const stopTimer = function () {
   if (!bridger.timer) return;
   mc.system.clearRun(bridger.timer);
   bridger.timer = null;
-};
-
-const isPB = function (): boolean {
-  const pb = BridgerData.getData(DynamicPropertyID.Bridger_PB);
-  return pb === -1 || bridger.ticks < pb;
 };
 
 /**
@@ -356,7 +335,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 
   player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(bridger.ticks)}§r`);
 
-  if (isPB()) {
+  if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), bridger.ticks)) {
     BridgerData.setData(DynamicPropertyID.Bridger_PB, bridger.ticks);
     showMessage(true, BridgerData.getData(DynamicPropertyID.Bridger_PB));
     player.playSound("random.levelup");

@@ -30,15 +30,6 @@ const wallRunner: WallRunner = {
 };
 
 /**
- * floating entity grabber
- */
-const getFloatingEntity = function (): mc.Entity {
-  return mc.world
-    .getDimension("overworld")
-    .getEntities({ location: { x: 30007.61, y: 106.12, z: 30015.16 }, excludeFamilies: ["player"] })[0];
-};
-
-/**
  * updates the floating texts including stats about the player
  */
 const updateFloatingText = function () {
@@ -57,7 +48,7 @@ const updateFloatingText = function () {
 §6Attempts:§r §f${info.attempts}§r
 §6Successful Attempts:§r §f${info.successAttempts}§r`;
 
-  getFloatingEntity().nameTag = displayText;
+  util.getFloatingEntity().nameTag = displayText;
 };
 
 /**
@@ -101,11 +92,6 @@ const resetMap = function () {
   updateFloatingText();
   clearBlocks();
   util.teleportation(<TeleportationLocation>locationData.wallRun);
-};
-
-const isPB = function (): boolean {
-  const pb = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
-  return pb === -1 || wallRunner.ticks < pb;
 };
 
 const differenceMs = function (ms1: number, ms2: number): string {
@@ -182,7 +168,7 @@ export const pressurePlatePushEvt = function ({ location }) {
       player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(wallRunner.ticks)}§r`);
       player.setGameMode(mc.GameMode.spectator);
 
-      if (isPB()) {
+      if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), wallRunner.ticks)) {
         WallRunData.setData(DynamicPropertyID.WallRunner_PB, wallRunner.ticks);
         showMessage(true, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
         player.playSound("random.levelup");
