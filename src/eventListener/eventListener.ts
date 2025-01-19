@@ -94,17 +94,13 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["player"] = player;
   exp.teleportation(<TeleportationLocation>data.locationData.lobby);
   exp.giveItems("lobby");
-  exp.lobbyScoreboardDisplay(player);
+  exp.displayScoreboard("lobby");
 });
 
 // leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
   DynamicProperty.postData();
-  switch (generalTs.commonData["gameID"]) {
-    case "clutcher":
-      clutcher.leaveWorldEnt();
-      break;
-  }
+  generalTs.clearBlocks();
 });
 
 // chat message

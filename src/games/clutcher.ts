@@ -131,13 +131,6 @@ const readyForClutch = function (player: mc.Player) {
   }, 20);
 };
 
-const clearBlocks = function () {
-  if (clutcherTs.commonData["storedLocations"].size)
-    [...clutcherTs.commonData["storedLocations"]].map((location) =>
-      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
-    );
-  util.backToLobbyKit();
-};
 ///////////////////////////////////////////////////////////////////
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
@@ -173,7 +166,10 @@ export const clutcherFormHandler = async function (player: mc.Player) {
   }
 
   // quit
-  if (selection === 16) clearBlocks();
+  if (selection === 16) {
+    clutcherTs.clearBlocks();
+    util.backToLobbyKit();
+  }
 };
 
 export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
@@ -202,9 +198,5 @@ export const slowListener = function () {
     clutcherTs.tempData["startLocation"],
     clutcherTs.tempData["endLocation"]
   );
-  clutcherTs.commonData["player"].onScreenDisplay.setActionBar(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Distance:§r\n   ${clutcherTs.tempData["distance"]} blocks\n\n §7- §6Hits:§r\n   ${clutcherTs.tempData["hitIndex"]}/${clutcherTs.tempData["clutchHits"].length}\n§7-------------------§r\n §8§oVersion ${data.VERSION} | ${util.today}`
-  );
+  util.displayScoreboard("clutcher");
 };
-
-export const leaveWorldEnt = clearBlocks;

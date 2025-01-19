@@ -1,12 +1,10 @@
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
-import { GameData } from "../data/dynamicProperty";
 import ChestFormData from "../formExtensions/forms";
 
-const confirmationForm = async function (player: Player): Promise<ActionFormResponse> {
-  const currentDistance = GameData.getData("Distance");
+const confirmationForm = async function (player: Player, title: string): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
-    .title(`§4§lReset PB for ${currentDistance} Blocks`)
+    .title(`§4§lReset PB for ${title}??`)
     .pattern(["_________", "__n___y__", "_________"], {
       n: {
         itemName: "§7Cancel",
@@ -23,6 +21,8 @@ const confirmationForm = async function (player: Player): Promise<ActionFormResp
         enchanted: false,
       },
     });
+
+  // !15: rejection, 15: confirm
   return await form.show(player);
 };
 

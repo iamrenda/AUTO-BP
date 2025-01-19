@@ -3,6 +3,7 @@ import { BridgerTicksID } from "../models/DynamicProperty";
 import GameID from "../models/GameID";
 import minecraftID from "../models/minecraftID";
 
+/////////////////////////////////////////////////////
 type CommonData = {
   player: mc.Player;
   gameID: GameID;
@@ -12,21 +13,6 @@ type CommonData = {
   ticks: number;
 };
 
-class TempStorage<T = any> {
-  public name: string;
-  public commonData: CommonData;
-  public tempData: T;
-
-  constructor(name: string, commonData: CommonData) {
-    this.name = name;
-    this.commonData = commonData;
-  }
-
-  protected setDefaultTempData(): T {
-    return {} as T;
-  }
-}
-
 type BridgerTempStorage = {
   blockBridger: minecraftID.MinecraftBlockIdIF;
   bridgerMode: BridgerTicksID;
@@ -34,23 +20,6 @@ type BridgerTempStorage = {
   isPlateDisabled: boolean;
   autoReq?: number;
 };
-
-class Bridger extends TempStorage<BridgerTempStorage> {
-  constructor(commonData: CommonData) {
-    super("Bridger", commonData);
-    this.tempData = this.setDefaultTempData();
-  }
-
-  protected setDefaultTempData(): BridgerTempStorage {
-    return {
-      blockBridger: "minecraft:sandstone",
-      bridgerMode: BridgerTicksID.straight16blocks,
-      bridgerDirection: "straight",
-      isPlateDisabled: false,
-      autoReq: undefined,
-    };
-  }
-}
 
 type ClutcherTempStorage = {
   clutcherBlock: minecraftID.MinecraftBlockIdIF;
@@ -69,6 +38,65 @@ type ClutcherTempStorage = {
 
   teleportationIndex: number;
 };
+
+type WallRunTempStorage = {
+  wallRunIsCheckPointEnabled: boolean;
+  autoReq: number | undefined;
+
+  isPlateDisabled: {
+    first: boolean;
+    checkpoint: boolean;
+    goal: boolean;
+  };
+  isCheckPointSaved: boolean;
+};
+/////////////////////////////////////////////////////
+
+class TempStorage<T = any> {
+  public name: string;
+  public commonData: CommonData;
+  public tempData: T;
+
+  constructor(name: string, commonData: CommonData) {
+    this.name = name;
+    this.commonData = commonData;
+  }
+
+  protected setDefaultTempData(): T {
+    return {} as T;
+  }
+
+  public clearBlocks(): void {
+    if (!this.commonData["storedLocations"].size) return;
+    [...this.commonData["storedLocations"]].map((location) =>
+      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
+    );
+    this.commonData["storedLocations"] = new Set();
+  }
+
+  public stopTimer(): void {
+    if (!this.commonData["timer"]) return;
+    mc.system.clearRun(this.commonData["timer"]);
+    this.commonData["timer"] = null;
+  }
+}
+
+class Bridger extends TempStorage<BridgerTempStorage> {
+  constructor(commonData: CommonData) {
+    super("Bridger", commonData);
+    this.tempData = this.setDefaultTempData();
+  }
+
+  protected setDefaultTempData(): BridgerTempStorage {
+    return {
+      blockBridger: "minecraft:sandstone",
+      bridgerMode: BridgerTicksID.straight16blocks,
+      bridgerDirection: "straight",
+      isPlateDisabled: false,
+      autoReq: undefined,
+    };
+  }
+}
 
 class Clutcher extends TempStorage<ClutcherTempStorage> {
   constructor(commonData: CommonData) {
@@ -97,18 +125,6 @@ class Clutcher extends TempStorage<ClutcherTempStorage> {
   }
 }
 
-type WallRunTempStorage = {
-  wallRunIsCheckPointEnabled: boolean;
-  autoReq: number | undefined;
-
-  isPlateDisabled: {
-    first: boolean;
-    checkpoint: boolean;
-    goal: boolean;
-  };
-  isCheckPointSaved: boolean;
-};
-
 class WallRun extends TempStorage<WallRunTempStorage> {
   constructor(commonData: CommonData) {
     super("WallRunner", commonData);
@@ -130,7 +146,6 @@ class WallRun extends TempStorage<WallRunTempStorage> {
   }
 }
 
-// Create a single instance of CommonData
 const commonDataInstance: CommonData = {
   player: mc.world.getAllPlayers()[0],
   gameID: "lobby",
@@ -140,7 +155,6 @@ const commonDataInstance: CommonData = {
   ticks: 0,
 };
 
-// Pass the commonDataInstance to each class
 const generalTs = new TempStorage("general", commonDataInstance);
 const bridgerTs = new Bridger(commonDataInstance);
 const clutcherTs = new Clutcher(commonDataInstance);

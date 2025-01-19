@@ -8,7 +8,6 @@ class DynamicProperty {
 
   public static postData(): void {
     const json = JSON.stringify(this.dynamicData);
-    world.sendMessage(json);
     world.setDynamicProperty("auto:dynamicData", json);
   }
 

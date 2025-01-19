@@ -1,14 +1,15 @@
 import * as mc from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import { getInvData, locationData, VERSION } from "../data/staticData";
+import { getInvData, locationData } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
 import { bridgerTs, generalTs } from "../data/tempStorage";
+import { bridgerScoreboard, clutcherScoreboard, lobbyScoreboard, wallRunScoreboard } from "../data/scoreboard";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  */
-const giveItems = function (gameid: GameID): void {
+export const giveItems = function (gameid: GameID): void {
   const player = generalTs.commonData["player"];
   const container = player.getComponent("inventory").container;
   const itemArr = getInvData(gameid);
@@ -26,32 +27,39 @@ const giveItems = function (gameid: GameID): void {
 /**
  * teleportation: teleport player
  */
-const teleportation = function (loc: TeleportationLocation): void {
+export const teleportation = function (loc: TeleportationLocation): void {
   generalTs.commonData["player"].teleport(loc.position, { facingLocation: loc.facing });
 };
 
 /**
  * confirmMessage: show message with sound
  */
-const confirmMessage = function (message: string, sound: string = ""): void {
+export const confirmMessage = function (message: string, sound: string = ""): void {
   const player = generalTs.commonData["player"];
   player.sendMessage(message);
   if (sound) player.playSound(sound);
 };
 
+/**
+ * returns todays date
+ */
 const date = new Date();
-const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(2, "0")}/${String(
-  date.getFullYear()
-).slice(-2)}`;
+export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(
+  2,
+  "0"
+)}/${String(date.getFullYear()).slice(-2)}`;
 
-const setBridgerMode = function (game: BridgerTicksID): void {
+/**
+ * sets bridger mode "straight16b", "straight21b", "straight50b", "inclined16b", "inclined21b", "inclined50b",
+ */
+export const setBridgerMode = function (game: BridgerTicksID): void {
   bridgerTs.tempData["bridgerMode"] = game;
 };
 
 /**
  * get the distance (rounded) between 2 location vector3 (ignoring y vector)
  */
-const calculateDistance = function (location1: mc.Vector3, location2: mc.Vector3): number {
+export const calculateDistance = function (location1: mc.Vector3, location2: mc.Vector3): number {
   if (!location1 || !location2) return 0;
   const dx = location2.x - location1.x;
   const dz = location2.z - location1.z;
@@ -61,34 +69,49 @@ const calculateDistance = function (location1: mc.Vector3, location2: mc.Vector3
 /**
  * converts from tick to seconds
  */
-const tickToSec = function (ticks: number): string {
+export const tickToSec = function (ticks: number): string {
   return (ticks / 20).toFixed(2);
+};
+
+/**
+ * display pb as text but if pb undefined, it will show as "--:--"
+ */
+export const pbText = function (ticks: number): string {
+  return ticks === -1 ? "--.--" : tickToSec(ticks);
 };
 
 /**
  * display lobby scoreboard
  */
-const lobbyScoreboardDisplay = function (player: mc.Player): void {
-  const scoreboard = `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Username:§r\n   ${player.nameTag}\n\n §7- §6Game Available:§r\n   Bridger\n   Clutcher\n   Wallrun\n\n §7- §6Discord:§r\n   .gg/4NRYhCYykk\n§7-------------------§r\n §8§oVersion ${VERSION} | ${today}`;
-  player.onScreenDisplay.setActionBar(scoreboard);
+export const displayScoreboard = function (gameId: GameID): void {
+  const player = generalTs.commonData["player"];
+  const scoreboards = {
+    lobby: lobbyScoreboard,
+    straightBridger: bridgerScoreboard,
+    inclinedBridger: bridgerScoreboard,
+    clutcher: clutcherScoreboard,
+    wallRun: wallRunScoreboard,
+  };
+
+  const display = scoreboards[gameId];
+  player.onScreenDisplay.setActionBar(display());
 };
 
 /**
  * back to lobby
  */
-const backToLobbyKit = function () {
-  const player = generalTs.commonData["player"];
+export const backToLobbyKit = function () {
   generalTs.commonData["gameID"] = "lobby";
-  lobbyScoreboardDisplay(player);
   confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");
+  displayScoreboard("lobby");
   teleportation(<TeleportationLocation>locationData.lobby);
 };
 
 /**
  * floating entity grabber
  */
-const getFloatingEntity = function (): mc.Entity {
+export const getFloatingEntity = function (): mc.Entity {
   switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
       return mc.world
@@ -105,20 +128,18 @@ const getFloatingEntity = function (): mc.Entity {
   }
 };
 
-const isPB = function (pb: number, time: number): boolean {
+/**
+ * returns boolean whether given time is faster than pb
+ */
+export const isPB = function (pb: number, time: number): boolean {
   return pb === -1 || time < pb;
 };
 
-export {
-  giveItems,
-  teleportation,
-  confirmMessage,
-  today,
-  setBridgerMode,
-  calculateDistance,
-  lobbyScoreboardDisplay,
-  backToLobbyKit,
-  tickToSec,
-  getFloatingEntity,
-  isPB,
+/**
+ * takes the difference in ms and returns it in seconds (string format)
+ */
+export const differenceMs = function (ms1: number, ms2: number): string {
+  const difference = ms1 - ms2;
+  if (difference === 0) return "±0.00";
+  return difference < 0 ? `§c+${tickToSec(Math.abs(difference))}` : `§a-${tickToSec(difference)}`;
 };

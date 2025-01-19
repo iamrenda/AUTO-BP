@@ -16,7 +16,6 @@ type FillAndPlaceIF = {
   distance: IslandDistance;
   isStairCased: boolean;
 };
-
 /////////////////////////////////////////////////////////
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
@@ -32,15 +31,6 @@ const HEIGHT_DIFF: Record<number, number> = {
 
 /////////////////////////////////////////////////////////
 /**
- * takes the difference in ms and returns it in seconds (string format)
- */
-const differenceMs = function (ms1: number, ms2: number): string {
-  const difference = ms1 - ms2;
-  if (difference === 0) return "±0.00";
-  return difference < 0 ? `§c+${util.tickToSec(Math.abs(difference))}` : `§a-${util.tickToSec(difference)}`;
-};
-
-/**
  * shows the result of the bridging
  */
 const showMessage = function (wasPB: boolean, prevPB?: number): void {
@@ -54,7 +44,7 @@ const showMessage = function (wasPB: boolean, prevPB?: number): void {
       pb === -1 ? "--.--" : util.tickToSec(waspb ? prevPB : pb)
     }§f
   §6Time Recorded:§r §f${util.tickToSec(time)}§r ${
-      pb !== -1 ? "§f(" + (wasPB ? differenceMs(prevPB, time) : differenceMs(pb, time)) + "§f)" : ""
+      pb !== -1 ? "§f(" + (wasPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : ""
     }§r`;
 
     const pbMessage = waspb ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
@@ -106,7 +96,6 @@ const updateFloatingText = function () {
 const resetBridger = function (): void {
   bridgerTs.commonData["blocks"] = 0;
   bridgerTs.commonData["ticks"] = 0;
-  bridgerTs.commonData["storedLocations"] = new Set();
 };
 
 /**
@@ -121,10 +110,7 @@ const resetMap = function (wasAttempt: boolean = true): void {
 
   if (wasAttempt) updateFloatingText();
 
-  if (bridgerTs.commonData["storedLocations"].size)
-    bridgerTs.commonData["storedLocations"].forEach((location) =>
-      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
-    );
+  bridgerTs.clearBlocks();
 
   resetBridger();
 };
@@ -138,15 +124,6 @@ const enablePlate = function (cancelTimer: boolean = false): void {
   if (cancelTimer) mc.system.clearRun(bridgerTs.tempData["autoReq"]);
   resetMap();
   util.giveItems("straightBridger");
-};
-
-/**
- * stops the timer
- */
-const stopTimer = function () {
-  if (!bridgerTs.commonData["timer"]) return;
-  mc.system.clearRun(bridgerTs.commonData["timer"]);
-  bridgerTs.commonData["timer"] = null;
 };
 
 /**
@@ -285,7 +262,8 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
   // reset pb
   if (bridgerSelection === 14) {
-    const { selection: confirmSelection } = await confirmationForm(player);
+    const distance = GameData.getData("Distance");
+    const { selection: confirmSelection } = await confirmationForm(player, `${distance} blocks`);
     if (confirmSelection !== 15) return;
 
     BridgerData.setData(DynamicPropertyID.Bridger_PB, -1);
@@ -302,10 +280,6 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 };
 
 export const placingBlockEvt = function (block: mc.Block) {
-  // if (!bridger.blocks && !bridger.timer) bridger.timer = mc.system.runInterval(() => bridger.timer && bridger.ticks++);
-
-  // bridger.blocks++;
-  // bridger.storedLocations.push(block.location);
   if (!bridgerTs.commonData["blocks"] && !bridgerTs.commonData["timer"])
     bridgerTs.commonData["timer"] = mc.system.runInterval(
       () => bridgerTs.commonData["timer"] && bridgerTs.commonData["ticks"]++
@@ -321,7 +295,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 
   bridgerTs.tempData["isPlateDisabled"] = true;
 
-  stopTimer();
+  bridgerTs.stopTimer();
 
   player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
 
@@ -342,19 +316,12 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 };
 
 export const listener = function () {
-  const pb = BridgerData.getData(DynamicPropertyID.Bridger_PB);
-  bridgerTs.commonData["player"].onScreenDisplay.setActionBar(
-    `      §b§lAUTO World§r\n§7-------------------§r\n §7- §6Personal Best:§r\n   ${
-      pb === -1 ? "--.--" : util.tickToSec(pb)
-    }\n\n §7- §6Time:§r\n   ${util.tickToSec(bridgerTs.commonData["ticks"])}\n\n §7- §6Blocks:§r\n   ${
-      bridgerTs.commonData["blocks"]
-    }\n§7-------------------§r\n §8§oVersion ${VERSION} | ${util.today}`
-  );
+  util.displayScoreboard("straightBridger");
 
   if (!(bridgerTs.commonData["player"].location.y <= 95)) return;
   if (bridgerTs.tempData["isPlateDisabled"]) enablePlate(true);
   else {
-    stopTimer();
+    bridgerTs.stopTimer();
     BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
     util.giveItems("straightBridger");
     resetMap();

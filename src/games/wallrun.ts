@@ -6,6 +6,7 @@ import { wallRunTs } from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { locationData, VERSION } from "../data/staticData";
 import { WallRunData } from "../data/dynamicProperty";
+import { confirmationForm } from "../forms/utility";
 
 /**
  * updates the floating texts including stats about the player
@@ -14,7 +15,7 @@ const updateFloatingText = function () {
   const pbData = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
   const avgTimeData = WallRunData.getData(DynamicPropertyID.WallRunner_AverageTime);
   const info = {
-    pb: pbData === -1 ? "--.--" : util.tickToSec(pbData),
+    pb: util.pbText(pbData),
     avgTime: avgTimeData === -1 ? "--.--" : util.tickToSec(avgTimeData),
     attempts: WallRunData.getData(DynamicPropertyID.WallRunner_Attempts),
     successAttempts: WallRunData.getData(DynamicPropertyID.WallRunner_SuccessAttempts),
@@ -27,15 +28,6 @@ const updateFloatingText = function () {
 §6Successful Attempts:§r §f${info.successAttempts}§r`;
 
   util.getFloatingEntity().nameTag = displayText;
-};
-
-/**
- * stops the timer
- */
-const stopTimer = function () {
-  if (!wallRunTs.commonData["timer"]) return;
-  mc.system.clearRun(wallRunTs.commonData["timer"]);
-  wallRunTs.commonData["timer"] = null;
 };
 
 /**
@@ -57,29 +49,16 @@ const resetWallRunner = function () {
   );
 };
 
-const clearBlocks = function () {
-  if (!wallRunTs.commonData["storedLocations"].size) return;
-  [...wallRunTs.commonData["storedLocations"]].map((location) =>
-    mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
-  );
-  wallRunTs.commonData["storedLocations"] = new Set();
-};
-
 /**
  * resets map
  */
 const resetMap = function () {
-  stopTimer();
+  wallRunTs.stopTimer();
   resetWallRunner();
   updateFloatingText();
-  clearBlocks();
+  wallRunTs.clearBlocks();
+  util.giveItems("wallRun");
   util.teleportation(<TeleportationLocation>locationData.wallRun);
-};
-
-const differenceMs = function (ms1: number, ms2: number): string {
-  const difference = ms1 - ms2;
-  if (difference === 0) return "±0.00";
-  return difference < 0 ? `§c+${util.tickToSec(Math.abs(difference))}` : `§a-${util.tickToSec(difference)}`;
 };
 
 const showMessage = function (wasPB: boolean, prevPB?: number): void {
@@ -92,7 +71,7 @@ const showMessage = function (wasPB: boolean, prevPB?: number): void {
       pb === -1 ? "--.--" : util.tickToSec(waspb ? prevPB : pb)
     }§f
   §6Time Recorded:§r §f${util.tickToSec(time)}§r ${
-      pb !== -1 ? "§f(" + (wasPB ? differenceMs(prevPB, time) : differenceMs(pb, time)) + "§f)" : ""
+      pb !== -1 ? "§f(" + (wasPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : ""
     }§r`;
 
     const pbMessage = waspb ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
@@ -146,8 +125,8 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     case 30121:
       if (isPlateDisabled("goal")) return;
       const player = wallRunTs.commonData["player"];
-      stopTimer();
-      clearBlocks();
+      wallRunTs.stopTimer();
+      wallRunTs.clearBlocks();
 
       player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(wallRunTs.commonData["ticks"])}§r`);
       player.setGameMode(mc.GameMode.spectator);
@@ -185,9 +164,19 @@ export const wallRunFormHandler = async function (player: mc.Player) {
     }
   }
 
+  // reset pb
+  if (selection === 14) {
+    const { selection: confirmationSelection } = await confirmationForm(player, `Wall Run`);
+    if (confirmationSelection !== 15) return;
+
+    WallRunData.setData(DynamicPropertyID.WallRunner_PB, -1);
+    util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
+    updateFloatingText();
+  }
+
   // back to lobby
   if (selection === 16) {
-    clearBlocks();
+    wallRunTs.clearBlocks();
     util.backToLobbyKit();
   }
 };
@@ -198,28 +187,15 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
 
 export const listener = function () {
   const player = wallRunTs.commonData["player"];
-  const progress = Math.max(0, +(((player.location.z - 30016) / 105) * 100).toFixed(0));
+  // const progress = Math.max(0, +(((player.location.z - 30016) / 105) * 100).toFixed(0));
 
-  player.onScreenDisplay.setActionBar(
-    `     §b§lAUTO World§r
-§7-------------------§r
-§7 - §6Personal Best:§r
-§f   69.420
-
-§7 - §6Time:§r
-§f   ${util.tickToSec(wallRunTs.commonData["ticks"])}
-
-§7 - §6Progress:§r
-§f   ${progress}%
-§7-------------------§r
-§8§o Version ${VERSION} | ${util.today}`
-  );
+  util.displayScoreboard("wallRun");
 
   if (!(player.location.y < 98) || player.getGameMode() === mc.GameMode.spectator) return;
   if (wallRunTs.tempData["isCheckPointSaved"]) {
     util.confirmMessage("§7Teleporting back to the checkpoint...");
     util.teleportation({ position: { x: 30009.5, y: 106, z: 30077.5 }, facing: { x: 30009.5, y: 106, z: 30078 } });
     util.giveItems("wallRun");
-    clearBlocks();
+    wallRunTs.clearBlocks();
   } else resetMap();
 };

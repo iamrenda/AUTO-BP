@@ -24,7 +24,7 @@ type ClutchStrengthIF = {
 /**
  * getInvData: get inventory data for giveItems
  */
-const getInvData = function (game: GameID): ItemInfo[] {
+export const getInvData = function (game: GameID): ItemInfo[] {
   if (game === "lobby")
     return [
       { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
@@ -53,7 +53,7 @@ const getInvData = function (game: GameID): ItemInfo[] {
 /**
  * locationData: lcoation to teleport when player joining to a game
  */
-const locationData: LocationDataIF = {
+export const locationData: LocationDataIF = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
     facing: { x: 91.5, y: 262.0, z: 64 },
@@ -94,7 +94,7 @@ const locationData: LocationDataIF = {
  * blockName: block's name to display
  * texture: block's texture's name
  */
-const formBlocks: DisplayBlockIF[] = [
+export const formBlocks: DisplayBlockIF[] = [
   { blockName: "Sandstone", texture: "minecraft:sandstone" },
   { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
   { blockName: "Bamboo Planks", texture: "minecraft:bamboo_planks" },
@@ -111,7 +111,7 @@ const formBlocks: DisplayBlockIF[] = [
  * name: name of the structure to display
  * file: file name to load
  */
-const structures = {
+export const structures = {
   straight: "straightDefault",
   inclined: "inclinedDefault",
 };
@@ -120,7 +120,7 @@ const structures = {
  * for clutcher
  * knockback strength with name & texture
  */
-const clutchStrength: ClutchStrengthIF = {
+export const clutchStrength: ClutchStrengthIF = {
   1: {
     texture: "minecraft:lime_stained_glass",
     name: "§aLight",
@@ -138,6 +138,4 @@ const clutchStrength: ClutchStrengthIF = {
   },
 };
 
-const VERSION = 5;
-
-export { getInvData, locationData, structures, formBlocks, clutchStrength, VERSION };
+export const VERSION = 5;
