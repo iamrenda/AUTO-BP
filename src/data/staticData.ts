@@ -45,7 +45,6 @@ export const getInvData = function (game: GameID): ItemInfo[] {
   if (game === "wallRun")
     return [
       { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:white_wool", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
 };

@@ -94,7 +94,6 @@ const applyKnockback = function (
 const startClutch = function (player: mc.Player) {
   mc.system.clearRun(clutcherTs.tempData["countDown"]);
   clutcherTs.tempData["isListening"] = true;
-  player.onScreenDisplay.setTitle("§aGO!");
   player.playSound("note.pling");
   clutcherTs.tempData["sec"] = 3;
 
@@ -168,7 +167,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
   // quit
   if (selection === 16) {
     clutcherTs.clearBlocks();
-    util.backToLobbyKit();
+    util.backToLobbyKit(player);
   }
 };
 
@@ -189,7 +188,7 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
   }, 60);
 };
 
-export const listener = async function () {
+export const listener = function () {
   if (clutcherTs.commonData["player"].location.y <= 88) restartClutch();
 };
 

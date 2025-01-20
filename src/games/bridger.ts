@@ -7,7 +7,6 @@ import { bridgerTs } from "../data/tempStorage";
 import { confirmationForm } from "../forms/utility";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { VERSION } from "../data/staticData";
 import { BridgerData, DynamicProperty, GameData } from "../data/dynamicProperty";
 
 type IslandDistance = 16 | 21 | 50;
@@ -31,32 +30,6 @@ const HEIGHT_DIFF: Record<number, number> = {
 
 /////////////////////////////////////////////////////////
 /**
- * shows the result of the bridging
- */
-const showMessage = function (wasPB: boolean, prevPB?: number): void {
-  const getMessage = (distance: number, pb: number, time: number, waspb = false) => {
-    const baseMessage = `
-§7----------------------------§r 
-  §bBridger§r §8§o- Version ${VERSION}§r
-
-  §6Distance:§r §f${distance} Blocks
-  §6${waspb ? "Your Previous Best" : "Your Personal Best"}:§r §f${
-      pb === -1 ? "--.--" : util.tickToSec(waspb ? prevPB : pb)
-    }§f
-  §6Time Recorded:§r §f${util.tickToSec(time)}§r ${
-      pb !== -1 ? "§f(" + (wasPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : ""
-    }§r`;
-
-    const pbMessage = waspb ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
-    return `${baseMessage}\n${pbMessage}§7----------------------------`;
-  };
-  const distance = GameData.getData("Distance");
-  const pb = BridgerData.getData(DynamicPropertyID.Bridger_PB);
-  const message = getMessage(distance, pb, bridgerTs.commonData["ticks"], wasPB);
-  bridgerTs.commonData["player"].sendMessage(message);
-};
-
-/**
  * sets a new average time for dynamic property
  */
 const setAverageTime = function (newTime: number) {
@@ -65,29 +38,6 @@ const setAverageTime = function (newTime: number) {
   const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
   BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
-};
-
-/**
- * updates the floating texts including stats about the player
- */
-const updateFloatingText = function () {
-  const pbData = BridgerData.getData(DynamicPropertyID.Bridger_PB);
-  const avgTimeData = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
-  const info = {
-    pb: pbData === -1 ? "--.--" : util.tickToSec(pbData),
-    avgTime: avgTimeData === -1 ? "--.--" : util.tickToSec(avgTimeData),
-    attempts: BridgerData.getData(DynamicPropertyID.Bridger_Attempts),
-    successAttempts: BridgerData.getData(DynamicPropertyID.Bridger_SuccessAttempts),
-  };
-  const distance = GameData.getData("Distance");
-
-  const displayText = `§b${bridgerTs.commonData["player"].nameTag}§r §7-§r §o§7${distance} blocks§r
-§6Personal Best:§r §f${info.pb}§r
-§6Average Time:§r §f${info.avgTime}§r
-§6Bridging Attempts:§r §f${info.attempts}§r
-§6Successful Attempts:§r §f${info.successAttempts}§r`;
-
-  util.getFloatingEntity().nameTag = displayText;
 };
 
 /**
@@ -108,7 +58,7 @@ const resetMap = function (wasAttempt: boolean = true): void {
     ? util.teleportation(<TeleportationLocation>data.locationData[gameId])
     : util.teleportation(<TeleportationLocation>data.locationData.lobby);
 
-  if (wasAttempt) updateFloatingText();
+  if (wasAttempt) util.updateFloatingText(BridgerData.getBundledData());
 
   bridgerTs.clearBlocks();
 
@@ -205,7 +155,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
   util.setBridgerMode(<BridgerTicksID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}b`);
 
   util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
-  updateFloatingText();
+  util.updateFloatingText(BridgerData.getBundledData());
 };
 
 /**
@@ -268,14 +218,14 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
     BridgerData.setData(DynamicPropertyID.Bridger_PB, -1);
     util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    updateFloatingText();
+    util.updateFloatingText(BridgerData.getBundledData());
   }
 
   // quit bridger
   if (bridgerSelection === 16) {
     DynamicProperty.postData();
     resetMap(false);
-    util.backToLobbyKit();
+    util.backToLobbyKit(player);
   }
 };
 
@@ -301,10 +251,10 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 
   if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), ticks)) {
     BridgerData.setData(DynamicPropertyID.Bridger_PB, ticks);
-    showMessage(true, BridgerData.getData(DynamicPropertyID.Bridger_PB));
+    util.showMessage(true, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
     player.playSound("random.levelup");
     player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
-  } else showMessage(false);
+  } else util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
 
   setAverageTime(ticks);
 

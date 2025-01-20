@@ -1,11 +1,9 @@
 import * as mc from "@minecraft/server";
 import * as exp from "../utilities/utilities";
-import * as data from "../data/staticData";
 import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
-import TeleportationLocation from "../models/TeleportationLocation";
 import { generalTs } from "../data/tempStorage";
 import { DynamicProperty } from "../data/dynamicProperty";
 
@@ -92,9 +90,7 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
 // joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["player"] = player;
-  exp.teleportation(<TeleportationLocation>data.locationData.lobby);
-  exp.giveItems("lobby");
-  exp.displayScoreboard("lobby");
+  exp.backToLobbyKit(player);
 });
 
 // leaving the world

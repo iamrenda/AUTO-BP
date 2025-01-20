@@ -8,7 +8,7 @@ const lobbyForm = async function (player: Player): Promise<ActionFormResponse> {
     a: {
       itemName: "§6§lBridger",
       itemDesc: ["§7Practice bridging across the", "§7other island as fast as you can!", "", "§eClick to Play!"],
-      texture: "minecraft:ladder",
+      texture: "minecraft:sandstone",
       stackAmount: 1,
       enchanted: false,
     },
@@ -55,14 +55,14 @@ const formBridgerDirForm = async function (player: Player): Promise<ActionFormRe
     s: {
       itemName: "§6Straight",
       itemDesc: [],
-      texture: "minecraft:arrow",
+      texture: "minecraft:chain",
       stackAmount: 1,
       enchanted: false,
     },
     i: {
       itemName: "§6Inclined",
       itemDesc: [],
-      texture: "minecraft:string",
+      texture: "minecraft:arrow",
       stackAmount: 1,
       enchanted: false,
     },

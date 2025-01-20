@@ -85,6 +85,36 @@ class BridgerData extends DynamicProperty {
     return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
   }
 
+  public static getBundledData(): { pb: number; avgTime: number; attempts: number; successAttempts: number } {
+    let bundledData = {
+      pb: -1,
+      avgTime: -1,
+      attempts: 0,
+      successAttempts: 0,
+    };
+
+    Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
+      if (!dynamicPropertyID.startsWith("WallRunner")) return;
+
+      switch (dynamicPropertyID) {
+        case "WallRunner_PB":
+          bundledData.pb = this.getData(DynamicPropertyID.Bridger_PB);
+          break;
+        case "WallRunner_Attempts":
+          bundledData.attempts = this.getData(DynamicPropertyID.Bridger_Attempts);
+          break;
+        case "WallRunner_SuccessAttempts":
+          bundledData.successAttempts = this.getData(DynamicPropertyID.Bridger_SuccessAttempts);
+          break;
+        case "WallRunner_AverageTime":
+          bundledData.avgTime = this.getData(DynamicPropertyID.Bridger_AverageTime);
+          break;
+      }
+    });
+
+    return bundledData;
+  }
+
   public static setData(id: DynamicPropertyID, data: number): void {
     this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
   }
@@ -97,6 +127,36 @@ class BridgerData extends DynamicProperty {
 class WallRunData extends DynamicProperty {
   public static getData(id: DynamicPropertyID): number {
     return this.dynamicData[id];
+  }
+
+  public static getBundledData(): { pb: number; avgTime: number; attempts: number; successAttempts: number } {
+    let bundledData = {
+      pb: -1,
+      avgTime: -1,
+      attempts: 0,
+      successAttempts: 0,
+    };
+
+    Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
+      if (!dynamicPropertyID.startsWith("Bridger")) return;
+
+      switch (dynamicPropertyID) {
+        case "Bridger_PB":
+          bundledData.pb = this.getData(DynamicPropertyID.WallRunner_PB);
+          break;
+        case "Bridger_Attempts":
+          bundledData.attempts = this.getData(DynamicPropertyID.WallRunner_Attempts);
+          break;
+        case "Bridger_SuccessAttempts":
+          bundledData.successAttempts = this.getData(DynamicPropertyID.WallRunner_SuccessAttempts);
+          break;
+        case "Bridger_AverageTime":
+          bundledData.avgTime = this.getData(DynamicPropertyID.WallRunner_AverageTime);
+          break;
+      }
+    });
+
+    return bundledData;
   }
 
   public static setData(id: DynamicPropertyID, data: number): void {

@@ -1,10 +1,17 @@
 import * as mc from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import { getInvData, locationData } from "../data/staticData";
+import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
 import { bridgerTs, generalTs } from "../data/tempStorage";
-import { bridgerScoreboard, clutcherScoreboard, lobbyScoreboard, wallRunScoreboard } from "../data/scoreboard";
+import {
+  bridgerMessage,
+  bridgerScoreboard,
+  clutcherScoreboard,
+  lobbyScoreboard,
+  wallRunMessage,
+  wallRunScoreboard,
+} from "../data/staticTextData";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -74,9 +81,9 @@ export const tickToSec = function (ticks: number): string {
 };
 
 /**
- * display pb as text but if pb undefined, it will show as "--:--"
+ * display time as text but if time undefined, it will show as "--:--"
  */
-export const pbText = function (ticks: number): string {
+export const properTimeText = function (ticks: number): string {
   return ticks === -1 ? "--.--" : tickToSec(ticks);
 };
 
@@ -84,7 +91,6 @@ export const pbText = function (ticks: number): string {
  * display lobby scoreboard
  */
 export const displayScoreboard = function (gameId: GameID): void {
-  const player = generalTs.commonData["player"];
   const scoreboards = {
     lobby: lobbyScoreboard,
     straightBridger: bridgerScoreboard,
@@ -94,14 +100,15 @@ export const displayScoreboard = function (gameId: GameID): void {
   };
 
   const display = scoreboards[gameId];
-  player.onScreenDisplay.setActionBar(display());
+  generalTs.commonData["player"].onScreenDisplay.setActionBar(display());
 };
 
 /**
  * back to lobby
  */
-export const backToLobbyKit = function () {
+export const backToLobbyKit = function (player: mc.Player) {
   generalTs.commonData["gameID"] = "lobby";
+  player.setGameMode(mc.GameMode.survival);
   confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");
   displayScoreboard("lobby");
@@ -142,4 +149,35 @@ export const differenceMs = function (ms1: number, ms2: number): string {
   const difference = ms1 - ms2;
   if (difference === 0) return "±0.00";
   return difference < 0 ? `§c+${tickToSec(Math.abs(difference))}` : `§a-${tickToSec(difference)}`;
+};
+
+/**
+ * updates the floating texts including stats about the player
+ */
+type FloatingTextParams = { pb: number; avgTime: number; attempts: number; successAttempts: number };
+export const updateFloatingText = function ({ pb, avgTime, attempts, successAttempts }: FloatingTextParams) {
+  const player = generalTs.commonData["player"];
+  const displayText = `§b${player.nameTag} - §7§oVersion ${VERSION}§r
+§6Personal Best: §f${properTimeText(pb)}
+§6Average Time: §f${properTimeText(avgTime)}
+§6Attempts: §f${attempts}
+§6Successful Attempts: §f${successAttempts}`;
+
+  getFloatingEntity().nameTag = displayText;
+};
+
+/**
+ * shows the result of the bridging
+ */
+export const showMessage = function (isPB: boolean, time: number, prevPB: number): void {
+  const gameId = generalTs.commonData["gameID"];
+  switch (gameId) {
+    case "straightBridger":
+    case "inclinedBridger":
+      generalTs.commonData["player"].sendMessage(bridgerMessage(isPB, time, prevPB));
+      break;
+    case "wallRun":
+      generalTs.commonData["player"].sendMessage(wallRunMessage(isPB, time, prevPB));
+      break;
+  }
 };

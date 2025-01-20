@@ -12,7 +12,9 @@ export const nagivatorFormHandler = async function (player: Player) {
 
   // bridger
   if (selection === 1) {
-    const { selection: bridgerDirSelection } = await form.formBridgerDirForm(player);
+    const { selection: bridgerDirSelection, canceled } = await form.formBridgerDirForm(player);
+
+    if (canceled) return;
 
     if (bridgerDirSelection === 2) {
       bridgerTs.commonData["gameID"] = "straightBridger";

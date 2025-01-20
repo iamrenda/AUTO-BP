@@ -4,7 +4,7 @@ import ChestFormData from "../formExtensions/forms";
 import { wallRunTs } from "../data/tempStorage";
 
 const wallRunForm = async function (player: Player): Promise<ActionFormResponse> {
-  const form = new ChestFormData("27").title("Settings").pattern(["_________", "_a___c_o_", "_________"], {
+  const form = new ChestFormData("27").title("Settings").pattern(["_________", "_a__c__o_", "_________"], {
     a: {
       itemName: "§2General",
       itemDesc: [],

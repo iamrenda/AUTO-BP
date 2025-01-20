@@ -4,31 +4,9 @@ import * as form from "../forms/wallrun";
 import TeleportationLocation from "../models/TeleportationLocation";
 import { wallRunTs } from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { locationData, VERSION } from "../data/staticData";
+import { locationData } from "../data/staticData";
 import { WallRunData } from "../data/dynamicProperty";
 import { confirmationForm } from "../forms/utility";
-
-/**
- * updates the floating texts including stats about the player
- */
-const updateFloatingText = function () {
-  const pbData = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
-  const avgTimeData = WallRunData.getData(DynamicPropertyID.WallRunner_AverageTime);
-  const info = {
-    pb: util.pbText(pbData),
-    avgTime: avgTimeData === -1 ? "--.--" : util.tickToSec(avgTimeData),
-    attempts: WallRunData.getData(DynamicPropertyID.WallRunner_Attempts),
-    successAttempts: WallRunData.getData(DynamicPropertyID.WallRunner_SuccessAttempts),
-  };
-
-  const displayText = `§b${wallRunTs.commonData["player"].nameTag}§r
-§6Personal Best:§r §f${info.pb}§r
-§6Average Time:§r §f${info.avgTime}§r
-§6Attempts:§r §f${info.attempts}§r
-§6Successful Attempts:§r §f${info.successAttempts}§r`;
-
-  util.getFloatingEntity().nameTag = displayText;
-};
 
 /**
  * disables the plate if not disabled; returns true or false depending on availiability
@@ -39,6 +17,9 @@ const isPlateDisabled = function (plate: "first" | "checkpoint" | "goal"): boole
   return false;
 };
 
+/**
+ * resets map
+ */
 const resetWallRunner = function () {
   wallRunTs.commonData["ticks"] = 0;
   wallRunTs.tempData["isCheckPointSaved"] = false;
@@ -55,31 +36,10 @@ const resetWallRunner = function () {
 const resetMap = function () {
   wallRunTs.stopTimer();
   resetWallRunner();
-  updateFloatingText();
+  util.updateFloatingText(WallRunData.getBundledData());
   wallRunTs.clearBlocks();
   util.giveItems("wallRun");
   util.teleportation(<TeleportationLocation>locationData.wallRun);
-};
-
-const showMessage = function (wasPB: boolean, prevPB?: number): void {
-  const getMessage = (pb: number, time: number, waspb = false) => {
-    const baseMessage = `
-§7----------------------------§r 
-  §bWallrun§r §8§o- Version ${VERSION}§r
-
-  §6${waspb ? "Your Previous Best" : "Your Personal Best"}:§r §f${
-      pb === -1 ? "--.--" : util.tickToSec(waspb ? prevPB : pb)
-    }§f
-  §6Time Recorded:§r §f${util.tickToSec(time)}§r ${
-      pb !== -1 ? "§f(" + (wasPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : ""
-    }§r`;
-
-    const pbMessage = waspb ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
-    return `${baseMessage}\n${pbMessage}§7----------------------------`;
-  };
-  const pb = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
-  const message = getMessage(pb, wallRunTs.commonData["ticks"], wasPB);
-  wallRunTs.commonData["player"].sendMessage(message);
 };
 
 const setAverageTime = function (newTime: number) {
@@ -125,20 +85,22 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     case 30121:
       if (isPlateDisabled("goal")) return;
       const player = wallRunTs.commonData["player"];
+      const ticks = wallRunTs.commonData["ticks"];
+
       wallRunTs.stopTimer();
       wallRunTs.clearBlocks();
 
-      player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(wallRunTs.commonData["ticks"])}§r`);
+      player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
       player.setGameMode(mc.GameMode.spectator);
 
-      if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), wallRunTs.commonData["ticks"])) {
-        WallRunData.setData(DynamicPropertyID.WallRunner_PB, wallRunTs.commonData["ticks"]);
-        showMessage(true, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
+      if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), ticks)) {
+        WallRunData.setData(DynamicPropertyID.WallRunner_PB, ticks);
+        util.showMessage(true, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
         player.playSound("random.levelup");
         player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
-      } else showMessage(false);
+      } else util.showMessage(false, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
 
-      setAverageTime(wallRunTs.commonData["ticks"]);
+      setAverageTime(ticks);
 
       mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", player.location);
       wallRunTs.tempData["autoReq"] = mc.system.runTimeout(enablePlate, 80);
@@ -165,19 +127,19 @@ export const wallRunFormHandler = async function (player: mc.Player) {
   }
 
   // reset pb
-  if (selection === 14) {
+  if (selection === 13) {
     const { selection: confirmationSelection } = await confirmationForm(player, `Wall Run`);
     if (confirmationSelection !== 15) return;
 
     WallRunData.setData(DynamicPropertyID.WallRunner_PB, -1);
     util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    updateFloatingText();
+    util.updateFloatingText(WallRunData.getBundledData());
   }
 
   // back to lobby
   if (selection === 16) {
     wallRunTs.clearBlocks();
-    util.backToLobbyKit();
+    util.backToLobbyKit(player);
   }
 };
 
@@ -187,7 +149,6 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
 
 export const listener = function () {
   const player = wallRunTs.commonData["player"];
-  // const progress = Math.max(0, +(((player.location.z - 30016) / 105) * 100).toFixed(0));
 
   util.displayScoreboard("wallRun");
 
