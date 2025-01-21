@@ -68,9 +68,7 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     case 30016:
       if (isPlateDisabled("first")) return;
       WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
-      wallRunTs.commonData["timer"] = mc.system.runInterval(
-        () => wallRunTs.commonData["timer"] && wallRunTs.commonData["ticks"]++
-      );
+      wallRunTs.startTimer();
       break;
 
     // checkpoint

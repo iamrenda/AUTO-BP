@@ -8,6 +8,7 @@ import { confirmationForm } from "../forms/utility";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { BridgerData, DynamicProperty, GameData } from "../data/dynamicProperty";
+import minecraftID from "../models/minecraftID";
 
 type IslandDistance = 16 | 21 | 50;
 
@@ -28,6 +29,35 @@ const HEIGHT_DIFF: Record<number, number> = {
   50: 5,
 };
 
+/**
+ * where to start building telly practice
+ */
+const TELLYSTARTBASELOCATION: mc.Vector3 = {
+  x: 10000,
+  y: 99,
+  z: 10004,
+};
+
+/**
+ * the number of telly set to build for each mode
+ */
+const TELLYBUILDERNUMBER: {
+  [key: string]: {
+    [key: number]: number;
+  };
+} = {
+  Telly: {
+    16: 2,
+    21: 3,
+    50: 8,
+  },
+  "Speed Telly": {
+    16: 4,
+    21: 5,
+    50: 15,
+  },
+};
+
 /////////////////////////////////////////////////////////
 /**
  * sets a new average time for dynamic property
@@ -35,7 +65,8 @@ const HEIGHT_DIFF: Record<number, number> = {
 const setAverageTime = function (newTime: number) {
   const prevAvgTime = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
   const attempts = BridgerData.getData(DynamicPropertyID.Bridger_Attempts);
-  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+  const newAvgTime =
+    prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
   BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
 };
@@ -77,10 +108,106 @@ const enablePlate = function (cancelTimer: boolean = false): void {
 };
 
 /**
+ * places a block for telly practice depending on telly type
+ */
+const tellyPracticeBuilder = function (
+  startLocation: mc.Vector3,
+  tellyType: "Telly" | "Speed Telly" | "4bFlat",
+  blockType: minecraftID.MinecraftBlockIdIF
+): mc.Vector3 {
+  const dimension = mc.world.getDimension("overworld");
+  switch (tellyType) {
+    case "Telly":
+      dimension.setBlockType(
+        { x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 },
+        blockType
+      );
+      dimension.setBlockType(
+        { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 6 },
+        blockType
+      );
+      return { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 6 };
+    case "Speed Telly":
+      dimension.setBlockType(
+        { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 3 },
+        blockType
+      );
+      return { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 3 };
+    case "4bFlat":
+      dimension.setBlockType(
+        { x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 },
+        blockType
+      );
+      return { x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 };
+  }
+};
+
+/**
+ * handling telly practice (activates also from distance change)
+ * (prev && new distance is required when distance changes)
+ */
+const handleTellyPractice = function (
+  newTellyMode: "None" | "Telly" | "Speed Telly",
+  prevDistanceArg?: number,
+  newDistanceArg?: number
+) {
+  const prevTellyMode = GameData.getData("TellyPractice");
+  const prevDistance = prevDistanceArg ?? GameData.getData("Distance");
+  const newDistance = newDistanceArg ?? GameData.getData("Distance");
+
+  if (prevTellyMode === newTellyMode && !newDistance)
+    return util.confirmMessage(
+      "§4The telly practice has already been changed!",
+      "random.anvil_land"
+    );
+
+  // clearing previous mode
+  if (prevTellyMode === "Telly") {
+    let currentLocation = TELLYSTARTBASELOCATION;
+    for (let i = 0; i < TELLYBUILDERNUMBER[prevTellyMode][prevDistance]; i++)
+      currentLocation = tellyPracticeBuilder(currentLocation, prevTellyMode, "minecraft:air");
+  }
+  if (prevTellyMode === "Speed Telly") {
+    let currentLocation = TELLYSTARTBASELOCATION;
+
+    currentLocation = tellyPracticeBuilder(currentLocation, "4bFlat", "minecraft:air");
+    for (let i = 0; i < TELLYBUILDERNUMBER[prevTellyMode][prevDistance] - 1; i++)
+      currentLocation = tellyPracticeBuilder(currentLocation, prevTellyMode, "minecraft:air");
+  }
+
+  // placing new practice mode
+  if (newTellyMode === "Telly") {
+    let currentLocation = TELLYSTARTBASELOCATION;
+    for (let i = 0; i < TELLYBUILDERNUMBER[newTellyMode][newDistance]; i++)
+      currentLocation = tellyPracticeBuilder(currentLocation, newTellyMode, "minecraft:red_wool");
+  }
+  if (newTellyMode === "Speed Telly") {
+    let currentLocation = TELLYSTARTBASELOCATION;
+
+    currentLocation = tellyPracticeBuilder(currentLocation, "4bFlat", "minecraft:red_wool");
+    for (let i = 0; i < TELLYBUILDERNUMBER[newTellyMode][newDistance] - 1; i++)
+      currentLocation = tellyPracticeBuilder(currentLocation, newTellyMode, "minecraft:red_wool");
+  }
+
+  if (prevDistanceArg || newDistanceArg) return;
+
+  GameData.setData("TellyPractice", newTellyMode);
+  if (newTellyMode === "None")
+    util.confirmMessage(`§aTelly practice mode has now been §cdisabled!`, "random.orb");
+  else if (prevTellyMode === "None")
+    util.confirmMessage(`§aTelly practice mode has now been enabled!`, "random.orb");
+  else util.confirmMessage(`§aThe change has now been made!`, "random.orb");
+};
+
+/**
  * gets the location (start fill, end fill, structure place) based on distance
  * @returns {mc.Vector3}
  */
-const getLocation = function (direction: "straight" | "inclined", distance: number, isStairCased: boolean): mc.Vector3 {
+const getLocation = function (
+  direction: "straight" | "inclined",
+  distance: number,
+  isStairCased: boolean
+): mc.Vector3 {
   const baseLocation: mc.Vector3 = BASE_LOCATION[direction];
   return {
     x: direction === "straight" ? baseLocation.x : baseLocation.x - distance,
@@ -107,6 +234,7 @@ const fillAndPlace = function (
   };
   let structurePlaceLocation: mc.Vector3 = { x: undefined, y: undefined, z: undefined };
 
+  // fill air
   if (distance1 === 16) fillAirLocation.start = getLocation(distance, 16, isStairCased1);
   if (distance1 === 21) fillAirLocation.start = getLocation(distance, 21, isStairCased1);
   if (distance1 === 50) fillAirLocation.start = getLocation(distance, 50, isStairCased1);
@@ -121,11 +249,21 @@ const fillAndPlace = function (
     fillAirLocation.end.z = fillAirLocation.start.z + 10;
   }
 
+  dimension.fillBlocks(
+    new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end),
+    "minecraft:air"
+  );
+
+  // telly (if enabled)
+  const currentTellyMode = GameData.getData("TellyPractice");
+  if (currentTellyMode === "Telly") handleTellyPractice("Telly", distance1, distance2);
+  if (currentTellyMode === "Speed Telly") handleTellyPractice("Speed Telly", distance1, distance2);
+
+  // new structure place
   if (distance2 === 16) structurePlaceLocation = getLocation(distance, 16, isStairCased2);
   if (distance2 === 21) structurePlaceLocation = getLocation(distance, 21, isStairCased2);
   if (distance2 === 50) structurePlaceLocation = getLocation(distance, 50, isStairCased2);
 
-  dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
   mc.world.structureManager.place(structure, dimension, structurePlaceLocation);
 };
 
@@ -135,7 +273,7 @@ const fillAndPlace = function (
 const handleDistanceChange = function (blocks: IslandDistance): void {
   // check whether player clicked on the same distance
   if (GameData.getData("Distance") === blocks)
-    return util.confirmMessage("§4The distance is already has been changed!", "random.anvil_land");
+    return util.confirmMessage("§4The distance has already been changed!", "random.anvil_land");
 
   fillAndPlace(
     data.structures[bridgerTs.tempData["bridgerDirection"]],
@@ -164,7 +302,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
 const handleHeightChange = function (isStairCased: boolean): void {
   // check whether player clicked on the same distance
   if (GameData.getData("IsStairCased") === isStairCased)
-    return util.confirmMessage("§4The height is already has been changed!", "random.anvil_land");
+    return util.confirmMessage("§4The height has already been changed!", "random.anvil_land");
 
   fillAndPlace(
     data.structures[bridgerTs.tempData["bridgerDirection"]],
@@ -181,8 +319,10 @@ const handleHeightChange = function (isStairCased: boolean): void {
 
   // set staircased as dynamic property
   GameData.setData("IsStairCased", isStairCased);
-
-  util.confirmMessage(`§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`, "random.orb");
+  util.confirmMessage(
+    `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`,
+    "random.orb"
+  );
 };
 
 /////////////////////////////////////////////////////////
@@ -198,6 +338,9 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     if (islandSelection === 28) handleDistanceChange(50);
     if (islandSelection === 12) handleHeightChange(true);
     if (islandSelection === 21) handleHeightChange(false);
+    if (islandSelection === 14) handleTellyPractice("Telly");
+    if (islandSelection === 23) handleTellyPractice("Speed Telly");
+    if (islandSelection === 32) handleTellyPractice("None");
   }
 
   // block
@@ -230,10 +373,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 };
 
 export const placingBlockEvt = function (block: mc.Block) {
-  if (!bridgerTs.commonData["blocks"] && !bridgerTs.commonData["timer"])
-    bridgerTs.commonData["timer"] = mc.system.runInterval(
-      () => bridgerTs.commonData["timer"] && bridgerTs.commonData["ticks"]++
-    );
+  if (!bridgerTs.commonData["blocks"] && !bridgerTs.commonData["timer"]) bridgerTs.startTimer();
 
   bridgerTs.commonData["blocks"]++;
   bridgerTs.commonData["storedLocations"].add(block.location);

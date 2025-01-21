@@ -21,6 +21,7 @@ class DynamicProperty {
       [DynamicPropertyID.GameDatas]: {
         [GameDataID.straightIsStairCased]: false,
         [GameDataID.straightDistance]: 16,
+        [GameDataID.straightTellyPractice]: "None",
         [GameDataID.inclinedIsStairCased]: false,
         [GameDataID.inclinedDistance]: 16,
       },
@@ -69,12 +70,15 @@ class DynamicProperty {
 }
 
 class GameData extends DynamicProperty {
-  public static getData(gameDataType: "IsStairCased" | "Distance") {
+  public static getData(gameDataType: "IsStairCased" | "Distance" | "TellyPractice") {
     const direction = bridgerTs.tempData["bridgerDirection"];
     return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
   }
 
-  public static setData(gameDataType: "IsStairCased" | "Distance", data: boolean | number): void {
+  public static setData(
+    gameDataType: "IsStairCased" | "Distance" | "TellyPractice",
+    data: boolean | number | string
+  ): void {
     const direction = bridgerTs.tempData["bridgerDirection"];
     this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`] = data;
   }

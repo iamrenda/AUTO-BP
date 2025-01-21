@@ -74,6 +74,10 @@ class TempStorage<T = any> {
     this.commonData["storedLocations"] = new Set();
   }
 
+  public startTimer(): void {
+    this.commonData["timer"] = mc.system.runInterval(() => this.commonData["timer"] && this.commonData["ticks"]++);
+  }
+
   public stopTimer(): void {
     if (!this.commonData["timer"]) return;
     mc.system.clearRun(this.commonData["timer"]);

@@ -6,36 +6,38 @@ import { formBlocks } from "../data/staticData";
 import { GameData } from "../data/dynamicProperty";
 
 const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
-  const form = new ChestFormData("27").title("Settings").pattern(["_________", "_i_b_r_o_", "_________"], {
-    i: {
-      itemName: "§3General",
-      itemDesc: [],
-      texture: "minecraft:grass_block",
-      stackAmount: 1,
-      enchanted: false,
-    },
-    b: {
-      itemName: "§2Blocks",
-      itemDesc: [],
-      texture: bridgerTs.tempData["blockBridger"],
-      stackAmount: 1,
-      enchanted: false,
-    },
-    r: {
-      itemName: "§l§4Reset Personal Best",
-      itemDesc: [],
-      texture: "minecraft:tnt",
-      stackAmount: 1,
-      enchanted: false,
-    },
-    o: {
-      itemName: "§cQuit",
-      itemDesc: [],
-      texture: "minecraft:red_dye",
-      stackAmount: 1,
-      enchanted: false,
-    },
-  });
+  const form = new ChestFormData("27")
+    .title("Settings")
+    .pattern(["_________", "_i_b_r_o_", "_________"], {
+      i: {
+        itemName: "§3General",
+        itemDesc: [],
+        texture: "minecraft:grass_block",
+        stackAmount: 1,
+        enchanted: false,
+      },
+      b: {
+        itemName: "§2Blocks",
+        itemDesc: [],
+        texture: bridgerTs.tempData["blockBridger"],
+        stackAmount: 1,
+        enchanted: false,
+      },
+      r: {
+        itemName: "§l§4Reset Personal Best",
+        itemDesc: [],
+        texture: "minecraft:tnt",
+        stackAmount: 1,
+        enchanted: false,
+      },
+      o: {
+        itemName: "§cQuit",
+        itemDesc: [],
+        texture: "minecraft:red_dye",
+        stackAmount: 1,
+        enchanted: false,
+      },
+    });
   return await form.show(player);
 };
 
@@ -53,10 +55,11 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
 const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
   const distance = GameData.getData("Distance");
   const isStairCased = GameData.getData("IsStairCased");
+  const tellyPractice = GameData.getData("TellyPractice");
 
   const form = new ChestFormData("45")
     .title("Island Customization")
-    .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {
+    .pattern(["_________", "_s_c_t___", "_m_f_T___", "_l___n___", "_________"], {
       s: {
         itemName: "§616 Blocks",
         itemDesc: [],
@@ -91,6 +94,27 @@ const bridgerIslandForm = async function (player: Player): Promise<ActionFormRes
         texture: "minecraft:sandstone_slab",
         stackAmount: 1,
         enchanted: !isStairCased,
+      },
+      t: {
+        itemName: "§6Telly Practice",
+        itemDesc: [],
+        texture: "minecraft:ender_eye",
+        stackAmount: 1,
+        enchanted: tellyPractice === "Telly",
+      },
+      T: {
+        itemName: "§6Speed Telly Practice",
+        itemDesc: [],
+        texture: "minecraft:ender_pearl",
+        stackAmount: 1,
+        enchanted: tellyPractice === "Speed Telly",
+      },
+      n: {
+        itemName: "§6No Telly Practice",
+        itemDesc: [],
+        texture: "minecraft:slime_ball",
+        stackAmount: 1,
+        enchanted: tellyPractice === "None",
       },
     });
   return await form.show(player);

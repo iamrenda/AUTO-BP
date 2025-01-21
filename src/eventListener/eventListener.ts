@@ -120,7 +120,7 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
 // breaking a block
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

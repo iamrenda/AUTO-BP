@@ -26,4 +26,5 @@ export enum GameDataID {
   straightDistance = "straightDistance",
   inclinedIsStairCased = "inclinedIsStairCased",
   inclinedDistance = "inclinedDistance",
+  straightTellyPractice = "straightTellyPractice", // "None", "Telly", "Speed Telly"
 }
