@@ -13,6 +13,7 @@ import {
   wallRunScoreboard,
   bedwarsRushScoreboard,
 } from "../data/staticTextData";
+import { DynamicProperty } from "../data/dynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -111,6 +112,7 @@ export const backToLobbyKit = function (player: mc.Player) {
   generalTs.stopTimer();
   generalTs.commonData["gameID"] = "lobby";
   generalTs.commonData["ticks"] = 0;
+  DynamicProperty.postData();
   player.setGameMode(mc.GameMode.survival);
   confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");

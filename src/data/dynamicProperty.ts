@@ -224,10 +224,10 @@ export class BedwarsRushData extends DynamicProperty {
   }
 
   public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
+    this.dynamicData[id] = data;
   }
 
   public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]]++;
+    this.dynamicData[id]++;
   }
 }

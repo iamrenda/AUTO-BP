@@ -5,7 +5,14 @@ import ChestFormData from "../formExtensions/forms";
 export const bedwarsRushForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title("Settings")
-    .pattern(["_________", "_______o_", "_________"], {
+    .pattern(["_________", "__a___o__", "_________"], {
+      a: {
+        itemName: "§c§lReset Personal Best",
+        itemDesc: [],
+        texture: "minecraft:tnt",
+        stackAmount: 1,
+        enchanted: false,
+      },
       o: {
         itemName: "§cQuit",
         itemDesc: [],

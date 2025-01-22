@@ -130,13 +130,11 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 
 // breaking a block (before event)
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
+  e.cancel = true;
   switch (generalTs.commonData["gameID"]) {
     case "bedwarsRush":
       if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
-      // e.cancel = true;
       break;
-    default:
-      e.cancel = true;
   }
 });
 
