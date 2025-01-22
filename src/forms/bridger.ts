@@ -5,7 +5,7 @@ import { ActionFormResponse } from "@minecraft/server-ui";
 import { formBlocks } from "../data/staticData";
 import { GameData } from "../data/dynamicProperty";
 
-const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
+export const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title("Settings")
     .pattern(["_________", "_i_b_r_o_", "_________"], {
@@ -41,7 +41,7 @@ const bridgerForm = async function (player: Player): Promise<ActionFormResponse>
   return await form.show(player);
 };
 
-const bridgerBlockForm = async function (player: Player): Promise<ActionFormResponse> {
+export const bridgerBlockForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27").title("Block Selection");
 
   formBlocks.map(({ blockName, texture }, index) =>
@@ -52,7 +52,7 @@ const bridgerBlockForm = async function (player: Player): Promise<ActionFormResp
   return await form.show(player);
 };
 
-const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
+export const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
   const distance = GameData.getData("Distance");
   const isStairCased = GameData.getData("IsStairCased");
   const tellyPractice = GameData.getData("TellyPractice");
@@ -119,5 +119,3 @@ const bridgerIslandForm = async function (player: Player): Promise<ActionFormRes
     });
   return await form.show(player);
 };
-
-export { bridgerBlockForm, bridgerForm, bridgerIslandForm };

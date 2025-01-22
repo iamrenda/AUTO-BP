@@ -10,6 +10,11 @@ export enum DynamicPropertyID {
   WallRunner_Attempts = "WallRunner_Attempts",
   WallRunner_SuccessAttempts = "WallRunner_SuccessAttempts",
   WallRunner_AverageTime = "WallRunner_AverageTime",
+
+  bedwarsRush_PB = "bedwarsRush_PB",
+  bedwarsRush_Attempts = "bedwarsRush_Attempts",
+  bedwarsRush_SuccessAttempts = "bedwarsRush_SuccessAttempts",
+  bedwarsRush_AverageTime = "bedwarsRush_AverageTime",
 }
 
 export enum BridgerTicksID {

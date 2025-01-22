@@ -75,7 +75,9 @@ class TempStorage<T = any> {
   }
 
   public startTimer(): void {
-    this.commonData["timer"] = mc.system.runInterval(() => this.commonData["timer"] && this.commonData["ticks"]++);
+    this.commonData["timer"] = mc.system.runInterval(
+      () => this.commonData["timer"] && this.commonData["ticks"]++
+    );
   }
 
   public stopTimer(): void {
@@ -150,6 +152,17 @@ class WallRun extends TempStorage<WallRunTempStorage> {
   }
 }
 
+class BedwarsRush extends TempStorage {
+  constructor(commonData: CommonData) {
+    super("BedwarsRush", commonData);
+    this.tempData = this.setDefaultTempData();
+  }
+
+  protected setDefaultTempData() {
+    return {};
+  }
+}
+
 const commonDataInstance: CommonData = {
   player: mc.world.getAllPlayers()[0],
   gameID: "lobby",
@@ -163,5 +176,6 @@ const generalTs = new TempStorage("general", commonDataInstance);
 const bridgerTs = new Bridger(commonDataInstance);
 const clutcherTs = new Clutcher(commonDataInstance);
 const wallRunTs = new WallRun(commonDataInstance);
+const bedwarsRushTs = new BedwarsRush(commonDataInstance);
 
-export { generalTs, bridgerTs, wallRunTs, clutcherTs };
+export { generalTs, bridgerTs, wallRunTs, clutcherTs, bedwarsRushTs };

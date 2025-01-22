@@ -11,6 +11,7 @@ import {
   lobbyScoreboard,
   wallRunMessage,
   wallRunScoreboard,
+  bedwarsRushScoreboard,
 } from "../data/staticTextData";
 
 /**
@@ -51,10 +52,9 @@ export const confirmMessage = function (message: string, sound: string = ""): vo
  * returns todays date
  */
 const date = new Date();
-export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(
-  2,
-  "0"
-)}/${String(date.getFullYear()).slice(-2)}`;
+export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(
+  date.getDate()
+).padStart(2, "0")}/${String(date.getFullYear()).slice(-2)}`;
 
 /**
  * sets bridger mode "straight16b", "straight21b", "straight50b", "inclined16b", "inclined21b", "inclined50b",
@@ -97,6 +97,7 @@ export const displayScoreboard = function (gameId: GameID): void {
     inclinedBridger: bridgerScoreboard,
     clutcher: clutcherScoreboard,
     wallRun: wallRunScoreboard,
+    bedwarsRush: bedwarsRushScoreboard,
   };
 
   const display = scoreboards[gameId];
@@ -107,7 +108,9 @@ export const displayScoreboard = function (gameId: GameID): void {
  * back to lobby
  */
 export const backToLobbyKit = function (player: mc.Player) {
+  generalTs.stopTimer();
   generalTs.commonData["gameID"] = "lobby";
+  generalTs.commonData["ticks"] = 0;
   player.setGameMode(mc.GameMode.survival);
   confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");
@@ -121,17 +124,25 @@ export const backToLobbyKit = function (player: mc.Player) {
 export const getFloatingEntity = function (): mc.Entity {
   switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
-      return mc.world
-        .getDimension("overworld")
-        .getEntities({ location: { x: 9997.2, y: 100.45, z: 10004.51 }, excludeFamilies: ["player"] })[0];
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 9997.2, y: 100.45, z: 10004.51 },
+        excludeFamilies: ["player"],
+      })[0];
     case "inclinedBridger":
-      return mc.world
-        .getDimension("overworld")
-        .getEntities({ location: { x: 9974.08, y: 100.0, z: 10002.96 }, excludeFamilies: ["player"] })[0];
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 9974.08, y: 100.0, z: 10002.96 },
+        excludeFamilies: ["player"],
+      })[0];
     case "wallRun":
-      return mc.world
-        .getDimension("overworld")
-        .getEntities({ location: { x: 30007.61, y: 106.12, z: 30015.16 }, excludeFamilies: ["player"] })[0];
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 30007.61, y: 106.12, z: 30015.16 },
+        excludeFamilies: ["player"],
+      })[0];
+    case "bedwarsRush":
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 40066.29, y: 105.0, z: 40004.54 },
+        excludeFamilies: ["player"],
+      })[0];
   }
 };
 
@@ -154,8 +165,18 @@ export const differenceMs = function (ms1: number, ms2: number): string {
 /**
  * updates the floating texts including stats about the player
  */
-type FloatingTextParams = { pb: number; avgTime: number; attempts: number; successAttempts: number };
-export const updateFloatingText = function ({ pb, avgTime, attempts, successAttempts }: FloatingTextParams) {
+type FloatingTextParams = {
+  pb: number;
+  avgTime: number;
+  attempts: number;
+  successAttempts: number;
+};
+export const updateFloatingText = function ({
+  pb,
+  avgTime,
+  attempts,
+  successAttempts,
+}: FloatingTextParams) {
   const player = generalTs.commonData["player"];
   const displayText = `§b${player.nameTag} - §7§oVersion ${VERSION}§r
 §6Personal Best: §f${properTimeText(pb)}
@@ -180,4 +201,15 @@ export const showMessage = function (isPB: boolean, time: number, prevPB: number
       generalTs.commonData["player"].sendMessage(wallRunMessage(isPB, time, prevPB));
       break;
   }
+};
+
+/**
+ * shoot fireworks dynamically
+ */
+export const shootFireworks = function (location: mc.Vector3): void {
+  const dimension = mc.world.getDimension("overworld");
+  dimension.spawnEntity("fireworks_rocket", { x: location.x + 2, y: location.y, z: location.z });
+  dimension.spawnEntity("fireworks_rocket", { x: location.x - 2, y: location.y, z: location.z });
+  dimension.spawnEntity("fireworks_rocket", { x: location.x, y: location.y, z: location.z + 2 });
+  dimension.spawnEntity("fireworks_rocket", { x: location.x, y: location.y, z: location.z - 2 });
 };

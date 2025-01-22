@@ -47,6 +47,12 @@ export const getInvData = function (game: GameID): ItemInfo[] {
       { item: "minecraft:white_wool", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
+  if (game === "bedwarsRush")
+    return [
+      { item: "minecraft:red_wool", quantity: 64 },
+      { item: "minecraft:red_wool", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ];
 };
 
 /**
@@ -86,6 +92,18 @@ export const locationData: LocationDataIF = {
   wallRun: {
     position: { x: 30009.5, y: 105, z: 30013.5 },
     facing: { x: 30009.5, y: 105, z: 30014 },
+  },
+  bedwarsRush: {
+    position: {
+      x: 40068.5,
+      y: 105,
+      z: 40007.5,
+    },
+    facing: {
+      x: 40068,
+      y: 105,
+      z: 40007.5,
+    },
   },
 };
 

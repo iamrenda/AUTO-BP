@@ -10,4 +10,5 @@ import "./eventListener/eventListener";
 //   mc.world.sendMessage("message detected");
 
 //   DynamicProperty.resetDynamicData();
+//   mc.world.sendMessage(String(mc.world.getDynamicProperty("auto:dynamicData")));
 // });

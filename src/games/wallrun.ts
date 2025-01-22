@@ -26,7 +26,9 @@ const resetWallRunner = function () {
 
   Object.keys(wallRunTs.tempData["isPlateDisabled"]).map(
     (plate) =>
-      (wallRunTs.tempData["isPlateDisabled"][plate as keyof (typeof wallRunTs.tempData)["isPlateDisabled"]] = false)
+      (wallRunTs.tempData["isPlateDisabled"][
+        plate as keyof (typeof wallRunTs.tempData)["isPlateDisabled"]
+      ] = false)
   );
 };
 
@@ -35,9 +37,9 @@ const resetWallRunner = function () {
  */
 const resetMap = function () {
   wallRunTs.stopTimer();
+  wallRunTs.clearBlocks();
   resetWallRunner();
   util.updateFloatingText(WallRunData.getBundledData());
-  wallRunTs.clearBlocks();
   util.giveItems("wallRun");
   util.teleportation(<TeleportationLocation>locationData.wallRun);
 };
@@ -45,7 +47,8 @@ const resetMap = function () {
 const setAverageTime = function (newTime: number) {
   const prevAvgTime = WallRunData.getData(DynamicPropertyID.WallRunner_AverageTime);
   const attempts = WallRunData.getData(DynamicPropertyID.WallRunner_Attempts);
-  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+  const newAvgTime =
+    prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
   WallRunData.setData(DynamicPropertyID.WallRunner_AverageTime, Math.round(newAvgTime * 100) / 100);
 };
@@ -100,7 +103,7 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
 
       setAverageTime(ticks);
 
-      mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", player.location);
+      util.shootFireworks(player.location);
       wallRunTs.tempData["autoReq"] = mc.system.runTimeout(enablePlate, 80);
 
       WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
@@ -120,7 +123,10 @@ export const wallRunFormHandler = async function (player: mc.Player) {
     if (generalSelection === 10) {
       const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
       wallRunTs.tempData["wallRunIsCheckPointEnabled"] = !isCheckPointEnabled;
-      util.confirmMessage(`Checkpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`, "random.orb");
+      util.confirmMessage(
+        `Checkpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`,
+        "random.orb"
+      );
     }
   }
 
@@ -153,7 +159,10 @@ export const listener = function () {
   if (!(player.location.y < 98) || player.getGameMode() === mc.GameMode.spectator) return;
   if (wallRunTs.tempData["isCheckPointSaved"]) {
     util.confirmMessage("§7Teleporting back to the checkpoint...");
-    util.teleportation({ position: { x: 30009.5, y: 106, z: 30077.5 }, facing: { x: 30009.5, y: 106, z: 30078 } });
+    util.teleportation({
+      position: { x: 30009.5, y: 106, z: 30077.5 },
+      facing: { x: 30009.5, y: 106, z: 30078 },
+    });
     util.giveItems("wallRun");
     wallRunTs.clearBlocks();
   } else resetMap();

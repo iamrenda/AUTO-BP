@@ -7,7 +7,7 @@ import { bridgerTs } from "../data/tempStorage";
 import { confirmationForm } from "../forms/utility";
 import { BridgerTicksID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { BridgerData, DynamicProperty, GameData } from "../data/dynamicProperty";
+import { BridgerData, GameData } from "../data/dynamicProperty";
 import minecraftID from "../models/minecraftID";
 
 type IslandDistance = 16 | 21 | 50;
@@ -105,6 +105,14 @@ const enablePlate = function (cancelTimer: boolean = false): void {
   if (cancelTimer) mc.system.clearRun(bridgerTs.tempData["autoReq"]);
   resetMap();
   util.giveItems("straightBridger");
+};
+
+/**
+ * adds attmps (and success attmps) depending on the input
+ */
+const updateAttemptData = function (isSuccess: boolean): void {
+  BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
+  isSuccess ? BridgerData.addData(DynamicPropertyID.Bridger_SuccessAttempts) : "";
 };
 
 /**
@@ -366,7 +374,6 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
   // quit bridger
   if (bridgerSelection === 16) {
-    DynamicProperty.postData();
     resetMap(false);
     util.backToLobbyKit(player);
   }
@@ -380,29 +387,37 @@ export const placingBlockEvt = function (block: mc.Block) {
 };
 
 export const pressurePlatePushEvt = function (player: mc.Player) {
-  if (bridgerTs.tempData["isPlateDisabled"]) return;
-  const ticks = bridgerTs.commonData["ticks"];
+  if (bridgerTs.tempData.isPlateDisabled) return;
 
-  bridgerTs.tempData["isPlateDisabled"] = true;
+  const ticks = bridgerTs.commonData.ticks;
+  bridgerTs.tempData.isPlateDisabled = true;
 
   bridgerTs.stopTimer();
+  updateAttemptData(true);
 
   player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
+  util.shootFireworks(player.location);
+
+  bridgerTs.tempData.autoReq = mc.system.runTimeout(enablePlate, 80);
+
+  // if telly practice
+  if (GameData.getData("TellyPractice") !== "None") {
+    player.playSound("random.orb");
+    util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
+    return;
+  }
 
   if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), ticks)) {
     BridgerData.setData(DynamicPropertyID.Bridger_PB, ticks);
     util.showMessage(true, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
-    player.playSound("random.levelup");
     player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
-  } else util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
+    player.playSound("random.levelup");
+  } else {
+    util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
+    player.playSound("random.orb");
+  }
 
   setAverageTime(ticks);
-
-  mc.world.getDimension("overworld").spawnEntity("fireworks_rocket", player.location);
-  bridgerTs.tempData["autoReq"] = mc.system.runTimeout(enablePlate, 80);
-
-  BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
-  BridgerData.addData(DynamicPropertyID.Bridger_SuccessAttempts);
 };
 
 export const listener = function () {
@@ -412,7 +427,7 @@ export const listener = function () {
   if (bridgerTs.tempData["isPlateDisabled"]) enablePlate(true);
   else {
     bridgerTs.stopTimer();
-    BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
+    updateAttemptData(false);
     util.giveItems("straightBridger");
     resetMap();
   }

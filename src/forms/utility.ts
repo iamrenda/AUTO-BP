@@ -2,7 +2,10 @@ import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
 
-const confirmationForm = async function (player: Player, title: string): Promise<ActionFormResponse> {
+export const confirmationForm = async function (
+  player: Player,
+  title: string
+): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title(`§4§lReset PB for ${title}??`)
     .pattern(["_________", "__n___y__", "_________"], {
@@ -25,5 +28,3 @@ const confirmationForm = async function (player: Player, title: string): Promise
   // !15: rejection, 15: confirm
   return await form.show(player);
 };
-
-export { confirmationForm };

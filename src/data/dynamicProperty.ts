@@ -3,7 +3,7 @@ import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/Dynamic
 import { bridgerTs } from "./tempStorage";
 
 /////////////////////////////////////////////////////////////////
-class DynamicProperty {
+export class DynamicProperty {
   protected static dynamicData = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
 
   public static postData(): void {
@@ -63,13 +63,18 @@ class DynamicProperty {
       [DynamicPropertyID.WallRunner_Attempts]: 0,
       [DynamicPropertyID.WallRunner_SuccessAttempts]: 0,
       [DynamicPropertyID.WallRunner_AverageTime]: -1,
+
+      [DynamicPropertyID.bedwarsRush_PB]: -1,
+      [DynamicPropertyID.bedwarsRush_Attempts]: 0,
+      [DynamicPropertyID.bedwarsRush_SuccessAttempts]: 0,
+      [DynamicPropertyID.bedwarsRush_AverageTime]: -1,
     };
     this.dynamicData = defaultData;
     world.setDynamicProperty("auto:dynamicData", JSON.stringify(defaultData));
   }
 }
 
-class GameData extends DynamicProperty {
+export class GameData extends DynamicProperty {
   public static getData(gameDataType: "IsStairCased" | "Distance" | "TellyPractice") {
     const direction = bridgerTs.tempData["bridgerDirection"];
     return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
@@ -84,12 +89,17 @@ class GameData extends DynamicProperty {
   }
 }
 
-class BridgerData extends DynamicProperty {
+export class BridgerData extends DynamicProperty {
   public static getData(id: DynamicPropertyID): number {
     return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
   }
 
-  public static getBundledData(): { pb: number; avgTime: number; attempts: number; successAttempts: number } {
+  public static getBundledData(): {
+    pb: number;
+    avgTime: number;
+    attempts: number;
+    successAttempts: number;
+  } {
     let bundledData = {
       pb: -1,
       avgTime: -1,
@@ -128,12 +138,17 @@ class BridgerData extends DynamicProperty {
   }
 }
 
-class WallRunData extends DynamicProperty {
+export class WallRunData extends DynamicProperty {
   public static getData(id: DynamicPropertyID): number {
     return this.dynamicData[id];
   }
 
-  public static getBundledData(): { pb: number; avgTime: number; attempts: number; successAttempts: number } {
+  public static getBundledData(): {
+    pb: number;
+    avgTime: number;
+    attempts: number;
+    successAttempts: number;
+  } {
     let bundledData = {
       pb: -1,
       avgTime: -1,
@@ -142,8 +157,6 @@ class WallRunData extends DynamicProperty {
     };
 
     Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
-      if (!dynamicPropertyID.startsWith("Bridger")) return;
-
       switch (dynamicPropertyID) {
         case "Bridger_PB":
           bundledData.pb = this.getData(DynamicPropertyID.WallRunner_PB);
@@ -172,4 +185,49 @@ class WallRunData extends DynamicProperty {
   }
 }
 
-export { DynamicProperty, GameData, BridgerData, WallRunData };
+export class BedwarsRushData extends DynamicProperty {
+  public static getData(id: DynamicPropertyID): number {
+    return this.dynamicData[id];
+  }
+
+  public static getBundledData(): {
+    pb: number;
+    avgTime: number;
+    attempts: number;
+    successAttempts: number;
+  } {
+    let bundledData = {
+      pb: -1,
+      avgTime: -1,
+      attempts: 0,
+      successAttempts: 0,
+    };
+
+    Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
+      switch (dynamicPropertyID) {
+        case "bedwarsRush_PB":
+          bundledData.pb = this.getData(DynamicPropertyID.bedwarsRush_PB);
+          break;
+        case "bedwarsRush_Attempts":
+          bundledData.attempts = this.getData(DynamicPropertyID.bedwarsRush_Attempts);
+          break;
+        case "bedwarsRush_SuccessAttempts":
+          bundledData.successAttempts = this.getData(DynamicPropertyID.bedwarsRush_SuccessAttempts);
+          break;
+        case "bedwarsRush_AverageTime":
+          bundledData.avgTime = this.getData(DynamicPropertyID.bedwarsRush_AverageTime);
+          break;
+      }
+    });
+
+    return bundledData;
+  }
+
+  public static setData(id: DynamicPropertyID, data: number): void {
+    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
+  }
+
+  public static addData(id: DynamicPropertyID): void {
+    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]]++;
+  }
+}

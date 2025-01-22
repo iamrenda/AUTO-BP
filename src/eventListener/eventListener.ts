@@ -4,6 +4,7 @@ import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
+import * as bedwarsRush from "../games/bedwarsRush";
 import { generalTs } from "../data/tempStorage";
 import { DynamicProperty } from "../data/dynamicProperty";
 
@@ -45,6 +46,10 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
     case "wallRun":
       if (item.typeId === "minecraft:book") wallRun.wallRunFormHandler(player);
       break;
+
+    case "bedwarsRush":
+      if (item.typeId === "minecraft:book") bedwarsRush.bedWarsRushFormHandler(player);
+      break;
   }
 });
 
@@ -60,6 +65,9 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
       break;
     case "wallRun":
       wallRun.placingBlockEvt(block);
+      break;
+    case "bedwarsRush":
+      bedwarsRush.placingBlockEvt(block);
       break;
   }
 });
@@ -90,6 +98,7 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
 // joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["player"] = player;
+  DynamicProperty.fetchData();
   exp.backToLobbyKit(player);
 });
 
@@ -119,8 +128,17 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
-// breaking a block
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => (e.cancel = true));
+// breaking a block (before event)
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
+  switch (generalTs.commonData["gameID"]) {
+    case "bedwarsRush":
+      if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
+      // e.cancel = true;
+      break;
+    default:
+      e.cancel = true;
+  }
+});
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
@@ -135,6 +153,9 @@ mc.system.runInterval((): void => {
       break;
     case "wallRun":
       wallRun.listener();
+      break;
+    case "bedwarsRush":
+      bedwarsRush.listener();
       break;
   }
 });

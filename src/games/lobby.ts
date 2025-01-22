@@ -5,13 +5,12 @@ import TeleportationLocation from "../models/TeleportationLocation";
 import { bridgerTs, clutcherTs, wallRunTs } from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import { DynamicProperty } from "../data/dynamicProperty";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);
 
   // bridger
-  if (selection === 1) {
+  if (selection === 11) {
     const { selection: bridgerDirSelection, canceled } = await form.formBridgerDirForm(player);
 
     if (canceled) return;
@@ -23,31 +22,38 @@ export const nagivatorFormHandler = async function (player: Player) {
       bridgerTs.commonData["gameID"] = "inclinedBridger";
       bridgerTs.tempData["bridgerDirection"] = "inclined";
     }
-    DynamicProperty.postData();
-    util.confirmMessage("§7Teleporting to bridger...");
+    util.confirmMessage("§7Teleporting to Bridger...");
     util.giveItems("straightBridger");
     util.setBridgerMode(BridgerTicksID[`${bridgerTs.tempData["bridgerDirection"]}16blocks`]);
     util.teleportation(<TeleportationLocation>data.locationData[bridgerTs.commonData["gameID"]]);
   }
 
   // clutcher
-  if (selection === 3) {
+  if (selection === 13) {
     clutcherTs.commonData["gameID"] = "clutcher";
     util.giveItems("clutcher");
-    util.confirmMessage("§7Teleporting to bridger...");
+    util.confirmMessage("§7Teleporting to Clutcher...");
     util.teleportation(data.locationData.clutcher[0 as keyof typeof data.locationData.clutcher]);
   }
 
   // wall run
-  if (selection === 5) {
+  if (selection === 15) {
     wallRunTs.commonData["gameID"] = "wallRun";
     util.giveItems("wallRun");
-    util.confirmMessage("§7Teleporting to bridger...");
+    util.confirmMessage("§7Teleporting to Wall Run...");
     util.teleportation(<TeleportationLocation>data.locationData.wallRun);
   }
 
+  // bedwars rush
+  if (selection === 21) {
+    wallRunTs.commonData["gameID"] = "bedwarsRush";
+    util.giveItems("bedwarsRush");
+    util.confirmMessage("§7Teleporting to Wall Run...");
+    util.teleportation(<TeleportationLocation>data.locationData.bedwarsRush);
+  }
+
   // back to lobby
-  if (selection === 7) util.teleportation(<TeleportationLocation>data.locationData.lobby);
+  if (selection === 23) util.teleportation(<TeleportationLocation>data.locationData.lobby);
 };
 
 export const launchingHandler = function (player: Player) {
