@@ -19,8 +19,8 @@ type FillAndPlaceIF = {
 /////////////////////////////////////////////////////////
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
-  straight: { x: 9993, y: 93, z: 10003 },
-  inclined: { x: 9970, y: 93, z: 10001 },
+  straight: { x: 9996, y: 89, z: 10005 },
+  inclined: { x: 9959, y: 92, z: 10004 },
 };
 
 const HEIGHT_DIFF: Record<number, number> = {
@@ -248,13 +248,13 @@ const fillAndPlace = function (
   if (distance1 === 50) fillAirLocation.start = getLocation(distance, 50, isStairCased1);
 
   if (distance === "straight") {
-    fillAirLocation.end.x = fillAirLocation.start.x + 12;
-    fillAirLocation.end.y = fillAirLocation.start.y + 13;
-    fillAirLocation.end.z = fillAirLocation.start.z + 9;
-  } else {
-    fillAirLocation.end.x = fillAirLocation.start.x + 13;
-    fillAirLocation.end.y = fillAirLocation.start.y + 16;
+    fillAirLocation.end.x = fillAirLocation.start.x + 10;
+    fillAirLocation.end.y = fillAirLocation.start.y + 21;
     fillAirLocation.end.z = fillAirLocation.start.z + 10;
+  } else {
+    fillAirLocation.end.x = fillAirLocation.start.x + 7;
+    fillAirLocation.end.y = fillAirLocation.start.y + 14;
+    fillAirLocation.end.z = fillAirLocation.start.z + 7;
   }
 
   dimension.fillBlocks(
@@ -423,7 +423,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 export const listener = function () {
   util.displayScoreboard("straightBridger");
 
-  if (!(bridgerTs.commonData["player"].location.y <= 95)) return;
+  if (!(bridgerTs.commonData["player"].location.y <= 97)) return;
   if (bridgerTs.tempData["isPlateDisabled"]) enablePlate(true);
   else {
     bridgerTs.stopTimer();

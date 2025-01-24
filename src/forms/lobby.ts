@@ -94,7 +94,20 @@ export const lobbyCreditForm = async function (player: Player): Promise<ActionFo
   const form = new ActionFormData()
     .title("Credits")
     .body(
-      `§3§lAUTO World§r §o§8- Version ${VERSION}§r\n\n§b§oContributors:§r\n  §7-§r §6Developer:§r §fTheMinerCat§r\n  §7-§r §6Builder:§r §fqwertyguy§r\n  §7-§r §6Helper:§r §fbartnielot§r\n\n§b§oPersonal thank you to:§r\n  §7-§r §6Chest UI:§r §fHerobrine643928§r\n  §7-§r §6Personal Scoreboard:§r §fPMK / Nodu§r\n\n`
+      `§3§lAUTO World§r §8- Version ${VERSION}§r
+ 
+ §b§oContributors:§r
+   §7- §6Developer: §fTheMinerCat
+   §7- §6Builder: §fqwertyguy
+   §7- §6Helper: §fbartnielot
+   
+ §b§oPersonal thank you to:§r
+   §7- §6Chest UI: §fHerobrine643928
+   §7- §6Personal Scoreboard: §fPMK / Nodu
+   §7- §6Bridger Map: §fBrody Bigwood
+   §7- §6Bedwars Rush Map: §fBdoggy617
+  
+`
     )
     .button("Close");
 

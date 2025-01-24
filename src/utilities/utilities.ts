@@ -127,7 +127,7 @@ export const getFloatingEntity = function (): mc.Entity {
   switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
       return mc.world.getDimension("overworld").getEntities({
-        location: { x: 9997.2, y: 100.45, z: 10004.51 },
+        location: { x: 9997.91, y: 101.59, z: 10004.76 },
         excludeFamilies: ["player"],
       })[0];
     case "inclinedBridger":
