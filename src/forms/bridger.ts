@@ -56,66 +56,108 @@ export const bridgerIslandForm = async function (player: Player): Promise<Action
   const distance = GameData.getData("Distance");
   const isStairCased = GameData.getData("IsStairCased");
   const tellyPractice = GameData.getData("TellyPractice");
+  const direction = bridgerTs.tempData["bridgerDirection"];
 
-  const form = new ChestFormData("45")
-    .title("Island Customization")
-    .pattern(["_________", "_s_c_t___", "_m_f_T___", "_l___n___", "_________"], {
-      s: {
-        itemName: "§616 Blocks",
-        itemDesc: [],
-        texture: "minecraft:sandstone",
-        stackAmount: 16,
-        enchanted: distance === 16,
-      },
-      m: {
-        itemName: "§621 Blocks",
-        itemDesc: [],
-        texture: "minecraft:sandstone",
-        stackAmount: 21,
-        enchanted: distance === 21,
-      },
-      l: {
-        itemName: "§650 Blocks",
-        itemDesc: [],
-        texture: "minecraft:sandstone",
-        stackAmount: 50,
-        enchanted: distance === 50,
-      },
-      c: {
-        itemName: "§6StairCased",
-        itemDesc: [],
-        texture: "minecraft:sandstone_stairs",
-        stackAmount: 1,
-        enchanted: isStairCased,
-      },
-      f: {
-        itemName: "§6Flat",
-        itemDesc: [],
-        texture: "minecraft:sandstone_slab",
-        stackAmount: 1,
-        enchanted: !isStairCased,
-      },
-      t: {
-        itemName: "§6Telly Practice",
-        itemDesc: [],
-        texture: "minecraft:ender_eye",
-        stackAmount: 1,
-        enchanted: tellyPractice === "Telly",
-      },
-      T: {
-        itemName: "§6Speed Telly Practice",
-        itemDesc: [],
-        texture: "minecraft:ender_pearl",
-        stackAmount: 1,
-        enchanted: tellyPractice === "Speed Telly",
-      },
-      n: {
-        itemName: "§6No Telly Practice",
-        itemDesc: [],
-        texture: "minecraft:slime_ball",
-        stackAmount: 1,
-        enchanted: tellyPractice === "None",
-      },
-    });
+  const form =
+    direction === "straight"
+      ? new ChestFormData("45")
+          .title("Island Customization")
+          .pattern(["_________", "_s_c_t___", "_m_f_T___", "_l___n___", "_________"], {
+            s: {
+              itemName: "§616 Blocks",
+              itemDesc: [],
+              texture: "minecraft:sandstone",
+              stackAmount: 16,
+              enchanted: distance === 16,
+            },
+            m: {
+              itemName: "§621 Blocks",
+              itemDesc: [],
+              texture: "minecraft:sandstone",
+              stackAmount: 21,
+              enchanted: distance === 21,
+            },
+            l: {
+              itemName: "§650 Blocks",
+              itemDesc: [],
+              texture: "minecraft:sandstone",
+              stackAmount: 50,
+              enchanted: distance === 50,
+            },
+            c: {
+              itemName: "§6StairCased",
+              itemDesc: [],
+              texture: "minecraft:sandstone_stairs",
+              stackAmount: 1,
+              enchanted: isStairCased,
+            },
+            f: {
+              itemName: "§6Flat",
+              itemDesc: [],
+              texture: "minecraft:sandstone_slab",
+              stackAmount: 1,
+              enchanted: !isStairCased,
+            },
+            t: {
+              itemName: "§6Telly Practice",
+              itemDesc: [],
+              texture: "minecraft:ender_eye",
+              stackAmount: 1,
+              enchanted: tellyPractice === "Telly",
+            },
+            T: {
+              itemName: "§6Speed Telly Practice",
+              itemDesc: [],
+              texture: "minecraft:ender_pearl",
+              stackAmount: 1,
+              enchanted: tellyPractice === "Speed Telly",
+            },
+            n: {
+              itemName: "§6No Telly Practice",
+              itemDesc: [],
+              texture: "minecraft:slime_ball",
+              stackAmount: 1,
+              enchanted: tellyPractice === "None",
+            },
+          })
+      : new ChestFormData("45")
+          .title("Island Customization")
+          .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {
+            s: {
+              itemName: "§616 Blocks",
+              itemDesc: [],
+              texture: "minecraft:sandstone",
+              stackAmount: 16,
+              enchanted: distance === 16,
+            },
+            m: {
+              itemName: "§621 Blocks",
+              itemDesc: [],
+              texture: "minecraft:sandstone",
+              stackAmount: 21,
+              enchanted: distance === 21,
+            },
+            l: {
+              itemName: "§650 Blocks",
+              itemDesc: [],
+              texture: "minecraft:sandstone",
+              stackAmount: 50,
+              enchanted: distance === 50,
+            },
+            c: {
+              itemName: "§6StairCased",
+              itemDesc: [],
+              texture: "minecraft:sandstone_stairs",
+              stackAmount: 1,
+              enchanted: isStairCased,
+            },
+            f: {
+              itemName: "§6Flat",
+              itemDesc: [],
+              texture: "minecraft:sandstone_slab",
+              stackAmount: 1,
+              enchanted: !isStairCased,
+            },
+          });
   return await form.show(player);
 };

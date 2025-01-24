@@ -70,22 +70,24 @@ export const lobbyForm = async function (player: Player): Promise<ActionFormResp
 };
 
 export const formBridgerDirForm = async function (player: Player): Promise<ActionFormResponse> {
-  const form = new ChestFormData("9").title("Direction").pattern(["__s___i__"], {
-    s: {
-      itemName: "§6Straight",
-      itemDesc: [],
-      texture: "minecraft:chain",
-      stackAmount: 1,
-      enchanted: false,
-    },
-    i: {
-      itemName: "§6Inclined",
-      itemDesc: [],
-      texture: "minecraft:arrow",
-      stackAmount: 1,
-      enchanted: false,
-    },
-  });
+  const form = new ChestFormData("27")
+    .title("Direction")
+    .pattern(["_________", "__s___i__", "_________"], {
+      s: {
+        itemName: "§6Straight",
+        itemDesc: [],
+        texture: "minecraft:chain",
+        stackAmount: 1,
+        enchanted: false,
+      },
+      i: {
+        itemName: "§6Inclined",
+        itemDesc: [],
+        texture: "minecraft:arrow",
+        stackAmount: 1,
+        enchanted: false,
+      },
+    });
 
   return await form.show(player);
 };

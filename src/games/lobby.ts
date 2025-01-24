@@ -16,10 +16,10 @@ export const nagivatorFormHandler = async function (player: Player) {
 
     if (canceled) return;
 
-    if (bridgerDirSelection === 2) {
+    if (bridgerDirSelection === 11) {
       bridgerTs.commonData["gameID"] = "straightBridger";
       bridgerTs.tempData["bridgerDirection"] = "straight";
-    } else if (bridgerDirSelection === 6) {
+    } else if (bridgerDirSelection === 15) {
       bridgerTs.commonData["gameID"] = "inclinedBridger";
       bridgerTs.tempData["bridgerDirection"] = "inclined";
     }

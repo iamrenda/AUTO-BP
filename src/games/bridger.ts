@@ -34,7 +34,7 @@ const HEIGHT_DIFF: Record<number, number> = {
  */
 const TELLYSTARTBASELOCATION: mc.Vector3 = {
   x: 10000,
-  y: 99,
+  y: 101,
   z: 10004,
 };
 
