@@ -112,7 +112,7 @@ mc.world.beforeEvents.playerLeave.subscribe(() => {
 mc.world.beforeEvents.chatSend.subscribe((event) => {
   const { message, sender: player } = event;
 
-  if (message.includes("AUTO!")) {
+  if (message.includes("AUTO!") && generalTs.commonData["gameID"] === "lobby") {
     event.cancel = true;
 
     mc.system.run(() => {
