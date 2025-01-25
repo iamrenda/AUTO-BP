@@ -27,9 +27,7 @@ export enum BridgerTicksID {
 }
 
 export enum GameDataID {
-  straightIsStairCased = "straightIsStairCased",
   straightDistance = "straightDistance",
-  inclinedIsStairCased = "inclinedIsStairCased",
   inclinedDistance = "inclinedDistance",
   straightTellyPractice = "straightTellyPractice", // "None", "Telly", "Speed Telly"
 }

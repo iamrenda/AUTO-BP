@@ -11,11 +11,6 @@ import { BridgerData, GameData } from "../data/dynamicProperty";
 import minecraftID from "../models/minecraftID";
 
 type IslandDistance = 16 | 21 | 50;
-
-type FillAndPlaceIF = {
-  distance: IslandDistance;
-  isStairCased: boolean;
-};
 /////////////////////////////////////////////////////////
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
@@ -33,7 +28,7 @@ const HEIGHT_DIFF: Record<number, number> = {
  * where to start building telly practice
  */
 const TELLYSTARTBASELOCATION: mc.Vector3 = {
-  x: 10000,
+  x: 10001,
   y: 101,
   z: 10004,
 };
@@ -211,29 +206,25 @@ const handleTellyPractice = function (
  * gets the location (start fill, end fill, structure place) based on distance
  * @returns {mc.Vector3}
  */
-const getLocation = function (
-  direction: "straight" | "inclined",
-  distance: number,
-  isStairCased: boolean
-): mc.Vector3 {
+const getLocation = function (direction: "straight" | "inclined", distance: number): mc.Vector3 {
   const baseLocation: mc.Vector3 = BASE_LOCATION[direction];
   return {
     x: direction === "straight" ? baseLocation.x : baseLocation.x - distance,
-    y: isStairCased ? baseLocation.y + HEIGHT_DIFF[distance] : baseLocation.y,
+    y: baseLocation.y + HEIGHT_DIFF[distance],
     z: baseLocation.z + distance,
   };
 };
 
 /**
  * clear previous island and place new island at new location
- * @param {Object} info which filled with air
- * @param {Object} info which new structure will be built
+ * @param distance1 info which filled with air
+ * @param distance2 info which new structure will be built
  */
 const fillAndPlace = function (
   structure: string,
-  distance: "straight" | "inclined",
-  { distance: distance1, isStairCased: isStairCased1 }: FillAndPlaceIF,
-  { distance: distance2, isStairCased: isStairCased2 }: FillAndPlaceIF
+  direction: "straight" | "inclined",
+  distance1: IslandDistance,
+  distance2: IslandDistance
 ) {
   const dimension = mc.world.getDimension("overworld");
   const fillAirLocation: Record<string, mc.Vector3> = {
@@ -243,18 +234,18 @@ const fillAndPlace = function (
   let structurePlaceLocation: mc.Vector3 = { x: undefined, y: undefined, z: undefined };
 
   // fill air
-  if (distance1 === 16) fillAirLocation.start = getLocation(distance, 16, isStairCased1);
-  if (distance1 === 21) fillAirLocation.start = getLocation(distance, 21, isStairCased1);
-  if (distance1 === 50) fillAirLocation.start = getLocation(distance, 50, isStairCased1);
+  if (distance1 === 16) fillAirLocation.start = getLocation(direction, 16);
+  if (distance1 === 21) fillAirLocation.start = getLocation(direction, 21);
+  if (distance1 === 50) fillAirLocation.start = getLocation(direction, 50);
 
-  if (distance === "straight") {
+  if (direction === "straight") {
     fillAirLocation.end.x = fillAirLocation.start.x + 10;
-    fillAirLocation.end.y = fillAirLocation.start.y + 21;
-    fillAirLocation.end.z = fillAirLocation.start.z + 10;
+    fillAirLocation.end.y = fillAirLocation.start.y + 17;
+    fillAirLocation.end.z = fillAirLocation.start.z + 11;
   } else {
-    fillAirLocation.end.x = fillAirLocation.start.x + 7;
-    fillAirLocation.end.y = fillAirLocation.start.y + 14;
-    fillAirLocation.end.z = fillAirLocation.start.z + 7;
+    fillAirLocation.end.x = fillAirLocation.start.x + 10;
+    fillAirLocation.end.y = fillAirLocation.start.y + 18;
+    fillAirLocation.end.z = fillAirLocation.start.z + 9;
   }
 
   dimension.fillBlocks(
@@ -268,9 +259,9 @@ const fillAndPlace = function (
   if (currentTellyMode === "Speed Telly") handleTellyPractice("Speed Telly", distance1, distance2);
 
   // new structure place
-  if (distance2 === 16) structurePlaceLocation = getLocation(distance, 16, isStairCased2);
-  if (distance2 === 21) structurePlaceLocation = getLocation(distance, 21, isStairCased2);
-  if (distance2 === 50) structurePlaceLocation = getLocation(distance, 50, isStairCased2);
+  if (distance2 === 16) structurePlaceLocation = getLocation(direction, 16);
+  if (distance2 === 21) structurePlaceLocation = getLocation(direction, 21);
+  if (distance2 === 50) structurePlaceLocation = getLocation(direction, 50);
 
   mc.world.structureManager.place(structure, dimension, structurePlaceLocation);
 };
@@ -286,14 +277,8 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
   fillAndPlace(
     data.structures[bridgerTs.tempData["bridgerDirection"]],
     bridgerTs.tempData["bridgerDirection"],
-    {
-      distance: GameData.getData("Distance"),
-      isStairCased: GameData.getData("IsStairCased"),
-    },
-    {
-      distance: blocks,
-      isStairCased: GameData.getData("IsStairCased"),
-    }
+    GameData.getData("Distance"),
+    blocks
   );
 
   // set distance as dynamic property, set bridger mode for temp data
@@ -302,35 +287,6 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
 
   util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   util.updateFloatingText(BridgerData.getBundledData());
-};
-
-/**
- * replace island based on height and save in dynamic property
- */
-const handleHeightChange = function (isStairCased: boolean): void {
-  // check whether player clicked on the same distance
-  if (GameData.getData("IsStairCased") === isStairCased)
-    return util.confirmMessage("§4The height has already been changed!", "random.anvil_land");
-
-  fillAndPlace(
-    data.structures[bridgerTs.tempData["bridgerDirection"]],
-    bridgerTs.tempData["bridgerDirection"],
-    {
-      distance: GameData.getData("Distance"),
-      isStairCased: !isStairCased,
-    },
-    {
-      distance: GameData.getData("Distance"),
-      isStairCased: isStairCased,
-    }
-  );
-
-  // set staircased as dynamic property
-  GameData.setData("IsStairCased", isStairCased);
-  util.confirmMessage(
-    `§aThe height is now§r §6${isStairCased ? "StairCased" : "Flat"}§r§a!`,
-    "random.orb"
-  );
 };
 
 /////////////////////////////////////////////////////////
@@ -344,11 +300,9 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     if (islandSelection === 10) handleDistanceChange(16);
     if (islandSelection === 19) handleDistanceChange(21);
     if (islandSelection === 28) handleDistanceChange(50);
-    if (islandSelection === 12) handleHeightChange(true);
-    if (islandSelection === 21) handleHeightChange(false);
-    if (islandSelection === 14) handleTellyPractice("Telly");
-    if (islandSelection === 23) handleTellyPractice("Speed Telly");
-    if (islandSelection === 32) handleTellyPractice("None");
+    if (islandSelection === 12) handleTellyPractice("Telly");
+    if (islandSelection === 21) handleTellyPractice("Speed Telly");
+    if (islandSelection === 30) handleTellyPractice("None");
   }
 
   // block
@@ -423,7 +377,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 export const listener = function () {
   util.displayScoreboard("straightBridger");
 
-  if (!(bridgerTs.commonData["player"].location.y <= 97)) return;
+  if (!(bridgerTs.commonData["player"].location.y <= 99)) return;
   if (bridgerTs.tempData["isPlateDisabled"]) enablePlate(true);
   else {
     bridgerTs.stopTimer();

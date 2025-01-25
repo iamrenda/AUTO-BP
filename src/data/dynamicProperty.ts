@@ -13,16 +13,14 @@ export class DynamicProperty {
 
   public static fetchData(): void {
     const json = world.getDynamicProperty("auto:dynamicData");
-    this.dynamicData = json;
+    this.dynamicData = JSON.parse(String(json));
   }
 
   public static resetDynamicData(): void {
     const defaultData = {
       [DynamicPropertyID.GameDatas]: {
-        [GameDataID.straightIsStairCased]: false,
         [GameDataID.straightDistance]: 16,
         [GameDataID.straightTellyPractice]: "None",
-        [GameDataID.inclinedIsStairCased]: false,
         [GameDataID.inclinedDistance]: 16,
       },
 
@@ -75,13 +73,13 @@ export class DynamicProperty {
 }
 
 export class GameData extends DynamicProperty {
-  public static getData(gameDataType: "IsStairCased" | "Distance" | "TellyPractice") {
+  public static getData(gameDataType: "Distance" | "TellyPractice") {
     const direction = bridgerTs.tempData["bridgerDirection"];
     return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
   }
 
   public static setData(
-    gameDataType: "IsStairCased" | "Distance" | "TellyPractice",
+    gameDataType: "Distance" | "TellyPractice",
     data: boolean | number | string
   ): void {
     const direction = bridgerTs.tempData["bridgerDirection"];

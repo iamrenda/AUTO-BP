@@ -10,10 +10,14 @@ import { clutcherTs } from "../data/tempStorage";
  */
 const teleportToCounterClockwise = function () {
   const location =
-    data.locationData.clutcher[clutcherTs.tempData["teleportationIndex"] as keyof typeof data.locationData.clutcher];
+    data.locationData.clutcher[
+      clutcherTs.tempData["teleportationIndex"] as keyof typeof data.locationData.clutcher
+    ];
   util.teleportation(location);
   clutcherTs.tempData["teleportationIndex"] =
-    clutcherTs.tempData["teleportationIndex"] === 3 ? 0 : clutcherTs.tempData["teleportationIndex"] + 1;
+    clutcherTs.tempData["teleportationIndex"] === 3
+      ? 0
+      : clutcherTs.tempData["teleportationIndex"] + 1;
 };
 
 /**
@@ -57,15 +61,15 @@ const resetClutcher = function () {
 /**
  * when player fails
  */
-const restartClutch = function () {
+const playerFall = function () {
   // if fail during countdown
   if (!clutcherTs.tempData["hitTimer"] && clutcherTs.tempData["countDown"]) {
     util.confirmMessage("§8Count down canceled", "note.guitar");
     clutcherTs.tempData["sec"] = 3;
   }
 
-  if (clutcherTs.tempData["countDown"]) mc.system.clearRun(clutcherTs.tempData["countDown"]);
   if (clutcherTs.tempData["hitTimer"]) mc.system.clearRun(clutcherTs.tempData["hitTimer"]);
+  clutcherTs.stopCountDown();
 
   resetClutcher();
 
@@ -92,8 +96,9 @@ const applyKnockback = function (
  * start applying knockback to the player
  */
 const startClutch = function (player: mc.Player) {
-  mc.system.clearRun(clutcherTs.tempData["countDown"]);
+  clutcherTs.stopCountDown();
   clutcherTs.tempData["isListening"] = true;
+  countDownDisplay(player, "§aGO!");
   player.playSound("note.pling");
   clutcherTs.tempData["sec"] = 3;
 
@@ -111,9 +116,13 @@ const startClutch = function (player: mc.Player) {
 /**
  * count down display
  */
-const countDownDisplay = function (player: mc.Player) {
+const countDownDisplay = function (player: mc.Player, text: string) {
   player.playSound("note.hat");
-  player.onScreenDisplay.setTitle(`§6${clutcherTs.tempData["sec"]}`);
+  player.onScreenDisplay.setTitle(text, {
+    fadeInDuration: 0,
+    fadeOutDuration: 7,
+    stayDuration: 20,
+  });
   clutcherTs.tempData["sec"]--;
 };
 
@@ -122,18 +131,26 @@ const countDownDisplay = function (player: mc.Player) {
  */
 const readyForClutch = function (player: mc.Player) {
   clutcherTs.tempData["hitIndex"] = 0;
-  countDownDisplay(player);
+  countDownDisplay(player, `§6${clutcherTs.tempData["sec"]}`);
 
+  // starting timer for countdown
   clutcherTs.tempData["countDown"] = mc.system.runInterval(() => {
     if (!clutcherTs.tempData["sec"]) return startClutch(player);
-    countDownDisplay(player);
+    countDownDisplay(player, `§6${clutcherTs.tempData["sec"]}`);
   }, 20);
 };
 
 ///////////////////////////////////////////////////////////////////
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
-  if (player.isSneaking && clutcherTs.tempData["clutchShiftStart"]) return readyForClutch(player);
+  if (
+    player.isSneaking &&
+    clutcherTs.tempData["clutchShiftStart"] &&
+    !clutcherTs.tempData["countDown"]
+  )
+    return readyForClutch(player);
+
+  if (clutcherTs.tempData["countDown"]) return;
 
   const { selection } = await form.clutcherForm(player);
 
@@ -189,7 +206,7 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
 };
 
 export const listener = function () {
-  if (clutcherTs.commonData["player"].location.y <= 88) restartClutch();
+  if (clutcherTs.commonData["player"].location.y <= 88) playerFall();
 };
 
 export const slowListener = function () {

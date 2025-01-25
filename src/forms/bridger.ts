@@ -54,7 +54,6 @@ export const bridgerBlockForm = async function (player: Player): Promise<ActionF
 
 export const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
   const distance = GameData.getData("Distance");
-  const isStairCased = GameData.getData("IsStairCased");
   const tellyPractice = GameData.getData("TellyPractice");
   const direction = bridgerTs.tempData["bridgerDirection"];
 
@@ -62,7 +61,7 @@ export const bridgerIslandForm = async function (player: Player): Promise<Action
     direction === "straight"
       ? new ChestFormData("45")
           .title("Island Customization")
-          .pattern(["_________", "_s_c_t___", "_m_f_T___", "_l___n___", "_________"], {
+          .pattern(["_________", "_s_t_____", "_m_T_____", "_l_n_____", "_________"], {
             s: {
               itemName: "§616 Blocks",
               itemDesc: [],
@@ -83,20 +82,6 @@ export const bridgerIslandForm = async function (player: Player): Promise<Action
               texture: "minecraft:sandstone",
               stackAmount: 50,
               enchanted: distance === 50,
-            },
-            c: {
-              itemName: "§6StairCased",
-              itemDesc: [],
-              texture: "minecraft:sandstone_stairs",
-              stackAmount: 1,
-              enchanted: isStairCased,
-            },
-            f: {
-              itemName: "§6Flat",
-              itemDesc: [],
-              texture: "minecraft:sandstone_slab",
-              stackAmount: 1,
-              enchanted: !isStairCased,
             },
             t: {
               itemName: "§6Telly Practice",
@@ -122,7 +107,7 @@ export const bridgerIslandForm = async function (player: Player): Promise<Action
           })
       : new ChestFormData("45")
           .title("Island Customization")
-          .pattern(["_________", "_s_c_____", "_m_f_____", "_l_______", "_________"], {
+          .pattern(["_________", "_s_______", "_m_______", "_l_______", "_________"], {
             s: {
               itemName: "§616 Blocks",
               itemDesc: [],
@@ -143,20 +128,6 @@ export const bridgerIslandForm = async function (player: Player): Promise<Action
               texture: "minecraft:sandstone",
               stackAmount: 50,
               enchanted: distance === 50,
-            },
-            c: {
-              itemName: "§6StairCased",
-              itemDesc: [],
-              texture: "minecraft:sandstone_stairs",
-              stackAmount: 1,
-              enchanted: isStairCased,
-            },
-            f: {
-              itemName: "§6Flat",
-              itemDesc: [],
-              texture: "minecraft:sandstone_slab",
-              stackAmount: 1,
-              enchanted: !isStairCased,
             },
           });
   return await form.show(player);

@@ -22,7 +22,6 @@ type BridgerTempStorage = {
 };
 
 type ClutcherTempStorage = {
-  clutcherBlock: minecraftID.MinecraftBlockIdIF;
   clutchHits: number[];
   clutchShiftStart: boolean;
 
@@ -112,7 +111,6 @@ class Clutcher extends TempStorage<ClutcherTempStorage> {
 
   protected setDefaultTempData(): ClutcherTempStorage {
     return {
-      clutcherBlock: "minecraft:sandstone",
       clutchHits: [1],
       clutchShiftStart: true,
 
@@ -128,6 +126,12 @@ class Clutcher extends TempStorage<ClutcherTempStorage> {
 
       teleportationIndex: 1,
     };
+  }
+
+  public stopCountDown(): void {
+    if (!this.tempData["countDown"]) return;
+    mc.system.clearRun(this.tempData["countDown"]);
+    this.tempData["countDown"] = null;
   }
 }
 

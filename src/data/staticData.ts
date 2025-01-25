@@ -2,7 +2,7 @@ import MinecraftID from "../models/minecraftID";
 import TeleportationLocation from "../models/TeleportationLocation";
 import ItemInfo from "../models/ItemInfo";
 import GameID from "../models/GameID";
-import { bridgerTs, clutcherTs } from "./tempStorage";
+import { bridgerTs } from "./tempStorage";
 
 ////////////////////
 // INTERFACE
@@ -39,7 +39,8 @@ export const getInvData = function (game: GameID): ItemInfo[] {
     ];
   if (game === "clutcher")
     return [
-      { item: clutcherTs.tempData["clutcherBlock"], quantity: 64 },
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:sandstone", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
   if (game === "wallRun")
