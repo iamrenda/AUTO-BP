@@ -1,6 +1,8 @@
 import "./eventListener/eventListener";
 import * as mc from "@minecraft/server";
+import { DynamicProperty } from "./data/dynamicProperty";
+DynamicProperty.fetchData();
 mc.world.afterEvents.chatSend.subscribe(() => {
-    mc.world.sendMessage("message detected");
-    mc.world.sendMessage(String(mc.world.getDynamicProperty("auto:dynamicData")));
+    DynamicProperty.postData();
+    mc.world.sendMessage("posted data");
 });

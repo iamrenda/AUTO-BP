@@ -5,7 +5,6 @@ import TeleportationLocation from "../models/TeleportationLocation";
 import { bridgerTs, clutcherTs, wallRunTs } from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { BridgerTicksID } from "../models/DynamicProperty";
-import { DynamicProperty } from "../data/dynamicProperty";
 
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);
@@ -23,7 +22,6 @@ export const nagivatorFormHandler = async function (player: Player) {
       bridgerTs.commonData["gameID"] = "inclinedBridger";
       bridgerTs.tempData["bridgerDirection"] = "inclined";
     }
-    DynamicProperty.fetchData();
     util.setBridgerMode(BridgerTicksID[`${bridgerTs.tempData["bridgerDirection"]}16blocks`]);
     util.giveItems("straightBridger");
     util.confirmMessage("§7Teleporting to Bridger...");
@@ -32,7 +30,6 @@ export const nagivatorFormHandler = async function (player: Player) {
 
   // clutcher
   if (selection === 13) {
-    DynamicProperty.fetchData();
     clutcherTs.commonData["gameID"] = "clutcher";
     util.giveItems("clutcher");
     util.confirmMessage("§7Teleporting to Clutcher...");
@@ -41,7 +38,6 @@ export const nagivatorFormHandler = async function (player: Player) {
 
   // wall run
   if (selection === 15) {
-    DynamicProperty.fetchData();
     wallRunTs.commonData["gameID"] = "wallRun";
     util.giveItems("wallRun");
     util.confirmMessage("§7Teleporting to Wall Run...");
@@ -50,7 +46,6 @@ export const nagivatorFormHandler = async function (player: Player) {
 
   // bedwars rush
   if (selection === 21) {
-    DynamicProperty.fetchData();
     wallRunTs.commonData["gameID"] = "bedwarsRush";
     util.giveItems("bedwarsRush");
     util.confirmMessage("§7Teleporting to Wall Run...");

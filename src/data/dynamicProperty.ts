@@ -12,13 +12,8 @@ export class DynamicProperty {
   }
 
   public static fetchData(): void {
-    try {
-      const json = world.getDynamicProperty("auto:dynamicData");
-      this.dynamicData = json ? JSON.parse(String(json)) : DynamicProperty.resetDynamicData();
-    } catch (error) {
-      console.error("Error fetching dynamic data:", error);
-      DynamicProperty.resetDynamicData();
-    }
+    const json = world.getDynamicProperty("auto:dynamicData");
+    this.dynamicData = json;
   }
 
   public static resetDynamicData(): void {
