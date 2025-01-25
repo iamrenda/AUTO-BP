@@ -19,8 +19,8 @@ type FillAndPlaceIF = {
 /////////////////////////////////////////////////////////
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
-  straight: { x: 9996, y: 89, z: 10005 },
-  inclined: { x: 9959, y: 92, z: 10004 },
+  straight: { x: 9997, y: 91, z: 10005 },
+  inclined: { x: 9958, y: 92, z: 10004 },
 };
 
 const HEIGHT_DIFF: Record<number, number> = {

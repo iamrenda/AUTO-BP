@@ -132,7 +132,7 @@ export const getFloatingEntity = function (): mc.Entity {
       })[0];
     case "inclinedBridger":
       return mc.world.getDimension("overworld").getEntities({
-        location: { x: 9962.66, y: 101.85, z: 10004.5 },
+        location: { x: 9960.73, y: 100.97, z: 10003.64 },
         excludeFamilies: ["player"],
       })[0];
     case "wallRun":
