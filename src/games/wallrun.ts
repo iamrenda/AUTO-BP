@@ -39,7 +39,7 @@ const resetMap = function () {
   wallRunTs.stopTimer();
   wallRunTs.clearBlocks();
   resetWallRunner();
-  util.updateFloatingText(WallRunData.getBundledData());
+  util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
   util.giveItems("wallRun");
   util.teleportation(<TeleportationLocation>locationData.wallRun);
 };
@@ -124,7 +124,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
       const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
       wallRunTs.tempData["wallRunIsCheckPointEnabled"] = !isCheckPointEnabled;
       util.confirmMessage(
-        `Checkpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`,
+        `§aCheckpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`,
         "random.orb"
       );
     }
@@ -137,7 +137,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
 
     WallRunData.setData(DynamicPropertyID.WallRunner_PB, -1);
     util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    util.updateFloatingText(WallRunData.getBundledData());
+    util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
   }
 
   // back to lobby

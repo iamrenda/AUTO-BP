@@ -84,7 +84,7 @@ const resetMap = function (wasAttempt: boolean = true): void {
     ? util.teleportation(<TeleportationLocation>data.locationData[gameId])
     : util.teleportation(<TeleportationLocation>data.locationData.lobby);
 
-  if (wasAttempt) util.updateFloatingText(BridgerData.getBundledData());
+  if (wasAttempt) util.updateFloatingText(BridgerData.getBundledData("Bridger"));
 
   bridgerTs.clearBlocks();
 
@@ -196,9 +196,9 @@ const handleTellyPractice = function (
 
   GameData.setData("TellyPractice", newTellyMode);
   if (newTellyMode === "None")
-    util.confirmMessage(`§aTelly practice mode has now been §cdisabled!`, "random.orb");
+    util.confirmMessage(`§aTelly practice mode has now been §cDisabled!`, "random.orb");
   else if (prevTellyMode === "None")
-    util.confirmMessage(`§aTelly practice mode has now been enabled!`, "random.orb");
+    util.confirmMessage(`§aTelly practice mode has now been Enabled!`, "random.orb");
   else util.confirmMessage(`§aThe change has now been made!`, "random.orb");
 };
 
@@ -286,7 +286,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
   util.setBridgerMode(<BridgerTicksID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}b`);
 
   util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
-  util.updateFloatingText(BridgerData.getBundledData());
+  util.updateFloatingText(BridgerData.getBundledData("Bridger"));
 };
 
 /////////////////////////////////////////////////////////
@@ -323,7 +323,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
     BridgerData.setData(DynamicPropertyID.Bridger_PB, -1);
     util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    util.updateFloatingText(BridgerData.getBundledData());
+    util.updateFloatingText(BridgerData.getBundledData("Bridger"));
   }
 
   // quit bridger

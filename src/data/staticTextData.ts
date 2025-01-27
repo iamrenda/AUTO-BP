@@ -71,7 +71,7 @@ export const wallRunScoreboard = function (): string {
 };
 
 export const bedwarsRushScoreboard = function (): string {
-  const pb = BedwarsRushData.getData(DynamicPropertyID.bedwarsRush_PB);
+  const pb = BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB);
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r

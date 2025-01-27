@@ -9,13 +9,13 @@ import { DynamicPropertyID } from "../models/DynamicProperty";
 import { confirmationForm } from "../forms/utility";
 
 const setAverageTime = function (newTime: number) {
-  const prevAvgTime = BedwarsRushData.getData(DynamicPropertyID.bedwarsRush_AverageTime);
-  const attempts = BedwarsRushData.getData(DynamicPropertyID.bedwarsRush_Attempts);
+  const prevAvgTime = BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_AverageTime);
+  const attempts = BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_Attempts);
   const newAvgTime =
     prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
   BedwarsRushData.setData(
-    DynamicPropertyID.bedwarsRush_AverageTime,
+    DynamicPropertyID.BedwarsRush_AverageTime,
     Math.round(newAvgTime * 100) / 100
   );
 };
@@ -29,7 +29,7 @@ const resetMap = function () {
   bedwarsRushTs.stopTimer();
   bedwarsRushTs.clearBlocks();
   resetBedwarsRusher();
-  util.updateFloatingText(BedwarsRushData.getBundledData());
+  util.updateFloatingText(BedwarsRushData.getBundledData("BedwarsRush"));
   util.giveItems("bedwarsRush");
   util.teleportation(<TeleportationLocation>locationData.bedwarsRush);
 };
@@ -42,9 +42,9 @@ export const bedWarsRushFormHandler = async function (player: mc.Player) {
     const { selection: confirmationSelection } = await confirmationForm(player, `Bedwars Rush`);
     if (confirmationSelection !== 15) return;
 
-    BedwarsRushData.setData(DynamicPropertyID.bedwarsRush_PB, -1);
+    BedwarsRushData.setData(DynamicPropertyID.BedwarsRush_PB, -1);
     util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    util.updateFloatingText(BedwarsRushData.getBundledData());
+    util.updateFloatingText(BedwarsRushData.getBundledData("BedwarsRush"));
   }
 
   // back to lobby
@@ -68,22 +68,22 @@ export const breakingBlockEvt = function (player: mc.Player) {
 
     player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
 
-    if (util.isPB(BedwarsRushData.getData(DynamicPropertyID.bedwarsRush_PB), ticks)) {
-      BedwarsRushData.setData(DynamicPropertyID.bedwarsRush_PB, ticks);
-      util.showMessage(true, ticks, BedwarsRushData.getData(DynamicPropertyID.bedwarsRush_PB));
+    if (util.isPB(BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB), ticks)) {
+      BedwarsRushData.setData(DynamicPropertyID.BedwarsRush_PB, ticks);
+      util.showMessage(true, ticks, BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB));
       player.playSound("random.levelup");
       player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
     } else
-      util.showMessage(false, ticks, BedwarsRushData.getData(DynamicPropertyID.bedwarsRush_PB));
+      util.showMessage(false, ticks, BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB));
 
     setAverageTime(ticks);
 
     util.shootFireworks(player.location);
 
-    BedwarsRushData.addData(DynamicPropertyID.bedwarsRush_Attempts);
-    BedwarsRushData.addData(DynamicPropertyID.bedwarsRush_SuccessAttempts);
+    BedwarsRushData.addData(DynamicPropertyID.BedwarsRush_Attempts);
+    BedwarsRushData.addData(DynamicPropertyID.BedwarsRush_SuccessAttempts);
 
-    util.updateFloatingText(BedwarsRushData.getBundledData());
+    util.updateFloatingText(BedwarsRushData.getBundledData("BedwarsRush"));
   });
 };
 
@@ -91,7 +91,7 @@ export const listener = function () {
   util.displayScoreboard("bedwarsRush");
 
   if (bedwarsRushTs.commonData["player"].location.y < 97) {
-    BedwarsRushData.addData(DynamicPropertyID.bedwarsRush_Attempts);
+    BedwarsRushData.addData(DynamicPropertyID.BedwarsRush_Attempts);
     resetMap();
   }
 };
