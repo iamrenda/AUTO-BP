@@ -1,6 +1,6 @@
-import { world } from "@minecraft/server";
+import { world, Vector3 } from "@minecraft/server";
 import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
-import { bridgerTs } from "./tempStorage";
+import { generalTs, bridgerTs } from "./tempStorage";
 
 /////////////////////////////////////////////////////////////////
 export class DynamicProperty {
@@ -227,5 +227,25 @@ export class BedwarsRushData extends DynamicProperty {
 
   public static addData(id: DynamicPropertyID): void {
     this.dynamicData[id]++;
+  }
+}
+
+export class StoredBlocksClass {
+  public static clearBlocks(): void {
+    const jsonArray = JSON.parse(`${world.getDynamicProperty("auto:storedBlocks")}`);
+
+    jsonArray.map((location: Vector3) =>
+      world.getDimension("overworld").setBlockType(location, "minecraft:air")
+    );
+    world.setDynamicProperty("auto:storedBlocksGameID", "undefined");
+    world.setDynamicProperty("auto:storedBlocks", "[]");
+    generalTs.commonData["storedLocationsGameID"] = undefined;
+  }
+
+  public static storeBlocks(): void {
+    const json = JSON.stringify([...generalTs.commonData["storedLocations"]]);
+    const gameId = generalTs.commonData["gameID"];
+    world.setDynamicProperty("auto:storedBlocks", json);
+    world.setDynamicProperty("auto:storedBlocksGameID", gameId);
   }
 }

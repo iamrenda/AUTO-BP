@@ -28,3 +28,11 @@ export const confirmationForm = async function (
   // !15: rejection, 15: confirm
   return await form.show(player);
 };
+
+export const clearBlocksForm = async function (player: Player): Promise<ActionFormResponse> {
+  const form = new ChestFormData("27")
+    .title("Clear Blocks?")
+    .button(13, "§aClear Blocks", [], "minecraft:lime_wool", 1, false);
+
+  return await form.show(player);
+};

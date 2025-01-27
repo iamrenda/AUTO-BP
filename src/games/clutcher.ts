@@ -9,10 +9,7 @@ import { clutcherTs } from "../data/tempStorage";
  * teleport player to counter clockwise location
  */
 const teleportToCounterClockwise = function () {
-  const location =
-    data.locationData.clutcher[
-      clutcherTs.tempData["teleportationIndex"] as keyof typeof data.locationData.clutcher
-    ];
+  const location = data.locationData.clutcher[clutcherTs.tempData["teleportationIndex"]];
   util.teleportation(location);
   clutcherTs.tempData["teleportationIndex"] =
     clutcherTs.tempData["teleportationIndex"] === 3

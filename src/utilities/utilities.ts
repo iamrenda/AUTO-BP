@@ -13,6 +13,8 @@ import {
   wallRunScoreboard,
   bedwarsRushScoreboard,
 } from "../data/staticTextData";
+import { clearBlocksForm } from "../forms/utility";
+import { StoredBlocksClass } from "../data/dynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -214,4 +216,21 @@ export const shootFireworks = function (location: mc.Vector3): void {
   dimension.spawnEntity("fireworks_rocket", { x: location.x - 2, y: location.y, z: location.z });
   dimension.spawnEntity("fireworks_rocket", { x: location.x, y: location.y, z: location.z + 2 });
   dimension.spawnEntity("fireworks_rocket", { x: location.x, y: location.y, z: location.z - 2 });
+};
+
+/**
+ * attempts to show clearing blocks if there is uncleared blocks
+ * @return boolean whether the form is shown or not
+ */
+export const clearBlocks = async function (player: mc.Player) {
+  const { selection } = await clearBlocksForm(player);
+  if (selection !== 13) return;
+
+  StoredBlocksClass.clearBlocks();
+  confirmMessage("§aWe have cleared the blocks!", "random.orb");
+};
+
+export const showTitleBar = function (player: mc.Player, title: string, subtitle?: string) {
+  player.onScreenDisplay.setTitle(title);
+  if (subtitle) player.onScreenDisplay.updateSubtitle(subtitle);
 };

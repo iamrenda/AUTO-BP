@@ -8,6 +8,7 @@ type CommonData = {
   player: mc.Player;
   gameID: GameID;
   storedLocations: Set<mc.Vector3>;
+  storedLocationsGameID: GameID;
   blocks: number;
   timer: number | undefined;
   ticks: number;
@@ -171,6 +172,7 @@ const commonDataInstance: CommonData = {
   player: mc.world.getAllPlayers()[0],
   gameID: "lobby",
   storedLocations: new Set(),
+  storedLocationsGameID: undefined,
   blocks: 0,
   timer: undefined,
   ticks: 0,

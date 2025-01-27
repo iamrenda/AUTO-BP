@@ -1,15 +1,11 @@
 import MinecraftID from "../models/minecraftID";
-import TeleportationLocation from "../models/TeleportationLocation";
 import ItemInfo from "../models/ItemInfo";
 import GameID from "../models/GameID";
 import { bridgerTs } from "./tempStorage";
+import TeleportationLocation from "../models/TeleportationLocation";
 
 ////////////////////
 // INTERFACE
-type LocationDataIF = {
-  [key in GameID]: TeleportationLocation | TeleportationLocation[];
-};
-
 type DisplayBlockIF = {
   blockName: string;
   texture: MinecraftID.MinecraftBlockIdIF;
@@ -59,7 +55,16 @@ export const getInvData = function (game: GameID): ItemInfo[] {
 /**
  * locationData: lcoation to teleport when player joining to a game
  */
-export const locationData: LocationDataIF = {
+type LocationData = {
+  lobby: TeleportationLocation;
+  straightBridger: TeleportationLocation;
+  inclinedBridger: TeleportationLocation;
+  clutcher: TeleportationLocation[];
+  wallRun: TeleportationLocation;
+  bedwarsRush: TeleportationLocation;
+};
+
+export const locationData: LocationData = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
     facing: { x: 91.5, y: 262.0, z: 64 },
