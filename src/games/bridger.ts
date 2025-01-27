@@ -349,14 +349,17 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
   bridgerTs.stopTimer();
   updateAttemptData(true);
 
-  player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
   util.shootFireworks(player.location);
 
   bridgerTs.tempData.autoReq = mc.system.runTimeout(enablePlate, 80);
 
   // if telly practice
-  if (GameData.getData("TellyPractice") !== "None") {
+  if (
+    GameData.getData("TellyPractice") !== "None" &&
+    bridgerTs.tempData["bridgerDirection"] !== "inclined"
+  ) {
     player.playSound("random.orb");
+    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
     util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
     return;
   }
@@ -364,9 +367,10 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
   if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), ticks)) {
     BridgerData.setData(DynamicPropertyID.Bridger_PB, ticks);
     util.showMessage(true, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
-    player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
+    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, "§dNEW RECORD!!!");
     player.playSound("random.levelup");
   } else {
+    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
     util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
     player.playSound("random.orb");
   }

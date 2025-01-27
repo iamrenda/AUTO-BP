@@ -37,7 +37,7 @@ export const nagivatorFormHandler = async function (player: Player) {
       handleNavigation(player, "straightBridger", data.locationData.straightBridger);
       bridgerTs.tempData["bridgerDirection"] = "straight";
     } else if (bridgerDirSelection === 15) {
-      handleNavigation(player, "inclinedBridger", data.locationData.straightBridger);
+      handleNavigation(player, "inclinedBridger", data.locationData.inclinedBridger);
       bridgerTs.tempData["bridgerDirection"] = "inclined";
     }
   }

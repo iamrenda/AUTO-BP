@@ -104,7 +104,7 @@ export const bridgerMessage = function (isPB: boolean, time: number, prevPB: num
   )}§f
     §6Time Recorded:§r §f${util.tickToSec(time)}§r ${difference}§r`;
 
-  const pbMessage = isPB ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
+  const pbMessage = isPB ? `    §d§lNEW PERSONAL BEST!!§r\n` : "";
   return `${baseMessage}\n${pbMessage}§7----------------------------`;
 };
 
@@ -124,6 +124,6 @@ export const wallRunMessage = function (isPB: boolean, time: number, prevPB: num
   )}§f
     §6Time Recorded:§r §f${util.tickToSec(time)}§r ${difference}§r`;
 
-  const pbMessage = isPB ? `  §d§lNEW PERSONAL BEST!!§r\n` : "";
+  const pbMessage = isPB ? `    §d§lNEW PERSONAL BEST!!§r\n` : "";
   return `${baseMessage}\n${pbMessage}§7----------------------------`;
 };

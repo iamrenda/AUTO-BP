@@ -66,15 +66,15 @@ export const breakingBlockEvt = function (player: mc.Player) {
     resetMap();
     util.shootFireworks(player.location);
 
-    player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
-
     if (util.isPB(BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB), ticks)) {
       BedwarsRushData.setData(DynamicPropertyID.BedwarsRush_PB, ticks);
       util.showMessage(true, ticks, BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB));
       player.playSound("random.levelup");
-      player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
-    } else
+      util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, "§dNEW RECORD!!!");
+    } else {
       util.showMessage(false, ticks, BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB));
+      util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
+    }
 
     setAverageTime(ticks);
 

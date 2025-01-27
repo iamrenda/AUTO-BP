@@ -55,7 +55,6 @@ const setAverageTime = function (newTime: number) {
 
 /**
  * re-enable pressure plate (disabled temp when plate is pressed)
- * @param {Boolean} cancelTimer - whether canceling timer to resetMap is necessary or not
  */
 const enablePlate = function (): void {
   wallRunTs.tempData["isPlateDisabled"].goal = false;
@@ -91,15 +90,17 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
       wallRunTs.stopTimer();
       wallRunTs.clearBlocks();
 
-      player.onScreenDisplay.setTitle(`§6Time§7: §f${util.tickToSec(ticks)}§r`);
       player.setGameMode(mc.GameMode.spectator);
 
       if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), ticks)) {
         WallRunData.setData(DynamicPropertyID.WallRunner_PB, ticks);
         util.showMessage(true, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
         player.playSound("random.levelup");
-        player.onScreenDisplay.updateSubtitle("§dNEW RECORD!!!");
-      } else util.showMessage(false, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
+        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, "§dNEW RECORD!!!");
+      } else {
+        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
+        util.showMessage(false, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
+      }
 
       setAverageTime(ticks);
 
