@@ -2,9 +2,9 @@ import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
-import { bridgerTs, clutcherTs, generalTs, wallRunTs } from "../data/tempStorage";
+import { generalTs, bridgerTs } from "../data/tempStorage";
 import { Player } from "@minecraft/server";
-import { BridgerTicksID } from "../models/DynamicProperty";
+import GameID from "../models/GameID";
 
 /**
  * if uncleared block detected, it shows the warning
@@ -17,6 +17,13 @@ const warnUnclearedBlocks = function (player: Player): void {
   util.showTitleBar(player, "§cUncleared blocks Detected");
 };
 
+const handleNavigation = (player: Player, gameId: GameID, locationData: TeleportationLocation) => {
+  generalTs.commonData["gameID"] = gameId;
+  util.giveItems(gameId);
+  util.teleportation(<TeleportationLocation>locationData);
+  warnUnclearedBlocks(player);
+};
+
 export const nagivatorFormHandler = async function (player: Player) {
   const { selection } = await form.lobbyForm(player);
 
@@ -27,51 +34,28 @@ export const nagivatorFormHandler = async function (player: Player) {
     if (canceled) return;
 
     if (bridgerDirSelection === 11) {
-      bridgerTs.commonData["gameID"] = "straightBridger";
+      handleNavigation(player, "straightBridger", data.locationData.straightBridger);
       bridgerTs.tempData["bridgerDirection"] = "straight";
     } else if (bridgerDirSelection === 15) {
-      bridgerTs.commonData["gameID"] = "inclinedBridger";
+      handleNavigation(player, "inclinedBridger", data.locationData.straightBridger);
       bridgerTs.tempData["bridgerDirection"] = "inclined";
     }
-    util.setBridgerMode(BridgerTicksID[`${bridgerTs.tempData["bridgerDirection"]}16blocks`]);
-    util.giveItems("straightBridger");
-    util.confirmMessage("§7Teleporting to Bridger...");
-    util.teleportation(<TeleportationLocation>data.locationData[bridgerTs.commonData["gameID"]]);
-    warnUnclearedBlocks(player);
   }
 
   // clutcher
-  if (selection === 13) {
-    clutcherTs.commonData["gameID"] = "clutcher";
-    util.giveItems("clutcher");
-    util.confirmMessage("§7Teleporting to Clutcher...");
-    util.teleportation(data.locationData.clutcher[0]);
-    warnUnclearedBlocks(player);
-  }
+  if (selection === 13) handleNavigation(player, "clutcher", data.locationData.clutcher[0]);
 
   // wall run
-  if (selection === 15) {
-    wallRunTs.commonData["gameID"] = "wallRun";
-    util.giveItems("wallRun");
-    util.confirmMessage("§7Teleporting to Wall Run...");
-    util.teleportation(<TeleportationLocation>data.locationData.wallRun);
-    warnUnclearedBlocks(player);
-  }
+  if (selection === 15) handleNavigation(player, "wallRun", data.locationData.wallRun);
 
   // bedwars rush
-  if (selection === 21) {
-    wallRunTs.commonData["gameID"] = "bedwarsRush";
-    util.giveItems("bedwarsRush");
-    util.confirmMessage("§7Teleporting to Wall Run...");
-    util.teleportation(<TeleportationLocation>data.locationData.bedwarsRush);
-    warnUnclearedBlocks(player);
-  }
+  if (selection === 21) handleNavigation(player, "bedwarsRush", data.locationData.bedwarsRush);
 
   // back to lobby
-  if (selection === 23) util.teleportation(<TeleportationLocation>data.locationData.lobby);
+  if (selection === 23) util.teleportation(data.locationData.lobby);
 };
 
-export const launchingHandler = function (player: Player) {
+export const launchingStickHandler = function (player: Player) {
   const { x: directionX, y: directionY, z: directionZ } = player.getViewDirection();
 
   player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));

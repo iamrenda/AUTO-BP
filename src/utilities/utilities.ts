@@ -114,7 +114,6 @@ export const backToLobbyKit = function (player: mc.Player) {
   generalTs.commonData["gameID"] = "lobby";
   generalTs.commonData["ticks"] = 0;
   player.setGameMode(mc.GameMode.survival);
-  confirmMessage("§7Teleporting back to lobby...");
   giveItems("lobby");
   displayScoreboard("lobby");
   teleportation(<TeleportationLocation>locationData.lobby);

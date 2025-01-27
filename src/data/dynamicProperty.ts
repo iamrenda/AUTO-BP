@@ -1,6 +1,7 @@
 import { world, Vector3 } from "@minecraft/server";
 import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
 import { generalTs, bridgerTs } from "./tempStorage";
+import GameID from "../models/GameID";
 
 /////////////////////////////////////////////////////////////////
 export class DynamicProperty {
@@ -62,13 +63,63 @@ export class DynamicProperty {
       [DynamicPropertyID.WallRunner_SuccessAttempts]: 0,
       [DynamicPropertyID.WallRunner_AverageTime]: -1,
 
-      [DynamicPropertyID.bedwarsRush_PB]: -1,
-      [DynamicPropertyID.bedwarsRush_Attempts]: 0,
-      [DynamicPropertyID.bedwarsRush_SuccessAttempts]: 0,
-      [DynamicPropertyID.bedwarsRush_AverageTime]: -1,
+      [DynamicPropertyID.BedwarsRush_PB]: -1,
+      [DynamicPropertyID.BedwarsRush_Attempts]: 0,
+      [DynamicPropertyID.BedwarsRush_SuccessAttempts]: 0,
+      [DynamicPropertyID.BedwarsRush_AverageTime]: -1,
     };
     this.dynamicData = defaultData;
     world.setDynamicProperty("auto:dynamicData", JSON.stringify(defaultData));
+  }
+}
+
+abstract class BaseGameData extends DynamicProperty {
+  public static getData(id: DynamicPropertyID): number {
+    return this.dynamicData[id];
+  }
+
+  /**
+   * returns an object containing pb, avgTime, attempts, and success attempts
+   */
+  public static getBundledData(gameId: "Bridger" | "WallRunner" | "BedwarsRush"): {
+    pb: number;
+    avgTime: number;
+    attempts: number;
+    successAttempts: number;
+  } {
+    let bundledData = {
+      pb: -1,
+      avgTime: -1,
+      attempts: 0,
+      successAttempts: 0,
+    };
+
+    Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
+      switch (dynamicPropertyID) {
+        case "bedwarsRush_PB":
+          bundledData.pb = this.getData(DynamicPropertyID.bedwarsRush_PB);
+          break;
+        case "bedwarsRush_Attempts":
+          bundledData.attempts = this.getData(DynamicPropertyID.bedwarsRush_Attempts);
+          break;
+        case "bedwarsRush_SuccessAttempts":
+          bundledData.successAttempts = this.getData(DynamicPropertyID.bedwarsRush_SuccessAttempts);
+          break;
+        case "bedwarsRush_AverageTime":
+          bundledData.avgTime = this.getData(DynamicPropertyID.bedwarsRush_AverageTime);
+          break;
+      }
+    });
+
+    return bundledData;
+  }
+
+  public static setData(id: DynamicPropertyID, data: number): void {
+    this.dynamicData[id] = data;
+  }
+
+  public static addData(id: DynamicPropertyID): void {
+    this.dynamicData[id]++;
   }
 }
 
@@ -87,7 +138,7 @@ export class GameData extends DynamicProperty {
   }
 }
 
-export class BridgerData extends DynamicProperty {
+export class BridgerData extends BaseGameData {
   public static getData(id: DynamicPropertyID): number {
     return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
   }
@@ -156,16 +207,16 @@ export class WallRunData extends DynamicProperty {
 
     Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
       switch (dynamicPropertyID) {
-        case "Bridger_PB":
+        case "WallRunner_PB":
           bundledData.pb = this.getData(DynamicPropertyID.WallRunner_PB);
           break;
-        case "Bridger_Attempts":
+        case "WallRunner_Attempts":
           bundledData.attempts = this.getData(DynamicPropertyID.WallRunner_Attempts);
           break;
-        case "Bridger_SuccessAttempts":
+        case "WallRunner_SuccessAttempts":
           bundledData.successAttempts = this.getData(DynamicPropertyID.WallRunner_SuccessAttempts);
           break;
-        case "Bridger_AverageTime":
+        case "WallRunner_AverageTime":
           bundledData.avgTime = this.getData(DynamicPropertyID.WallRunner_AverageTime);
           break;
       }

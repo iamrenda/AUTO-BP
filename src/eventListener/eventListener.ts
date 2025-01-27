@@ -32,7 +32,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
   switch (generalTs.commonData["gameID"]) {
     case "lobby":
       if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
-      if (item.typeId === "minecraft:stick") lobby.launchingHandler(player);
+      if (item.typeId === "minecraft:stick") lobby.launchingStickHandler(player);
       if (item.typeId === "minecraft:book") lobby.creditFormHandler(player);
       break;
 
