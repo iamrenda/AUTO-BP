@@ -31,6 +31,7 @@ export const getInvData = function (game: GameID): ItemInfo[] {
     return [
       { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
       { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
+      { item: "minecraft:diamond_pickaxe", quantity: 1, name: "§3Miner's Pickaxe" },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
   if (game === "clutcher")

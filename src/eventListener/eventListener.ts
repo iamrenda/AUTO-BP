@@ -5,7 +5,7 @@ import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
-import { generalTs } from "../data/tempStorage";
+import { bridgerTs, generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
 
@@ -25,65 +25,48 @@ const eatGhead = (player: mc.Player): void => {
 };
 
 // right-click an item
+type ItemTypeHandlers = { [key: string]: (player: mc.Player) => void };
+
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
   // ghead
-  if (item.typeId === "auto:ghead") eatGhead(player);
+  if (item.typeId === "auto:ghead") return eatGhead(player);
 
-  switch (generalTs.commonData["gameID"]) {
-    case "lobby":
-      if (item.typeId === "minecraft:compass") lobby.nagivatorFormHandler(player);
-      if (item.typeId === "minecraft:stick") lobby.launchingStickHandler(player);
-      if (item.typeId === "minecraft:book") lobby.creditFormHandler(player);
-      break;
+  const gameID = generalTs.commonData["gameID"];
+  const storedGameID = generalTs.commonData["storedLocationsGameID"];
 
-    case "straightBridger":
-    case "inclinedBridger":
-      if (item.typeId === "minecraft:book")
-        generalTs.commonData["storedLocationsGameID"] === generalTs.commonData["gameID"]
-          ? util.clearBlocks(player)
-          : bridger.bridgerFormHandler(player);
-      break;
+  const itemTypeHandlers: ItemTypeHandlers = {
+    "minecraft:compass": lobby.nagivatorFormHandler,
+    "minecraft:stick": lobby.launchingStickHandler,
+    "minecraft:book": (player: mc.Player) => {
+      if (storedGameID === gameID) util.clearBlocks(player);
+      else {
+        const formHandlers: { [key in GameID]: (player: mc.Player) => void } = {
+          lobby: lobby.creditFormHandler,
+          straightBridger: bridger.bridgerFormHandler,
+          inclinedBridger: bridger.bridgerFormHandler,
+          clutcher: clutcher.clutcherFormHandler,
+          wallRun: wallRun.wallRunFormHandler,
+          bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
+        };
+        formHandlers[gameID](player);
+      }
+    },
+  };
 
-    case "clutcher":
-      if (item.typeId === "minecraft:book")
-        generalTs.commonData["storedLocationsGameID"] === generalTs.commonData["gameID"]
-          ? util.clearBlocks(player)
-          : clutcher.clutcherFormHandler(player);
-      break;
-
-    case "wallRun":
-      if (item.typeId === "minecraft:book")
-        generalTs.commonData["storedLocationsGameID"] === generalTs.commonData["gameID"]
-          ? util.clearBlocks(player)
-          : wallRun.wallRunFormHandler(player);
-      break;
-
-    case "bedwarsRush":
-      if (item.typeId === "minecraft:book")
-        generalTs.commonData["storedLocationsGameID"] === generalTs.commonData["gameID"]
-          ? util.clearBlocks(player)
-          : bedwarsRush.bedWarsRushFormHandler(player);
-      break;
-  }
+  if (itemTypeHandlers[item.typeId]) itemTypeHandlers[item.typeId](player);
 });
 
 // placing a block
+const eventMap: { [key: string]: (block: any) => void } = {
+  straightBridger: bridger.placingBlockEvt,
+  inclinedBridger: bridger.placingBlockEvt,
+  clutcher: clutcher.placingBlockEvt,
+  wallRun: wallRun.placingBlockEvt,
+  bedwarsRush: bedwarsRush.placingBlockEvt,
+};
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-    case "inclinedBridger":
-      bridger.placingBlockEvt(block);
-      break;
-    case "clutcher":
-      clutcher.placingBlockEvt(block);
-      break;
-    case "wallRun":
-      wallRun.placingBlockEvt(block);
-      break;
-    case "bedwarsRush":
-      bedwarsRush.placingBlockEvt(block);
-      break;
-  }
+  const eventHandler = eventMap[generalTs.commonData["gameID"]];
+  if (eventHandler) eventHandler(block);
 });
 
 // pushed a pressureplate
@@ -149,33 +132,42 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
 // breaking a block (before event)
+const hasCoordinates = function (loc: mc.Vector3) {
+  return [...bridgerTs.commonData["storedLocations"]].some(
+    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
+  );
+};
+
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
-  e.cancel = true;
   switch (generalTs.commonData["gameID"]) {
+    case "straightBridger":
+    case "inclinedBridger":
+      if (hasCoordinates(e.block.location)) e.cancel = false;
+      else e.cancel = true;
+      break;
+
     case "bedwarsRush":
       if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
+      e.cancel = true;
       break;
+
+    default:
+      e.cancel = true;
   }
 });
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
+const listenerMap: { [key: string]: () => void } = {
+  straightBridger: bridger.listener,
+  inclinedBridger: bridger.listener,
+  clutcher: clutcher.listener,
+  wallRun: wallRun.listener,
+  bedwarsRush: bedwarsRush.listener,
+};
 mc.system.runInterval((): void => {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-    case "inclinedBridger":
-      bridger.listener();
-      break;
-    case "clutcher":
-      clutcher.listener();
-      break;
-    case "wallRun":
-      wallRun.listener();
-      break;
-    case "bedwarsRush":
-      bedwarsRush.listener();
-      break;
-  }
+  const listener = listenerMap[generalTs.commonData["gameID"]];
+  if (listener) listener();
 });
 
 // every 10 tick
