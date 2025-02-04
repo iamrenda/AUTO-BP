@@ -4,15 +4,8 @@ import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
 import { bridgerTs, generalTs } from "../data/tempStorage";
-import {
-  bridgerMessage,
-  bridgerScoreboard,
-  clutcherScoreboard,
-  lobbyScoreboard,
-  wallRunMessage,
-  wallRunScoreboard,
-  bedwarsRushScoreboard,
-} from "../data/staticTextData";
+import * as scoreboard from "../data/scoreboard";
+import * as goalMessage from "../data/goalMessage";
 import { clearBlocksForm } from "../forms/utility";
 import { StoredBlocksClass } from "../data/dynamicProperty";
 
@@ -94,12 +87,13 @@ export const properTimeText = function (ticks: number): string {
  */
 export const displayScoreboard = function (gameId: GameID): void {
   const scoreboards = {
-    lobby: lobbyScoreboard,
-    straightBridger: bridgerScoreboard,
-    inclinedBridger: bridgerScoreboard,
-    clutcher: clutcherScoreboard,
-    wallRun: wallRunScoreboard,
-    bedwarsRush: bedwarsRushScoreboard,
+    lobby: scoreboard.lobbyScoreboard,
+    straightBridger: scoreboard.bridgerScoreboard,
+    inclinedBridger: scoreboard.bridgerScoreboard,
+    clutcher: scoreboard.clutcherScoreboard,
+    wallRun: scoreboard.wallRunScoreboard,
+    bedwarsRush: scoreboard.bedwarsRushScoreboard,
+    fistReduce: scoreboard.fistReduceScoreboard,
   };
 
   const display = scoreboards[gameId];
@@ -198,10 +192,10 @@ export const showMessage = function (isPB: boolean, time: number, prevPB: number
   switch (gameId) {
     case "straightBridger":
     case "inclinedBridger":
-      generalTs.commonData["player"].sendMessage(bridgerMessage(isPB, time, prevPB));
+      generalTs.commonData["player"].sendMessage(goalMessage.bridgerMessage(isPB, time, prevPB));
       break;
     case "wallRun":
-      generalTs.commonData["player"].sendMessage(wallRunMessage(isPB, time, prevPB));
+      generalTs.commonData["player"].sendMessage(goalMessage.wallRunMessage(isPB, time, prevPB));
       break;
   }
 };
@@ -229,6 +223,9 @@ export const clearBlocks = async function (player: mc.Player) {
   confirmMessage("§aWe have cleared the blocks!", "random.orb");
 };
 
+/**
+ * shows title bar (optional: subtitle)
+ */
 export const showTitleBar = function (player: mc.Player, title: string, subtitle?: string) {
   player.onScreenDisplay.setTitle(title);
   if (subtitle) player.onScreenDisplay.updateSubtitle(subtitle);

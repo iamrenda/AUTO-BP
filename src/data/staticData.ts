@@ -63,6 +63,7 @@ type LocationData = {
   clutcher: TeleportationLocation[];
   wallRun: TeleportationLocation;
   bedwarsRush: TeleportationLocation;
+  fistReduce: TeleportationLocation;
 };
 
 export const locationData: LocationData = {
@@ -108,6 +109,18 @@ export const locationData: LocationData = {
     },
     facing: {
       x: 40068,
+      y: 105,
+      z: 40007.5,
+    },
+  },
+  fistReduce: {
+    position: {
+      x: 40068.5,
+      y: 105,
+      z: 40007.5,
+    },
+    facing: {
+      x: 40068.5,
       y: 105,
       z: 40007.5,
     },
@@ -162,4 +175,4 @@ export const clutchStrength: ClutchStrengthIF = {
   },
 };
 
-export const VERSION = 5;
+export const VERSION = 6;

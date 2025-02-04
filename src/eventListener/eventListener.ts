@@ -5,6 +5,7 @@ import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
+import * as fistReduce from "../games/fistReduce";
 import { bridgerTs, generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
@@ -47,6 +48,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
           clutcher: clutcher.clutcherFormHandler,
           wallRun: wallRun.wallRunFormHandler,
           bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
+          fistReduce: fistReduce.fistReduceFormHandler,
         };
         formHandlers[gameID](player);
       }

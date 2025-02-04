@@ -6,29 +6,10 @@ import { wallRunTs } from "../data/tempStorage";
 export const wallRunForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title("Settings")
-    .pattern(["_________", "_a__c__o_", "_________"], {
-      a: {
-        itemName: "§2General",
-        itemDesc: [],
-        texture: "minecraft:grass_block",
-        stackAmount: 1,
-        enchanted: false,
-      },
-      c: {
-        itemName: "§c§lReset Personal Best",
-        itemDesc: [],
-        texture: "minecraft:tnt",
-        stackAmount: 1,
-        enchanted: false,
-      },
-      o: {
-        itemName: "§cQuit",
-        itemDesc: [],
-        texture: "minecraft:red_dye",
-        stackAmount: 1,
-        enchanted: false,
-      },
-    });
+    .button(10, "§2General", [], "minecraft:grass_block", 1, false)
+    .button(13, "§c§lReset Personal Best", [], "minecraft:tnt", 1, false)
+    .button(16, "§cQuit", [], "minecraft:red_dye", 1, false);
+
   return await form.show(player);
 };
 
@@ -36,16 +17,14 @@ export const wallRunGeneralForm = async function (player: Player): Promise<Actio
   const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
   const form = new ChestFormData("27")
     .title("General Settings")
-    .pattern(["_________", "_a_______", "_________"], {
-      a: {
-        itemName: "§6Save CheckPoint",
-        itemDesc: ["", `${isCheckPointEnabled ? "§aEnabled" : "§cDisabled"}`],
-        texture: isCheckPointEnabled
-          ? "minecraft:redstone_torch"
-          : "minecraft:unlit_redstone_torch",
-        stackAmount: 1,
-        enchanted: false,
-      },
-    });
+    .button(
+      11,
+      "§6Save CheckPoint",
+      ["", `${isCheckPointEnabled ? "§aEnabled" : "§cDisabled"}`],
+      isCheckPointEnabled ? "minecraft:redstone_torch" : "minecraft:unlit_redstone_torch",
+      1,
+      false
+    );
+
   return await form.show(player);
 };

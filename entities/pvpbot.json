@@ -1,0 +1,119 @@
+{
+  "format_version": "1.16.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "auto:pvpbot",
+      "is_spawnable": false,
+      "is_summonable": true,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "auto:reduce": {
+        "minecraft:behavior.melee_attack": {
+          "priority": 3,
+          "cooldown_time": 0.7,
+          "reach_multiplier": 2.95
+        }
+      },
+      "auto:hit": {
+        "minecraft:behavior.melee_attack": {
+          "priority": 3,
+          "cooldown_time": 0.5,
+          "reach_multiplier": 10
+        }
+      }
+    },
+    "components": {
+      "minecraft:collision_box": {
+        "height": 1.8,
+        "width": 0.6
+      },
+      "minecraft:nameable": {
+        "always_show": true
+      },
+      "minecraft:variant": {
+        "value": 0
+      },
+      "minecraft:type_family": {
+        "family": ["monster", "mob"]
+      },
+      "minecraft:equip_item": {},
+      "minecraft:movement": {
+        "value": 0.345
+      },
+      "minecraft:movement.basic": {},
+      "minecraft:navigation.walk": {
+        "is_amphibious": true,
+        "can_pass_doors": true,
+        "can_walk": true,
+        "can_jump": true
+      },
+      "minecraft:jump.static": {},
+      "minecraft:can_climb": {},
+      "minecraft:health": {
+        "value": 100000,
+        "max": 100000
+      },
+      "minecraft:breathable": {
+        "total_supply": 15,
+        "suffocate_time": 0,
+        "breathes_air": true,
+        "breathes_water": true
+      },
+      "minecraft:attack": {
+        "damage": 1
+      },
+      "minecraft:behavior.nearest_attackable_target": {
+        "priority": 9,
+        "must_see": false,
+        "within_radius": 100,
+        "must_see_forget_duration": 40,
+        "set_persistent": true,
+        "must_reach": false,
+        "target_search_height": 40,
+        "entity_types": [
+          {
+            "filters": {
+              "all_of": [
+                {
+                  "test": "is_family",
+                  "subject": "other",
+                  "value": "player"
+                }
+              ]
+            },
+            "max_dist": 55
+          }
+        ]
+      },
+      "minecraft:physics": {},
+      "minecraft:pushable": {
+        "is_pushable": true
+      },
+      "minecraft:conditional_bandwidth_optimization": {},
+      "minecraft:knockback_resistance": {
+        "value": 1.1
+      },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "cause": "fall",
+            "deals_damage": false
+          }
+        ]
+      }
+    },
+    "events": {
+      "auto:reduce": {
+        "add": {
+          "component_groups": ["auto:reduce"]
+        }
+      },
+      "auto:hit": {
+        "remove": {
+          "component_groups": ["auto:reduce"]
+        }
+      }
+    }
+  }
+}

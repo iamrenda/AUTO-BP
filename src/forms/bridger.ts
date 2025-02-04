@@ -8,36 +8,11 @@ import { GameData } from "../data/dynamicProperty";
 export const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title("Settings")
-    .pattern(["_________", "_i_b_r_o_", "_________"], {
-      i: {
-        itemName: "§3General",
-        itemDesc: [],
-        texture: "minecraft:grass_block",
-        stackAmount: 1,
-        enchanted: false,
-      },
-      b: {
-        itemName: "§2Blocks",
-        itemDesc: [],
-        texture: bridgerTs.tempData["blockBridger"],
-        stackAmount: 1,
-        enchanted: false,
-      },
-      r: {
-        itemName: "§l§4Reset Personal Best",
-        itemDesc: [],
-        texture: "minecraft:tnt",
-        stackAmount: 1,
-        enchanted: false,
-      },
-      o: {
-        itemName: "§cQuit",
-        itemDesc: [],
-        texture: "minecraft:red_dye",
-        stackAmount: 1,
-        enchanted: false,
-      },
-    });
+    .button(10, "§3General", [], "minecraft:grass_block", 1, false)
+    .button(12, "§2Blocks", [], bridgerTs.tempData["blockBridger"], 1, false)
+    .button(14, "§l§4Reset Personal Best", [], "minecraft:tnt", 1, false)
+    .button(16, "§cQuit", [], "minecraft:red_dye", 1, false);
+
   return await form.show(player);
 };
 
@@ -61,74 +36,17 @@ export const bridgerIslandForm = async function (player: Player): Promise<Action
     direction === "straight"
       ? new ChestFormData("45")
           .title("Island Customization")
-          .pattern(["_________", "_s_t_____", "_m_T_____", "_l_n_____", "_________"], {
-            s: {
-              itemName: "§616 Blocks",
-              itemDesc: [],
-              texture: "minecraft:sandstone",
-              stackAmount: 16,
-              enchanted: distance === 16,
-            },
-            m: {
-              itemName: "§621 Blocks",
-              itemDesc: [],
-              texture: "minecraft:sandstone",
-              stackAmount: 21,
-              enchanted: distance === 21,
-            },
-            l: {
-              itemName: "§650 Blocks",
-              itemDesc: [],
-              texture: "minecraft:sandstone",
-              stackAmount: 50,
-              enchanted: distance === 50,
-            },
-            t: {
-              itemName: "§6Telly Practice",
-              itemDesc: [],
-              texture: "minecraft:ender_eye",
-              stackAmount: 1,
-              enchanted: tellyPractice === "Telly",
-            },
-            T: {
-              itemName: "§6Speed Telly Practice",
-              itemDesc: [],
-              texture: "minecraft:ender_pearl",
-              stackAmount: 1,
-              enchanted: tellyPractice === "Speed Telly",
-            },
-            n: {
-              itemName: "§6No Telly Practice",
-              itemDesc: [],
-              texture: "minecraft:slime_ball",
-              stackAmount: 1,
-              enchanted: tellyPractice === "None",
-            },
-          })
+          .button(10, "§616 Blocks", [], "minecraft:sandstone", 16, distance === 16)
+          .button(19, "§621 Blocks", [], "minecraft:sandstone", 21, distance === 21)
+          .button(28, "§650 Blocks", [], "minecraft:sandstone", 50, distance === 50)
+          .button(12, "§6Telly Practice", [], "minecraft:ender_eye", 1, tellyPractice === "Telly")
+          .button(21, "§6Speed Telly Practice", [], "minecraft:ender_pearl", 1, tellyPractice === "Speed Telly")
+          .button(30, "§6No Telly Practice", [], "minecraft:slime_ball", 1, tellyPractice === "None")
       : new ChestFormData("45")
           .title("Island Customization")
-          .pattern(["_________", "_s_______", "_m_______", "_l_______", "_________"], {
-            s: {
-              itemName: "§616 Blocks",
-              itemDesc: [],
-              texture: "minecraft:sandstone",
-              stackAmount: 16,
-              enchanted: distance === 16,
-            },
-            m: {
-              itemName: "§621 Blocks",
-              itemDesc: [],
-              texture: "minecraft:sandstone",
-              stackAmount: 21,
-              enchanted: distance === 21,
-            },
-            l: {
-              itemName: "§650 Blocks",
-              itemDesc: [],
-              texture: "minecraft:sandstone",
-              stackAmount: 50,
-              enchanted: distance === 50,
-            },
-          });
+          .button(10, "§616 Blocks", [], "minecraft:sandstone", 16, distance === 16)
+          .button(19, "§621 Blocks", [], "minecraft:sandstone", 21, distance === 21)
+          .button(28, "§650 Blocks", [], "minecraft:sandstone", 50, distance === 50);
+
   return await form.show(player);
 };

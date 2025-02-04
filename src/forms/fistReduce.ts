@@ -2,7 +2,7 @@ import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import ChestFormData from "../formExtensions/forms";
 
-export const bedwarsRushForm = async function (player: Player): Promise<ActionFormResponse> {
+export const fistReduceForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
     .title("Settings")
     .button(11, "§c§lReset Personal Best", [], "minecraft:tnt", 1, false)

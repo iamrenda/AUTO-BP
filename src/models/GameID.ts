@@ -4,6 +4,7 @@ type GameID =
   | "inclinedBridger"
   | "clutcher"
   | "wallRun"
-  | "bedwarsRush";
+  | "bedwarsRush"
+  | "fistReduce";
 
 export default GameID;
