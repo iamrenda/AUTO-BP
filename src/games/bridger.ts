@@ -14,7 +14,7 @@ type IslandDistance = 16 | 21 | 50;
 /////////////////////////////////////////////////////////
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
-  straight: { x: 9997, y: 91, z: 10005 },
+  straight: { x: 9997, y: 86, z: 10005 },
   inclined: { x: 9958, y: 92, z: 10004 },
 };
 
@@ -222,8 +222,8 @@ const fillAndPlace = function (
 
   if (direction === "straight") {
     fillAirLocation.end.x = fillAirLocation.start.x + 10;
-    fillAirLocation.end.y = fillAirLocation.start.y + 17;
-    fillAirLocation.end.z = fillAirLocation.start.z + 11;
+    fillAirLocation.end.y = fillAirLocation.start.y + 23;
+    fillAirLocation.end.z = fillAirLocation.start.z + 10;
   } else {
     fillAirLocation.end.x = fillAirLocation.start.x + 10;
     fillAirLocation.end.y = fillAirLocation.start.y + 18;

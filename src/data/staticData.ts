@@ -79,8 +79,8 @@ export const locationData: LocationData = {
     facing: { x: 91.5, y: 262.0, z: 64 },
   },
   straightBridger: {
-    position: { x: 10001.5, y: 102, z: 10001.5 },
-    facing: { x: 10001.5, y: 102, z: 10002 },
+    position: { x: 10001.5, y: 101, z: 10001.5 },
+    facing: { x: 10001.5, y: 101, z: 10002 },
   },
   inclinedBridger: {
     position: { x: 9966.5, y: 102, z: 10002.5 },

@@ -2,7 +2,7 @@ import * as util from "../utilities/utilities";
 import { VERSION } from "./staticData";
 import { BridgerData, WallRunData } from "./dynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { generalTs, bridgerTs, wallRunTs, clutcherTs } from "./tempStorage";
+import { generalTs, bridgerTs, wallRunTs, clutcherTs, fistReduceTs } from "./tempStorage";
 import { BedwarsRushData } from "./dynamicProperty";
 
 export const lobbyScoreboard = function (): string {
@@ -88,10 +88,11 @@ export const bedwarsRushScoreboard = function (): string {
 };
 
 export const fistReduceScoreboard = function (): string {
+  const mode = fistReduceTs.commonData["gameID"] === "normalFistReduce" ? "Normal Reduce" : "LIMITLESS";
   return `      §b§lAUTO World§r
 §7-------------------§r
- §7- §6Gamemode:§r
-   Fist Reduce
+ §7- §6Reduce Mode:§r
+    ${mode}
              
  §7- §6Discord§r
    .gg/4NRYhCYykk

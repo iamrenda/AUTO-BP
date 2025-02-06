@@ -127,9 +127,9 @@ export const fistReduceAttackEvt = function (hurtEntity: mc.Entity, damageSource
     } else {
       hurtEntity.clearVelocity();
       hurtEntity.applyImpulse({
-        x: unitX / 10.5,
+        x: unitX / 9,
         y: 0.35,
-        z: unitZ / 10.5,
+        z: unitZ / 9,
       });
     }
   }
