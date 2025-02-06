@@ -139,7 +139,7 @@ export const getFloatingEntity = function (): mc.Entity {
       })[0];
     case "bedwarsRush":
       return mc.world.getDimension("overworld").getEntities({
-        location: { x: 40066.29, y: 105.0, z: 40004.54 },
+        location: { x: 40093.53, y: 102.19, z: 40032.97 },
         excludeFamilies: ["player"],
       })[0];
   }

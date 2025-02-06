@@ -47,8 +47,8 @@ export const getInvData = function (game: GameID): ItemInfo[] {
     ];
   if (game === "bedwarsRush")
     return [
-      { item: "minecraft:red_wool", quantity: 64 },
-      { item: "minecraft:red_wool", quantity: 64 },
+      { item: "minecraft:white_wool", quantity: 64 },
+      { item: "minecraft:white_wool", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
   if (game === "normalFistReduce" || game === "limitlessFistReduce")
@@ -110,14 +110,14 @@ export const locationData: LocationData = {
   },
   bedwarsRush: {
     position: {
-      x: 40068.5,
-      y: 105,
-      z: 40007.5,
+      x: 40097.5,
+      y: 102,
+      z: 40029.5,
     },
     facing: {
-      x: 40068,
-      y: 105,
-      z: 40007.5,
+      x: 40097,
+      y: 102,
+      z: 40029.5,
     },
   },
   normalFistReduce: {
