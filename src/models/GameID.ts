@@ -5,6 +5,7 @@ type GameID =
   | "clutcher"
   | "wallRun"
   | "bedwarsRush"
-  | "fistReduce";
+  | "normalFistReduce"
+  | "limitlessFistReduce";
 
 export default GameID;

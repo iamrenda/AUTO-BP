@@ -1,7 +1,6 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as form from "../forms/wallrun";
-import TeleportationLocation from "../models/TeleportationLocation";
 import { wallRunTs } from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { locationData } from "../data/staticData";
@@ -26,9 +25,7 @@ const resetWallRunner = function () {
 
   Object.keys(wallRunTs.tempData["isPlateDisabled"]).map(
     (plate) =>
-      (wallRunTs.tempData["isPlateDisabled"][
-        plate as keyof (typeof wallRunTs.tempData)["isPlateDisabled"]
-      ] = false)
+      (wallRunTs.tempData["isPlateDisabled"][plate as keyof (typeof wallRunTs.tempData)["isPlateDisabled"]] = false)
   );
 };
 
@@ -41,14 +38,13 @@ const resetMap = function () {
   resetWallRunner();
   util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
   util.giveItems("wallRun");
-  util.teleportation(<TeleportationLocation>locationData.wallRun);
+  util.teleportation(locationData.wallRun);
 };
 
 const setAverageTime = function (newTime: number) {
   const prevAvgTime = WallRunData.getData(DynamicPropertyID.WallRunner_AverageTime);
   const attempts = WallRunData.getData(DynamicPropertyID.WallRunner_Attempts);
-  const newAvgTime =
-    prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
   WallRunData.setData(DynamicPropertyID.WallRunner_AverageTime, Math.round(newAvgTime * 100) / 100);
 };
@@ -124,10 +120,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
     if (generalSelection === 10) {
       const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
       wallRunTs.tempData["wallRunIsCheckPointEnabled"] = !isCheckPointEnabled;
-      util.confirmMessage(
-        `§aCheckpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`,
-        "random.orb"
-      );
+      util.confirmMessage(`§aCheckpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`, "random.orb");
     }
   }
 

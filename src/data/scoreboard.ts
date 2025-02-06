@@ -17,6 +17,7 @@ export const lobbyScoreboard = function (): string {
    Clutcher
    Wallrun
    Bedwars Rush
+   Fist Reduce
              
  §7- §6Discord:§r
    .gg/4NRYhCYykk
@@ -87,5 +88,13 @@ export const bedwarsRushScoreboard = function (): string {
 };
 
 export const fistReduceScoreboard = function (): string {
-  return "NIGGA";
+  return `      §b§lAUTO World§r
+§7-------------------§r
+ §7- §6Gamemode:§r
+   Fist Reduce
+             
+ §7- §6Discord§r
+   .gg/4NRYhCYykk
+§7-------------------§r
+ §8§oVersion ${VERSION} | ${util.today}`;
 };

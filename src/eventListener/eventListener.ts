@@ -6,7 +6,7 @@ import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
-import { bridgerTs, generalTs } from "../data/tempStorage";
+import { bridgerTs, fistReduceTs, generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
 
@@ -48,7 +48,8 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
           clutcher: clutcher.clutcherFormHandler,
           wallRun: wallRun.wallRunFormHandler,
           bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
-          fistReduce: fistReduce.fistReduceFormHandler,
+          normalFistReduce: fistReduce.fistReduceFormHandler,
+          limitlessFistReduce: fistReduce.fistReduceFormHandler,
         };
         formHandlers[gameID](player);
       }
@@ -65,6 +66,8 @@ const eventMap: { [key: string]: (block: any) => void } = {
   clutcher: clutcher.placingBlockEvt,
   wallRun: wallRun.placingBlockEvt,
   bedwarsRush: bedwarsRush.placingBlockEvt,
+  normalFistReduce: fistReduce.placingBlockEvt,
+  limitlessFistReduce: fistReduce.placingBlockEvt,
 };
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   const eventHandler = eventMap[generalTs.commonData["gameID"]];
@@ -84,7 +87,6 @@ mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): vo
   }
 });
 
-/////////////////////////////////////////////////////////////////////////////////
 // world init
 mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): void => {
   blockComponentRegistry.registerCustomComponent("auto:clear", {
@@ -97,20 +99,20 @@ mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): vo
 // joining the world
 mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["player"] = player;
-  generalTs.commonData["storedLocationsGameID"] = <GameID>(
-    mc.world.getDynamicProperty("auto:storedBlocksGameID")
-  );
+  generalTs.commonData["storedLocationsGameID"] = <GameID>mc.world.getDynamicProperty("auto:storedBlocksGameID");
   DynamicProperty.fetchData();
   util.backToLobbyKit(player);
 });
 
 // leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
+  DynamicProperty.postData();
+  if (generalTs.commonData["gameID"] === "normalFistReduce" || generalTs.commonData["gameID"] === "limitlessFistReduce")
+    fistReduceTs.tempData["bot"].kill();
   if (generalTs.commonData["storedLocations"].size) {
     StoredBlocksClass.storeBlocks();
     generalTs.commonData["storedLocationsGameID"] = generalTs.commonData["gameID"];
   }
-  DynamicProperty.postData();
 });
 
 // chat message
@@ -140,6 +142,7 @@ const hasCoordinates = function (loc: mc.Vector3) {
   );
 };
 
+// breaking a block (after event)
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
   switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
@@ -154,8 +157,14 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
       break;
 
     default:
-      e.cancel = true;
+    // e.cancel = true;
   }
+});
+
+// entity attack
+mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
+  if (generalTs.commonData["gameID"] === "normalFistReduce" || generalTs.commonData["gameID"] === "limitlessFistReduce")
+    fistReduce.fistReduceAttackEvt(hurtEntity, damageSource);
 });
 
 /////////////////////////////////////////////////////////////////////////////////
@@ -177,6 +186,12 @@ mc.system.runInterval((): void => {
   switch (generalTs.commonData["gameID"]) {
     case "clutcher":
       clutcher.slowListener();
+      break;
+    case "normalFistReduce":
+      fistReduce.slowListener("normal");
+      break;
+    case "limitlessFistReduce":
+      fistReduce.slowListener("limitless");
       break;
   }
 }, 10);

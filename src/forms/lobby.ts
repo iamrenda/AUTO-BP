@@ -66,6 +66,15 @@ export const formBridgerDirForm = async function (player: Player): Promise<Actio
   return await form.show(player);
 };
 
+export const fistReduceModeForm = async function (player: Player): Promise<ActionFormResponse> {
+  const form = new ChestFormData("27")
+    .title("Direction")
+    .button(11, "§6Normal", [], "minecraft:mace", 1, false)
+    .button(15, "§6LIMITLESS", [], "minecraft:elytra", 1, false);
+
+  return await form.show(player);
+};
+
 export const lobbyCreditForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ActionFormData()
     .title("Credits")

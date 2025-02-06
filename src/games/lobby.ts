@@ -11,16 +11,17 @@ import GameID from "../models/GameID";
  */
 const warnUnclearedBlocks = function (player: Player): void {
   if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
-  util.confirmMessage(
-    `§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`
-  );
+  util.confirmMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
   util.showTitleBar(player, "§cUncleared blocks Detected");
 };
 
+/**
+ * handling navigation for lobby
+ */
 const handleNavigation = (player: Player, gameId: GameID, locationData: TeleportationLocation) => {
   generalTs.commonData["gameID"] = gameId;
   util.giveItems(gameId);
-  util.teleportation(<TeleportationLocation>locationData);
+  util.teleportation(locationData);
   warnUnclearedBlocks(player);
 };
 
@@ -51,8 +52,22 @@ export const nagivatorFormHandler = async function (player: Player) {
   // bedwars rush
   if (selection === 21) handleNavigation(player, "bedwarsRush", data.locationData.bedwarsRush);
 
+  // fist reduce
+  if (selection === 23) {
+    const { selection: bridgerDirSelection, canceled } = await form.fistReduceModeForm(player);
+    if (canceled) return;
+
+    if (bridgerDirSelection === 11) {
+      util.displayScoreboard("normalFistReduce");
+      handleNavigation(player, "normalFistReduce", data.locationData.normalFistReduce);
+    } else if (bridgerDirSelection === 15) {
+      util.displayScoreboard("limitlessFistReduce");
+      handleNavigation(player, "limitlessFistReduce", data.locationData.limitlessFistReduce);
+    }
+  }
+
   // back to lobby
-  if (selection === 23) util.teleportation(data.locationData.lobby);
+  if (selection === 31) util.teleportation(data.locationData.lobby);
 };
 
 export const launchingStickHandler = function (player: Player) {

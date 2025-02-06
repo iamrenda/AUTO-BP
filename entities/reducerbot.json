@@ -2,7 +2,7 @@
   "format_version": "1.16.0",
   "minecraft:entity": {
     "description": {
-      "identifier": "auto:pvpbot",
+      "identifier": "auto:reducerbot",
       "is_spawnable": false,
       "is_summonable": true,
       "is_experimental": false
@@ -11,35 +11,54 @@
       "auto:reduce": {
         "minecraft:behavior.melee_attack": {
           "priority": 3,
-          "cooldown_time": 0.7,
-          "reach_multiplier": 2.95
-        }
-      },
-      "auto:hit": {
-        "minecraft:behavior.melee_attack": {
-          "priority": 3,
-          "cooldown_time": 0.5,
-          "reach_multiplier": 10
+          "cooldown_time": 0.75,
+          "reach_multiplier": 2.95,
+          "track_target": true
         }
       }
     },
     "components": {
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "on_damage": {
+              "filters": {
+                "all_of": [
+                  {
+                    "test": "is_family",
+                    "subject": "other",
+                    "value": "lightning"
+                  }
+                ]
+              }
+            },
+            "deals_damage": false
+          },
+          {
+            "cause": "fall",
+            "deals_damage": false
+          }
+        ]
+      },
+      "minecraft:equip_item": {},
+      "minecraft:nameable": {
+        "always_show": true
+      },
+      "minecraft:follow_range": {
+        "value": 99999
+      },
       "minecraft:collision_box": {
         "height": 1.8,
         "width": 0.6
       },
-      "minecraft:nameable": {
-        "always_show": true
+      "minecraft:type_family": {
+        "family": ["monster", "mob", "auto:reducerbot"]
+      },
+      "minecraft:movement": {
+        "value": 0.345
       },
       "minecraft:variant": {
         "value": 0
-      },
-      "minecraft:type_family": {
-        "family": ["monster", "mob"]
-      },
-      "minecraft:equip_item": {},
-      "minecraft:movement": {
-        "value": 0.345
       },
       "minecraft:movement.basic": {},
       "minecraft:navigation.walk": {
@@ -63,11 +82,15 @@
       "minecraft:attack": {
         "damage": 1
       },
+      "minecraft:behavior.look_at_player": {
+        "priority": 6,
+        "look_distance": 100,
+        "probability": 0.02
+      },
       "minecraft:behavior.nearest_attackable_target": {
         "priority": 9,
         "must_see": false,
         "within_radius": 100,
-        "must_see_forget_duration": 40,
         "set_persistent": true,
         "must_reach": false,
         "target_search_height": 40,
@@ -82,25 +105,18 @@
                 }
               ]
             },
-            "max_dist": 55
+            "max_dist": 100.0,
+            "must_see": false
           }
         ]
       },
       "minecraft:physics": {},
       "minecraft:pushable": {
-        "is_pushable": true
+        "is_pushable": false
       },
       "minecraft:conditional_bandwidth_optimization": {},
       "minecraft:knockback_resistance": {
-        "value": 1.1
-      },
-      "minecraft:damage_sensor": {
-        "triggers": [
-          {
-            "cause": "fall",
-            "deals_damage": false
-          }
-        ]
+        "value": 0.95
       }
     },
     "events": {
@@ -109,7 +125,7 @@
           "component_groups": ["auto:reduce"]
         }
       },
-      "auto:hit": {
+      "auto:pause": {
         "remove": {
           "component_groups": ["auto:reduce"]
         }

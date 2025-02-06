@@ -51,6 +51,12 @@ export const getInvData = function (game: GameID): ItemInfo[] {
       { item: "minecraft:red_wool", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
+  if (game === "normalFistReduce" || game === "limitlessFistReduce")
+    return [
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ];
 };
 
 /**
@@ -63,7 +69,8 @@ type LocationData = {
   clutcher: TeleportationLocation[];
   wallRun: TeleportationLocation;
   bedwarsRush: TeleportationLocation;
-  fistReduce: TeleportationLocation;
+  normalFistReduce: TeleportationLocation;
+  limitlessFistReduce: TeleportationLocation;
 };
 
 export const locationData: LocationData = {
@@ -113,16 +120,28 @@ export const locationData: LocationData = {
       z: 40007.5,
     },
   },
-  fistReduce: {
+  normalFistReduce: {
     position: {
-      x: 40068.5,
-      y: 105,
-      z: 40007.5,
+      x: 50008.5,
+      y: 102,
+      z: 50014.5,
     },
     facing: {
-      x: 40068.5,
-      y: 105,
-      z: 40007.5,
+      x: 50008.5,
+      y: 102,
+      z: 50015,
+    },
+  },
+  limitlessFistReduce: {
+    position: {
+      x: 50008.5,
+      y: 320,
+      z: 50014.5,
+    },
+    facing: {
+      x: 50008.5,
+      y: 320,
+      z: 50015,
     },
   },
 };

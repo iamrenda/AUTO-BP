@@ -12,9 +12,7 @@ const teleportToCounterClockwise = function () {
   const location = data.locationData.clutcher[clutcherTs.tempData["teleportationIndex"]];
   util.teleportation(location);
   clutcherTs.tempData["teleportationIndex"] =
-    clutcherTs.tempData["teleportationIndex"] === 3
-      ? 0
-      : clutcherTs.tempData["teleportationIndex"] + 1;
+    clutcherTs.tempData["teleportationIndex"] === 3 ? 0 : clutcherTs.tempData["teleportationIndex"] + 1;
 };
 
 /**
@@ -140,11 +138,7 @@ const readyForClutch = function (player: mc.Player) {
 ///////////////////////////////////////////////////////////////////
 export const clutcherFormHandler = async function (player: mc.Player) {
   // quick start
-  if (
-    player.isSneaking &&
-    clutcherTs.tempData["clutchShiftStart"] &&
-    !clutcherTs.tempData["countDown"]
-  )
+  if (player.isSneaking && clutcherTs.tempData["clutchShiftStart"] && !clutcherTs.tempData["countDown"])
     return readyForClutch(player);
 
   if (clutcherTs.tempData["countDown"]) return;

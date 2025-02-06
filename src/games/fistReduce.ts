@@ -1,10 +1,179 @@
-import { Player } from "@minecraft/server";
+import * as mc from "@minecraft/server";
 import { fistReduceForm } from "../forms/fistReduce";
 import * as util from "../utilities/utilities";
+import { fistReduceTs } from "../data/tempStorage";
+import { locationData } from "../data/staticData";
 
-export const fistReduceFormHandler = async function (player: Player) {
+/**
+ * applying knockback to player from knockback
+ */
+const applyKnockback = function (
+  player: mc.Player,
+  { viewX, viewZ }: { viewX: number; viewZ: number },
+  horizontalKb: number
+) {
+  const verticalKb = 0.55;
+
+  player.applyKnockback(-viewX, -viewZ, horizontalKb, verticalKb);
+  player.playSound("game.player.hurt");
+};
+
+/**
+ * teleports the bot
+ */
+const teleportBot = function (bot: mc.Entity, mode: "normal" | "limitless") {
+  if (!bot) return;
+
+  if (mode === "normal")
+    bot.teleport({ x: 50008.5, y: 102, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 102, z: 50052 } });
+  else bot.teleport({ x: 50008.5, y: 320, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 320, z: 50052 } });
+};
+
+export const fistReduceFormHandler = async function (player: mc.Player) {
   const { selection } = await fistReduceForm(player);
 
+  // gamemode status
+  if (selection === 10) {
+    switch (fistReduceTs.tempData["gameModeStatus"]) {
+      // about to start
+      case "Starting":
+        const dimension = mc.world.getDimension("overworld");
+
+        const bot = dimension.spawnEntity(
+          "auto:reducerbot<auto:reduce>",
+          fistReduceTs.commonData["gameID"] === "normalFistReduce"
+            ? { x: 50008.5, y: 102, z: 50052.5 }
+            : { x: 50008.5, y: 320, z: 50052.5 }
+        );
+
+        fistReduceTs.tempData["gameModeStatus"] = "Running";
+        fistReduceTs.tempData["bot"] = bot;
+        break;
+
+      // about to pause
+      case "Running":
+        fistReduceTs.tempData["gameModeStatus"] = "Paused";
+        fistReduceTs.tempData["bot"].triggerEvent("auto:pause");
+        util.confirmMessage("§6Bot is now paused!", "random.glass");
+        break;
+
+      // about to continue
+      case "Paused":
+        fistReduceTs.tempData["gameModeStatus"] = "Running";
+        fistReduceTs.tempData["bot"].triggerEvent("auto:reduce");
+        util.confirmMessage("§2Bot is now resumed!", "random.glass");
+        break;
+    }
+  }
+
+  // num hits
+  if (selection === 13) {
+    if (fistReduceTs.tempData["numHits"] === "Single") {
+      fistReduceTs.tempData["numHits"] = "Double";
+    } else if (fistReduceTs.tempData["numHits"] === "Double") {
+      fistReduceTs.tempData["numHits"] = "Triple";
+    } else if (fistReduceTs.tempData["numHits"] === "Triple") {
+      fistReduceTs.tempData["numHits"] = "Single";
+    }
+    fistReduceFormHandler(player);
+
+    util.confirmMessage("", "random.orb");
+  }
+
   // back to lobby
-  if (selection === 15) util.backToLobbyKit(player);
+  if (selection === 16) {
+    fistReduceTs.tempData["bot"]?.kill();
+    fistReduceTs.clearBlocks();
+    util.backToLobbyKit(player);
+  }
+};
+
+export const fistReduceAttackEvt = function (hurtEntity: mc.Entity, damageSource: mc.EntityDamageSource) {
+  if (!damageSource.damagingEntity || damageSource.cause === "entityExplosion") return;
+  const attackerLocation = damageSource.damagingEntity.location;
+  const hurtEntityLocation = hurtEntity.location;
+  const deltaX = hurtEntityLocation.x - attackerLocation.x;
+  const deltaZ = hurtEntityLocation.z - attackerLocation.z;
+  const distance = Math.sqrt(deltaX * deltaX + deltaZ * deltaZ);
+  const unitX = deltaX / distance;
+  const unitZ = deltaZ / distance;
+
+  // when player hits bot
+  if (hurtEntity.typeId !== "minecraft:player") {
+    const player = fistReduceTs.commonData["player"];
+    const { numHits } = fistReduceTs.tempData;
+
+    fistReduceTs.tempData["hitCount"]++;
+
+    if (fistReduceTs.tempData["hitCount"] === 2) {
+      hurtEntity.clearVelocity();
+      hurtEntity.applyImpulse({
+        x: -(unitX / 13),
+        y: 0.35,
+        z: -(unitZ / 13),
+      });
+
+      mc.system.runTimeout(() => {
+        const { x: viewX, z: viewZ } = player.getViewDirection();
+        applyKnockback(player, { viewX, viewZ }, 2.75);
+
+        if (numHits === "Double") mc.system.runTimeout(() => applyKnockback(player, { viewX, viewZ }, 2.75), 10);
+        if (numHits === "Triple") {
+          mc.system.runTimeout(() => applyKnockback(player, { viewX, viewZ }, 2.75), 10);
+          mc.system.runTimeout(() => applyKnockback(player, { viewX, viewZ }, 2.75), 20);
+        }
+        fistReduceTs.tempData["hitCount"] = 0;
+      }, 12);
+    } else {
+      hurtEntity.clearVelocity();
+      hurtEntity.applyImpulse({
+        x: unitX / 10.5,
+        y: 0.35,
+        z: unitZ / 10.5,
+      });
+    }
+  }
+};
+
+export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
+  fistReduceTs.commonData["storedLocations"].add(location);
+  mc.system.runTimeout(() => {
+    try {
+      mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock");
+      fistReduceTs.commonData["storedLocations"].delete(location);
+    } catch (e) {}
+  }, 60);
+};
+
+const resetMap = function (whoDied: "player" | "bot") {
+  const gameID = fistReduceTs.commonData["gameID"];
+  const bot = fistReduceTs.tempData["bot"];
+
+  if (whoDied === "player") {
+    util.giveItems("normalFistReduce");
+    util.confirmMessage("", "random.pop");
+    fistReduceTs.tempData["hitCount"] = 0;
+
+    if (gameID === "normalFistReduce") {
+      util.teleportation(locationData.normalFistReduce);
+      teleportBot(bot, "normal");
+    } else {
+      util.teleportation(locationData.limitlessFistReduce);
+      teleportBot(bot, "limitless");
+    }
+  } else gameID === "normalFistReduce" ? teleportBot(bot, "normal") : teleportBot(bot, "limitless");
+};
+
+export const slowListener = function (mode: "normal" | "limitless") {
+  const { commonData, tempData } = fistReduceTs;
+  const playerY = commonData["player"].location.y;
+  const botY = tempData["bot"]?.location?.y;
+
+  if (mode === "normal") {
+    if (playerY < 95) resetMap("player");
+    if (botY < 95) resetMap("bot");
+  } else {
+    if (playerY < 312) resetMap("player");
+    if (botY < 312) resetMap("bot");
+  }
 };

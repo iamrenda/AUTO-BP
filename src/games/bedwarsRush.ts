@@ -1,6 +1,5 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
-import TeleportationLocation from "../models/TeleportationLocation";
 import { locationData } from "../data/staticData";
 import { bedwarsRushForm } from "../forms/bedwarsRush";
 import { bedwarsRushTs } from "../data/tempStorage";
@@ -11,13 +10,9 @@ import { confirmationForm } from "../forms/utility";
 const setAverageTime = function (newTime: number) {
   const prevAvgTime = BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_AverageTime);
   const attempts = BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_Attempts);
-  const newAvgTime =
-    prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
-  BedwarsRushData.setData(
-    DynamicPropertyID.BedwarsRush_AverageTime,
-    Math.round(newAvgTime * 100) / 100
-  );
+  BedwarsRushData.setData(DynamicPropertyID.BedwarsRush_AverageTime, Math.round(newAvgTime * 100) / 100);
 };
 
 const resetBedwarsRusher = function () {
@@ -31,7 +26,7 @@ const resetMap = function () {
   resetBedwarsRusher();
   util.updateFloatingText(BedwarsRushData.getBundledData("BedwarsRush"));
   util.giveItems("bedwarsRush");
-  util.teleportation(<TeleportationLocation>locationData.bedwarsRush);
+  util.teleportation(locationData.bedwarsRush);
 };
 
 export const bedWarsRushFormHandler = async function (player: mc.Player) {
@@ -52,8 +47,7 @@ export const bedWarsRushFormHandler = async function (player: mc.Player) {
 };
 
 export const placingBlockEvt = function (block: mc.Block) {
-  if (!bedwarsRushTs.commonData["blocks"] && !bedwarsRushTs.commonData["timer"])
-    bedwarsRushTs.startTimer();
+  if (!bedwarsRushTs.commonData["blocks"] && !bedwarsRushTs.commonData["timer"]) bedwarsRushTs.startTimer();
 
   bedwarsRushTs.commonData["blocks"]++;
   bedwarsRushTs.commonData["storedLocations"].add(block.location);

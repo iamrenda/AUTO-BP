@@ -50,6 +50,13 @@ type WallRunTempStorage = {
   };
   isCheckPointSaved: boolean;
 };
+
+type FistReduceTempStorage = {
+  gameModeStatus: "Starting" | "Running" | "Paused";
+  numHits: "Single" | "Double" | "Triple";
+  hitCount: number;
+  bot: mc.Entity;
+};
 /////////////////////////////////////////////////////
 
 class TempStorage<T = any> {
@@ -75,9 +82,7 @@ class TempStorage<T = any> {
   }
 
   public startTimer(): void {
-    this.commonData["timer"] = mc.system.runInterval(
-      () => this.commonData["timer"] && this.commonData["ticks"]++
-    );
+    this.commonData["timer"] = mc.system.runInterval(() => this.commonData["timer"] && this.commonData["ticks"]++);
   }
 
   public stopTimer(): void {
@@ -168,6 +173,22 @@ class BedwarsRush extends TempStorage {
   }
 }
 
+class FistReduce extends TempStorage {
+  constructor(commonData: CommonData) {
+    super("FistReduce", commonData);
+    this.tempData = this.setDefaultTempData();
+  }
+
+  protected setDefaultTempData(): FistReduceTempStorage {
+    return {
+      gameModeStatus: "Starting",
+      bot: undefined,
+      hitCount: 0,
+      numHits: "Single",
+    };
+  }
+}
+
 const commonDataInstance: CommonData = {
   player: mc.world.getAllPlayers()[0],
   gameID: "lobby",
@@ -178,10 +199,9 @@ const commonDataInstance: CommonData = {
   ticks: 0,
 };
 
-const generalTs = new TempStorage("general", commonDataInstance);
-const bridgerTs = new Bridger(commonDataInstance);
-const clutcherTs = new Clutcher(commonDataInstance);
-const wallRunTs = new WallRun(commonDataInstance);
-const bedwarsRushTs = new BedwarsRush(commonDataInstance);
-
-export { generalTs, bridgerTs, wallRunTs, clutcherTs, bedwarsRushTs };
+export const generalTs = new TempStorage("general", commonDataInstance);
+export const bridgerTs = new Bridger(commonDataInstance);
+export const clutcherTs = new Clutcher(commonDataInstance);
+export const wallRunTs = new WallRun(commonDataInstance);
+export const bedwarsRushTs = new BedwarsRush(commonDataInstance);
+export const fistReduceTs = new FistReduce(commonDataInstance);

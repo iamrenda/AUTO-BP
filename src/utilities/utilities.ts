@@ -37,9 +37,9 @@ export const teleportation = function (loc: TeleportationLocation): void {
 /**
  * confirmMessage: show message with sound
  */
-export const confirmMessage = function (message: string, sound: string = ""): void {
+export const confirmMessage = function (message: string = "", sound: string = ""): void {
   const player = generalTs.commonData["player"];
-  player.sendMessage(message);
+  if (message) player.sendMessage(message);
   if (sound) player.playSound(sound);
 };
 
@@ -47,9 +47,10 @@ export const confirmMessage = function (message: string, sound: string = ""): vo
  * returns todays date
  */
 const date = new Date();
-export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(
-  date.getDate()
-).padStart(2, "0")}/${String(date.getFullYear()).slice(-2)}`;
+export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(date.getDate()).padStart(
+  2,
+  "0"
+)}/${String(date.getFullYear()).slice(-2)}`;
 
 /**
  * sets bridger mode "straight16b", "straight21b", "straight50b", "inclined16b", "inclined21b", "inclined50b",
@@ -93,7 +94,8 @@ export const displayScoreboard = function (gameId: GameID): void {
     clutcher: scoreboard.clutcherScoreboard,
     wallRun: scoreboard.wallRunScoreboard,
     bedwarsRush: scoreboard.bedwarsRushScoreboard,
-    fistReduce: scoreboard.fistReduceScoreboard,
+    normalFistReduce: scoreboard.fistReduceScoreboard,
+    limitlessFistReduce: scoreboard.fistReduceScoreboard,
   };
 
   const display = scoreboards[gameId];
@@ -110,7 +112,7 @@ export const backToLobbyKit = function (player: mc.Player) {
   player.setGameMode(mc.GameMode.survival);
   giveItems("lobby");
   displayScoreboard("lobby");
-  teleportation(<TeleportationLocation>locationData.lobby);
+  teleportation(locationData.lobby);
 };
 
 /**
@@ -168,12 +170,7 @@ type FloatingTextParams = {
   attempts: number;
   successAttempts: number;
 };
-export const updateFloatingText = function ({
-  pb,
-  avgTime,
-  attempts,
-  successAttempts,
-}: FloatingTextParams) {
+export const updateFloatingText = function ({ pb, avgTime, attempts, successAttempts }: FloatingTextParams) {
   const player = generalTs.commonData["player"];
   const displayText = `§b${player.nameTag} - §7§oVersion ${VERSION}§r
 §6Personal Best: §f${properTimeText(pb)}

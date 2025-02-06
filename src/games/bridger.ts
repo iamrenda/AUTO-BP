@@ -60,8 +60,7 @@ const TELLYBUILDERNUMBER: {
 const setAverageTime = function (newTime: number) {
   const prevAvgTime = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
   const attempts = BridgerData.getData(DynamicPropertyID.Bridger_Attempts);
-  const newAvgTime =
-    prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
+  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
 
   BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
 };
@@ -82,7 +81,7 @@ const resetMap = function (wasAttempt: boolean = true): void {
 
   wasAttempt
     ? util.teleportation(<TeleportationLocation>data.locationData[gameId])
-    : util.teleportation(<TeleportationLocation>data.locationData.lobby);
+    : util.teleportation(data.locationData.lobby);
 
   if (wasAttempt) util.updateFloatingText(BridgerData.getBundledData("Bridger"));
 
@@ -121,26 +120,14 @@ const tellyPracticeBuilder = function (
   const dimension = mc.world.getDimension("overworld");
   switch (tellyType) {
     case "Telly":
-      dimension.setBlockType(
-        { x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 },
-        blockType
-      );
-      dimension.setBlockType(
-        { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 6 },
-        blockType
-      );
+      dimension.setBlockType({ x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 }, blockType);
+      dimension.setBlockType({ x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 6 }, blockType);
       return { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 6 };
     case "Speed Telly":
-      dimension.setBlockType(
-        { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 3 },
-        blockType
-      );
+      dimension.setBlockType({ x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 3 }, blockType);
       return { x: startLocation.x, y: startLocation.y + 1, z: startLocation.z + 3 };
     case "4bFlat":
-      dimension.setBlockType(
-        { x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 },
-        blockType
-      );
+      dimension.setBlockType({ x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 }, blockType);
       return { x: startLocation.x, y: startLocation.y, z: startLocation.z + 4 };
   }
 };
@@ -159,10 +146,7 @@ const handleTellyPractice = function (
   const newDistance = newDistanceArg ?? GameData.getData("Distance");
 
   if (prevTellyMode === newTellyMode && !newDistance)
-    return util.confirmMessage(
-      "§4The telly practice has already been changed!",
-      "random.anvil_land"
-    );
+    return util.confirmMessage("§4The telly practice has already been changed!", "random.anvil_land");
 
   // clearing previous mode
   if (prevTellyMode === "Telly") {
@@ -195,10 +179,8 @@ const handleTellyPractice = function (
   if (prevDistanceArg || newDistanceArg) return;
 
   GameData.setData("TellyPractice", newTellyMode);
-  if (newTellyMode === "None")
-    util.confirmMessage(`§aTelly practice mode has now been §cDisabled!`, "random.orb");
-  else if (prevTellyMode === "None")
-    util.confirmMessage(`§aTelly practice mode has now been Enabled!`, "random.orb");
+  if (newTellyMode === "None") util.confirmMessage(`§aTelly practice mode has now been §cDisabled!`, "random.orb");
+  else if (prevTellyMode === "None") util.confirmMessage(`§aTelly practice mode has now been Enabled!`, "random.orb");
   else util.confirmMessage(`§aThe change has now been made!`, "random.orb");
 };
 
@@ -248,10 +230,7 @@ const fillAndPlace = function (
     fillAirLocation.end.z = fillAirLocation.start.z + 9;
   }
 
-  dimension.fillBlocks(
-    new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end),
-    "minecraft:air"
-  );
+  dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
 
   // telly (if enabled)
   const currentTellyMode = GameData.getData("TellyPractice");
@@ -354,10 +333,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
   bridgerTs.tempData.autoReq = mc.system.runTimeout(enablePlate, 80);
 
   // if telly practice
-  if (
-    GameData.getData("TellyPractice") !== "None" &&
-    bridgerTs.tempData["bridgerDirection"] !== "inclined"
-  ) {
+  if (GameData.getData("TellyPractice") !== "None" && bridgerTs.tempData["bridgerDirection"] !== "inclined") {
     player.playSound("random.orb");
     util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
     util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
