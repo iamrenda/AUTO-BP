@@ -43,7 +43,7 @@ export const bedWarsRushFormHandler = async function (player: mc.Player) {
   }
 
   // back to lobby
-  if (selection === 15) util.backToLobbyKit(player);
+  if (selection === 15) util.backToLobbyKit(player, bedwarsRushTs);
 };
 
 export const placingBlockEvt = function (block: mc.Block) {

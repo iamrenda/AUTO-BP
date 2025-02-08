@@ -3,7 +3,7 @@ import { BridgerTicksID } from "../models/DynamicProperty";
 import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
-import { bridgerTs, generalTs } from "../data/tempStorage";
+import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "../data/scoreboard";
 import * as goalMessage from "../data/goalMessage";
 import { clearBlocksForm } from "../forms/utility";
@@ -105,10 +105,11 @@ export const displayScoreboard = function (gameId: GameID): void {
 /**
  * back to lobby
  */
-export const backToLobbyKit = function (player: mc.Player) {
+export const backToLobbyKit = function (player: mc.Player, tempDataClass: TempStorage) {
   generalTs.stopTimer();
   generalTs.commonData["gameID"] = "lobby";
   generalTs.commonData["ticks"] = 0;
+  tempDataClass.tempData = tempDataClass.setDefaultTempData();
   player.setGameMode(mc.GameMode.survival);
   giveItems("lobby");
   displayScoreboard("lobby");

@@ -175,7 +175,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
   // quit
   if (selection === 16) {
     clutcherTs.clearBlocks();
-    util.backToLobbyKit(player);
+    util.backToLobbyKit(player, clutcherTs);
   }
 };
 

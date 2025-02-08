@@ -58,11 +58,11 @@ export const nagivatorFormHandler = async function (player: Player) {
     if (canceled) return;
 
     if (bridgerDirSelection === 11) {
-      util.displayScoreboard("normalFistReduce");
       handleNavigation(player, "normalFistReduce", data.locationData.normalFistReduce);
+      util.displayScoreboard("normalFistReduce");
     } else if (bridgerDirSelection === 15) {
-      util.displayScoreboard("limitlessFistReduce");
       handleNavigation(player, "limitlessFistReduce", data.locationData.limitlessFistReduce);
+      util.displayScoreboard("limitlessFistReduce");
     }
   }
 

@@ -194,4 +194,7 @@ export const clutchStrength: ClutchStrengthIF = {
   },
 };
 
+/**
+ * AUTO World version
+ */
 export const VERSION = 6;

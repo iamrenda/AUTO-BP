@@ -308,7 +308,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   // quit bridger
   if (bridgerSelection === 16) {
     resetMap(false);
-    util.backToLobbyKit(player);
+    util.backToLobbyKit(player, bridgerTs);
   }
 };
 

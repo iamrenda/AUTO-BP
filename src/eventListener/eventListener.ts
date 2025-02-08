@@ -6,7 +6,7 @@ import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
-import { bridgerTs, fistReduceTs, generalTs } from "../data/tempStorage";
+import { bridgerTs, generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
 
@@ -101,14 +101,12 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["player"] = player;
   generalTs.commonData["storedLocationsGameID"] = <GameID>mc.world.getDynamicProperty("auto:storedBlocksGameID");
   DynamicProperty.fetchData();
-  util.backToLobbyKit(player);
+  util.backToLobbyKit(player, generalTs);
 });
 
 // leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
   DynamicProperty.postData();
-  if (generalTs.commonData["gameID"] === "normalFistReduce" || generalTs.commonData["gameID"] === "limitlessFistReduce")
-    fistReduceTs.tempData["bot"].kill();
   if (generalTs.commonData["storedLocations"].size) {
     StoredBlocksClass.storeBlocks();
     generalTs.commonData["storedLocationsGameID"] = generalTs.commonData["gameID"];

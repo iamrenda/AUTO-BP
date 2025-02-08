@@ -137,7 +137,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
   // back to lobby
   if (selection === 16) {
     wallRunTs.clearBlocks();
-    util.backToLobbyKit(player);
+    util.backToLobbyKit(player, wallRunTs);
   }
 };
 

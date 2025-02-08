@@ -55,11 +55,10 @@ type FistReduceTempStorage = {
   gameModeStatus: "Starting" | "Running" | "Paused";
   numHits: "Single" | "Double" | "Triple";
   hitCount: number;
-  bot: mc.Entity;
 };
 /////////////////////////////////////////////////////
 
-class TempStorage<T = any> {
+export class TempStorage<T = any> {
   public name: string;
   public commonData: CommonData;
   public tempData: T;
@@ -69,7 +68,7 @@ class TempStorage<T = any> {
     this.commonData = commonData;
   }
 
-  protected setDefaultTempData(): T {
+  public setDefaultTempData(): T {
     return {} as T;
   }
 
@@ -98,7 +97,7 @@ class Bridger extends TempStorage<BridgerTempStorage> {
     this.tempData = this.setDefaultTempData();
   }
 
-  protected setDefaultTempData(): BridgerTempStorage {
+  public setDefaultTempData(): BridgerTempStorage {
     return {
       blockBridger: "minecraft:sandstone",
       bridgerMode: BridgerTicksID.straight16blocks,
@@ -115,7 +114,7 @@ class Clutcher extends TempStorage<ClutcherTempStorage> {
     this.tempData = this.setDefaultTempData();
   }
 
-  protected setDefaultTempData(): ClutcherTempStorage {
+  public setDefaultTempData(): ClutcherTempStorage {
     return {
       clutchHits: [1],
       clutchShiftStart: true,
@@ -147,7 +146,7 @@ class WallRun extends TempStorage<WallRunTempStorage> {
     this.tempData = this.setDefaultTempData();
   }
 
-  protected setDefaultTempData(): WallRunTempStorage {
+  public setDefaultTempData(): WallRunTempStorage {
     return {
       wallRunIsCheckPointEnabled: true,
       autoReq: undefined,
@@ -168,7 +167,7 @@ class BedwarsRush extends TempStorage {
     this.tempData = this.setDefaultTempData();
   }
 
-  protected setDefaultTempData() {
+  public setDefaultTempData() {
     return {};
   }
 }
@@ -179,10 +178,9 @@ class FistReduce extends TempStorage {
     this.tempData = this.setDefaultTempData();
   }
 
-  protected setDefaultTempData(): FistReduceTempStorage {
+  public setDefaultTempData(): FistReduceTempStorage {
     return {
       gameModeStatus: "Starting",
-      bot: undefined,
       hitCount: 0,
       numHits: "Single",
     };

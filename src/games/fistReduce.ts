@@ -21,13 +21,25 @@ const applyKnockback = function (
 /**
  * teleports the bot
  */
-const teleportBot = function (bot: mc.Entity, mode: "normal" | "limitless") {
-  if (!bot) return;
-
-  if (mode === "normal")
-    bot.teleport({ x: 50008.5, y: 102, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 102, z: 50052 } });
-  else bot.teleport({ x: 50008.5, y: 320, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 320, z: 50052 } });
+const teleportBot = function (mode: "normal" | "limitless") {
+  const bot = ReducerBot.bot;
+  mode === "normal"
+    ? bot.teleport({ x: 50008.5, y: 102, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 102, z: 50052 } })
+    : bot.teleport({ x: 50008.5, y: 320, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 320, z: 50052 } });
 };
+
+/**
+ * reducer bot class
+ */
+class ReducerBot {
+  static bot: mc.Entity;
+
+  constructor() {}
+
+  public static defineBot() {
+    ReducerBot.bot = mc.world.getDimension("overworld").getEntities({ type: "auto:reducerbot" })[0];
+  }
+}
 
 export const fistReduceFormHandler = async function (player: mc.Player) {
   const { selection } = await fistReduceForm(player);
@@ -37,30 +49,23 @@ export const fistReduceFormHandler = async function (player: mc.Player) {
     switch (fistReduceTs.tempData["gameModeStatus"]) {
       // about to start
       case "Starting":
-        const dimension = mc.world.getDimension("overworld");
-
-        const bot = dimension.spawnEntity(
-          "auto:reducerbot<auto:reduce>",
-          fistReduceTs.commonData["gameID"] === "normalFistReduce"
-            ? { x: 50008.5, y: 102, z: 50052.5 }
-            : { x: 50008.5, y: 320, z: 50052.5 }
-        );
-
+        ReducerBot.defineBot();
+        fistReduceTs.commonData["gameID"] === "normalFistReduce" ? teleportBot("normal") : teleportBot("limitless");
+        ReducerBot.bot.triggerEvent("auto:reduce");
         fistReduceTs.tempData["gameModeStatus"] = "Running";
-        fistReduceTs.tempData["bot"] = bot;
         break;
 
       // about to pause
       case "Running":
         fistReduceTs.tempData["gameModeStatus"] = "Paused";
-        fistReduceTs.tempData["bot"].triggerEvent("auto:pause");
+        ReducerBot.bot.triggerEvent("auto:pause");
         util.confirmMessage("§6Bot is now paused!", "random.glass");
         break;
 
       // about to continue
       case "Paused":
         fistReduceTs.tempData["gameModeStatus"] = "Running";
-        fistReduceTs.tempData["bot"].triggerEvent("auto:reduce");
+        ReducerBot.bot.triggerEvent("auto:reduce");
         util.confirmMessage("§2Bot is now resumed!", "random.glass");
         break;
     }
@@ -82,9 +87,9 @@ export const fistReduceFormHandler = async function (player: mc.Player) {
 
   // back to lobby
   if (selection === 16) {
-    fistReduceTs.tempData["bot"]?.kill();
     fistReduceTs.clearBlocks();
-    util.backToLobbyKit(player);
+    ReducerBot.bot.triggerEvent("auto:pause");
+    util.backToLobbyKit(player, fistReduceTs);
   }
 };
 
@@ -147,7 +152,6 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
 
 const resetMap = function (whoDied: "player" | "bot") {
   const gameID = fistReduceTs.commonData["gameID"];
-  const bot = fistReduceTs.tempData["bot"];
 
   if (whoDied === "player") {
     util.giveItems("normalFistReduce");
@@ -156,18 +160,17 @@ const resetMap = function (whoDied: "player" | "bot") {
 
     if (gameID === "normalFistReduce") {
       util.teleportation(locationData.normalFistReduce);
-      teleportBot(bot, "normal");
+      teleportBot("normal");
     } else {
       util.teleportation(locationData.limitlessFistReduce);
-      teleportBot(bot, "limitless");
+      teleportBot("limitless");
     }
-  } else gameID === "normalFistReduce" ? teleportBot(bot, "normal") : teleportBot(bot, "limitless");
+  } else gameID === "normalFistReduce" ? teleportBot("normal") : teleportBot("limitless");
 };
 
 export const slowListener = function (mode: "normal" | "limitless") {
-  const { commonData, tempData } = fistReduceTs;
-  const playerY = commonData["player"].location.y;
-  const botY = tempData["bot"]?.location?.y;
+  const playerY = fistReduceTs.commonData["player"].location.y;
+  const botY = ReducerBot.bot?.location?.y;
 
   if (mode === "normal") {
     if (playerY < 95) resetMap("player");

@@ -89,10 +89,11 @@ export const bedwarsRushScoreboard = function (): string {
 
 export const fistReduceScoreboard = function (): string {
   const mode = fistReduceTs.commonData["gameID"] === "normalFistReduce" ? "Normal Reduce" : "LIMITLESS";
+
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Reduce Mode:§r
-    ${mode}
+   ${mode}
              
  §7- §6Discord§r
    .gg/4NRYhCYykk

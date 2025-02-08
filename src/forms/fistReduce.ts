@@ -27,8 +27,8 @@ export const fistReduceForm = async function (player: Player): Promise<ActionFor
       fistReduceTs.tempData["numHits"] === "Single"
         ? "§aSingle Hit"
         : fistReduceTs.tempData["numHits"] === "Double"
-        ? "Double Hit"
-        : "Triple Hit",
+        ? "§6Double Hit"
+        : "§cTriple Hit",
       [],
       fistReduceTs.tempData["numHits"] === "Single"
         ? "minecraft:apple"
