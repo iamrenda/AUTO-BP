@@ -92,7 +92,7 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
         WallRunData.setData(DynamicPropertyID.WallRunner_PB, ticks);
         util.showMessage(true, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
         player.playSound("random.levelup");
-        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, "§dNEW RECORD!!!");
+        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
       } else {
         util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
         util.showMessage(false, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));

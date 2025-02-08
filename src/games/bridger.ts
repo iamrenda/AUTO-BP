@@ -343,7 +343,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
   if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), ticks)) {
     BridgerData.setData(DynamicPropertyID.Bridger_PB, ticks);
     util.showMessage(true, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
-    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, "§dNEW RECORD!!!");
+    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
     player.playSound("random.levelup");
   } else {
     util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);

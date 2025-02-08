@@ -224,7 +224,17 @@ export const clearBlocks = async function (player: mc.Player) {
 /**
  * shows title bar (optional: subtitle)
  */
-export const showTitleBar = function (player: mc.Player, title: string, subtitle?: string) {
-  player.onScreenDisplay.setTitle(title);
+export const showTitleBar = function (
+  player: mc.Player,
+  title: string,
+  displayOption: { fadeInDuration?: number; fadeOutDuration?: number; stayDuration?: number; subtitle?: string } = {
+    fadeInDuration: 20,
+    fadeOutDuration: 20,
+    stayDuration: 60,
+    subtitle: "",
+  }
+) {
+  const { fadeInDuration = 20, fadeOutDuration = 20, stayDuration = 60, subtitle = "" } = displayOption;
+  player.onScreenDisplay.setTitle(title, { fadeInDuration, fadeOutDuration, stayDuration });
   if (subtitle) player.onScreenDisplay.updateSubtitle(subtitle);
 };

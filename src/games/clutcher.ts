@@ -93,7 +93,6 @@ const applyKnockback = function (
 const startClutch = function (player: mc.Player) {
   clutcherTs.stopCountDown();
   clutcherTs.tempData["isListening"] = true;
-  countDownDisplay(player, "§aGO!");
   player.playSound("note.pling");
   clutcherTs.tempData["sec"] = 3;
 
@@ -113,10 +112,11 @@ const startClutch = function (player: mc.Player) {
  */
 const countDownDisplay = function (player: mc.Player, text: string) {
   player.playSound("note.hat");
-  player.onScreenDisplay.setTitle(text, {
+  util.showTitleBar(player, text, {
     fadeInDuration: 0,
-    fadeOutDuration: 7,
+    fadeOutDuration: 2,
     stayDuration: 20,
+    subtitle: `§b[§f${clutcherTs.tempData["clutchHits"].length} HITS§b]`,
   });
   clutcherTs.tempData["sec"]--;
 };
