@@ -18,16 +18,16 @@ export enum DynamicPropertyID {
 }
 
 export enum BridgerTicksID {
-  straight16blocks = "straight16b",
-  straight21blocks = "straight21b",
-  straight50blocks = "straight50b",
-  inclined16blocks = "inclined16b",
-  inclined21blocks = "inclined21b",
-  inclined50blocks = "inclined50b",
+  straight16blocks = "straight16blocks",
+  straight21blocks = "straight21blocks",
+  straight50blocks = "straight50blocks",
+  inclined16blocks = "inclined16blocks",
+  inclined21blocks = "inclined21blocks",
+  inclined50blocks = "inclined50blocks",
 }
 
 export enum GameDataID {
   straightDistance = "straightDistance",
   inclinedDistance = "inclinedDistance",
-  straightTellyPractice = "straightTellyPractice", // "None", "Telly", "Speed Telly"
+  straightTellyPractice = "straightTellyPractice",
 }

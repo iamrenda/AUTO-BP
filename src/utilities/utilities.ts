@@ -53,10 +53,17 @@ export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(d
 )}/${String(date.getFullYear()).slice(-2)}`;
 
 /**
- * sets bridger mode "straight16b", "straight21b", "straight50b", "inclined16b", "inclined21b", "inclined50b",
+ * sets bridger mode
  */
 export const setBridgerMode = function (game: BridgerTicksID): void {
   bridgerTs.tempData["bridgerMode"] = game;
+};
+
+/**
+ * gets bridger mode
+ */
+export const getBridgerMode = function (): BridgerTicksID {
+  return bridgerTs.tempData["bridgerMode"];
 };
 
 /**
@@ -73,14 +80,7 @@ export const calculateDistance = function (location1: mc.Vector3, location2: mc.
  * converts from tick to seconds
  */
 export const tickToSec = function (ticks: number): string {
-  return (ticks / 20).toFixed(2);
-};
-
-/**
- * display time as text but if time undefined, it will show as "--:--"
- */
-export const properTimeText = function (ticks: number): string {
-  return ticks === -1 ? "--.--" : tickToSec(ticks);
+  return ticks === -1 ? "--.--" : (ticks / 20).toFixed(2);
 };
 
 /**
@@ -174,8 +174,8 @@ type FloatingTextParams = {
 export const updateFloatingText = function ({ pb, avgTime, attempts, successAttempts }: FloatingTextParams) {
   const player = generalTs.commonData["player"];
   const displayText = `§b${player.nameTag} - §7§oVersion ${VERSION}§r
-§6Personal Best: §f${properTimeText(pb)}
-§6Average Time: §f${properTimeText(avgTime)}
+§6Personal Best: §f${tickToSec(pb)}
+§6Average Time: §f${tickToSec(avgTime)}
 §6Attempts: §f${attempts}
 §6Successful Attempts: §f${successAttempts}`;
 

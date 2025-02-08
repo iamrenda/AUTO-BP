@@ -9,6 +9,7 @@ import * as fistReduce from "../games/fistReduce";
 import { bridgerTs, generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
+import { locationData } from "../data/staticData";
 
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
@@ -26,41 +27,58 @@ const eatGhead = (player: mc.Player): void => {
 };
 
 // right-click an item
-type ItemTypeHandlers = { [key: string]: (player: mc.Player) => void };
-
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
   // ghead
   if (item.typeId === "auto:ghead") return eatGhead(player);
 
+  switch (item.typeId) {
+    case "minecraft:stick":
+      lobby.launchingStickHandler(player);
+      break;
+
+    case "minecraft:compass":
+      lobby.nagivatorFormHandler(player);
+      break;
+
+    case "minecraft:book":
+      bookHandlers(player);
+      break;
+
+    case "minecraft:guster_banner_pattern":
+      lobby.statsFormHandler(player);
+      break;
+
+    case "minecraft:flint":
+      util.teleportation(locationData.lobby);
+      mc.system.run(() => util.confirmMessage("", "mob.endermen.portal"));
+      break;
+  }
+});
+
+// book right-click handler
+const bookHandlers = (player: mc.Player) => {
   const gameID = generalTs.commonData["gameID"];
   const storedGameID = generalTs.commonData["storedLocationsGameID"];
 
-  const itemTypeHandlers: ItemTypeHandlers = {
-    "minecraft:compass": lobby.nagivatorFormHandler,
-    "minecraft:stick": lobby.launchingStickHandler,
-    "minecraft:book": (player: mc.Player) => {
-      if (storedGameID === gameID) util.clearBlocks(player);
-      else {
-        const formHandlers: { [key in GameID]: (player: mc.Player) => void } = {
-          lobby: lobby.creditFormHandler,
-          straightBridger: bridger.bridgerFormHandler,
-          inclinedBridger: bridger.bridgerFormHandler,
-          clutcher: clutcher.clutcherFormHandler,
-          wallRun: wallRun.wallRunFormHandler,
-          bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
-          normalFistReduce: fistReduce.fistReduceFormHandler,
-          limitlessFistReduce: fistReduce.fistReduceFormHandler,
-        };
-        formHandlers[gameID](player);
-      }
-    },
-  };
-
-  if (itemTypeHandlers[item.typeId]) itemTypeHandlers[item.typeId](player);
-});
+  if (storedGameID === gameID) util.clearBlocks(player);
+  else {
+    const formHandlers: { [key in GameID]: (player: mc.Player) => void } = {
+      lobby: lobby.creditFormHandler,
+      straightBridger: bridger.bridgerFormHandler,
+      inclinedBridger: bridger.bridgerFormHandler,
+      clutcher: clutcher.clutcherFormHandler,
+      wallRun: wallRun.wallRunFormHandler,
+      bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
+      normalFistReduce: fistReduce.fistReduceFormHandler,
+      limitlessFistReduce: fistReduce.fistReduceFormHandler,
+    };
+    formHandlers[gameID](player);
+  }
+};
 
 // placing a block
-const eventMap: { [key: string]: (block: any) => void } = {
+const eventMap: { [key in GameID]: (block: any) => void } = {
+  lobby: lobby.placingBlockEvt,
   straightBridger: bridger.placingBlockEvt,
   inclinedBridger: bridger.placingBlockEvt,
   clutcher: clutcher.placingBlockEvt,

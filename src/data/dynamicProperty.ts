@@ -1,6 +1,7 @@
 import { world, Vector3 } from "@minecraft/server";
 import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
 import { generalTs, bridgerTs } from "./tempStorage";
+import { getBridgerMode } from "../utilities/utilities";
 
 /////////////////////////////////////////////////////////////////
 export class DynamicProperty {
@@ -72,7 +73,7 @@ export class DynamicProperty {
   }
 }
 
-abstract class BaseGameData extends DynamicProperty {
+export abstract class BaseGameData extends DynamicProperty {
   public static getData(id: DynamicPropertyID): number {
     return this.dynamicData[id];
   }
@@ -112,9 +113,7 @@ abstract class BaseGameData extends DynamicProperty {
           bundledData.attempts = this.getData(<DynamicPropertyID>`${gameId}_Attempts`);
           break;
         case `${gameId}_SuccessAttempts`:
-          bundledData.successAttempts = this.getData(
-            <DynamicPropertyID>`${gameId}_SuccessAttempts`
-          );
+          bundledData.successAttempts = this.getData(<DynamicPropertyID>`${gameId}_SuccessAttempts`);
           break;
         case `${gameId}_AverageTime`:
           bundledData.avgTime = this.getData(<DynamicPropertyID>`${gameId}_AverageTime`);
@@ -132,10 +131,7 @@ export class GameData extends DynamicProperty {
     return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
   }
 
-  public static setData(
-    gameDataType: "Distance" | "TellyPractice",
-    data: boolean | number | string
-  ): void {
+  public static setData(gameDataType: "Distance" | "TellyPractice", data: boolean | number | string): void {
     const direction = bridgerTs.tempData["bridgerDirection"];
     this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`] = data;
   }
@@ -143,15 +139,15 @@ export class GameData extends DynamicProperty {
 
 export class BridgerData extends BaseGameData {
   public static getData(id: DynamicPropertyID): number {
-    return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
+    return this.dynamicData[id][getBridgerMode()];
   }
 
   public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
+    this.dynamicData[id][getBridgerMode()] = data;
   }
 
   public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]]++;
+    this.dynamicData[id][getBridgerMode()]++;
   }
 }
 
@@ -163,9 +159,7 @@ export class StoredBlocksClass {
   public static clearBlocks(): void {
     const jsonArray = JSON.parse(`${world.getDynamicProperty("auto:storedBlocks")}`);
 
-    jsonArray.map((location: Vector3) =>
-      world.getDimension("overworld").setBlockType(location, "minecraft:air")
-    );
+    jsonArray.map((location: Vector3) => world.getDimension("overworld").setBlockType(location, "minecraft:air"));
     world.setDynamicProperty("auto:storedBlocksGameID", "undefined");
     world.setDynamicProperty("auto:storedBlocks", "[]");
     generalTs.commonData["storedLocationsGameID"] = undefined;

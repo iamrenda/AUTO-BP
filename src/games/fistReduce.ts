@@ -147,7 +147,7 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
       mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock");
       fistReduceTs.commonData["storedLocations"].delete(location);
     } catch (e) {}
-  }, 60);
+  }, 100);
 };
 
 const resetMap = function (whoDied: "player" | "bot") {

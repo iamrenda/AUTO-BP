@@ -23,9 +23,12 @@ type ClutchStrengthIF = {
 export const getInvData = function (game: GameID): ItemInfo[] {
   if (game === "lobby")
     return [
-      { item: "minecraft:stick", quantity: 1, slot: 2, name: "§9Launching Stick" },
-      { item: "minecraft:compass", quantity: 1, slot: 4, name: "§fNavigator" },
+      { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
+      { item: "minecraft:white_wool", quantity: 64, slot: 1, name: "§fWhite Wool" },
+      { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
       { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
+      { item: "minecraft:guster_banner_pattern", quantity: 1, slot: 7, name: "§5Your Stats" },
+      { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },
     ];
   if (game === "straightBridger" || game === "inclinedBridger")
     return [

@@ -30,7 +30,7 @@ export const bridgerScoreboard = function (): string {
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r
-   ${util.properTimeText(pb)}
+   ${util.tickToSec(pb)}
     
  §7- §6Time:§r
    ${util.tickToSec(bridgerTs.commonData["ticks"])}
@@ -60,7 +60,7 @@ export const wallRunScoreboard = function (): string {
   return `     §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r
-   §f${util.properTimeText(pb)}
+   §f${util.tickToSec(pb)}
 
  §7- §6Time:§r
    §f${util.tickToSec(wallRunTs.commonData["ticks"])}
@@ -76,7 +76,7 @@ export const bedwarsRushScoreboard = function (): string {
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r
-   ${util.properTimeText(pb)}
+   ${util.tickToSec(pb)}
     
  §7- §6Time:§r
    ${util.tickToSec(bridgerTs.commonData["ticks"])}

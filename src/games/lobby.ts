@@ -3,13 +3,14 @@ import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import { generalTs, bridgerTs } from "../data/tempStorage";
-import { Player } from "@minecraft/server";
+import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
+import { BedwarsRushData, BridgerData, WallRunData } from "../data/dynamicProperty";
 
 /**
  * if uncleared block detected, it shows the warning
  */
-const warnUnclearedBlocks = function (player: Player): void {
+const warnUnclearedBlocks = function (player: mc.Player): void {
   if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
   util.confirmMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
   util.showTitleBar(player, "§cUncleared blocks Detected");
@@ -18,14 +19,14 @@ const warnUnclearedBlocks = function (player: Player): void {
 /**
  * handling navigation for lobby
  */
-const handleNavigation = (player: Player, gameId: GameID, locationData: TeleportationLocation) => {
+const handleNavigation = (player: mc.Player, gameId: GameID, locationData: TeleportationLocation) => {
   generalTs.commonData["gameID"] = gameId;
   util.giveItems(gameId);
   util.teleportation(locationData);
   warnUnclearedBlocks(player);
 };
 
-export const nagivatorFormHandler = async function (player: Player) {
+export const nagivatorFormHandler = async function (player: mc.Player) {
   const { selection } = await form.lobbyForm(player);
 
   // bridger
@@ -65,12 +66,18 @@ export const nagivatorFormHandler = async function (player: Player) {
       util.displayScoreboard("limitlessFistReduce");
     }
   }
-
-  // back to lobby
-  if (selection === 31) util.teleportation(data.locationData.lobby);
 };
 
-export const launchingStickHandler = function (player: Player) {
+export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
+  mc.system.runTimeout(() => {
+    try {
+      mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock");
+      generalTs.commonData["storedLocations"].delete(location);
+    } catch (e) {}
+  }, 60);
+};
+
+export const launchingStickHandler = function (player: mc.Player) {
   const { x: directionX, y: directionY, z: directionZ } = player.getViewDirection();
 
   player.applyKnockback(directionX, directionZ, 7, 2 * (1 + directionY));
@@ -78,6 +85,22 @@ export const launchingStickHandler = function (player: Player) {
   player.spawnParticle("minecraft:huge_explosion_emitter", player.location);
 };
 
-export const creditFormHandler = function (player: Player) {
+export const creditFormHandler = function (player: mc.Player) {
   form.lobbyCreditForm(player);
+};
+
+export const statsFormHandler = async function (player: mc.Player) {
+  const { selection } = await form.lobbyStatsGamemodeForm(player);
+
+  switch (selection) {
+    case 11:
+      form.lobbyStatsForm(player, BridgerData, "Bridger");
+      break;
+    case 13:
+      form.lobbyStatsForm(player, WallRunData, "WallRunner");
+      break;
+    case 15:
+      form.lobbyStatsForm(player, BedwarsRushData, "BedwarsRush");
+      break;
+  }
 };
