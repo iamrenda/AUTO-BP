@@ -80,11 +80,11 @@ const applyKnockback = function (
   { viewX, viewZ }: { viewX: number; viewZ: number },
   horizontalKb: number
 ) {
-  const verticalKb = 0.6;
+  const verticalKb = clutcherTs.tempData["hitIndex"] === 0 ? 0.45 : 0.6;
 
+  clutcherTs.tempData["hitIndex"]++;
   player.applyKnockback(-viewX, -viewZ, horizontalKb, verticalKb);
   player.playSound("game.player.hurt");
-  clutcherTs.tempData["hitIndex"]++;
 };
 
 /**
