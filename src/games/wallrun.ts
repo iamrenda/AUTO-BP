@@ -3,9 +3,7 @@ import * as util from "../utilities/utilities";
 import * as form from "../forms/wallrun";
 import { wallRunTs } from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { locationData } from "../data/staticData";
 import { WallRunData } from "../data/dynamicProperty";
-import { confirmationForm } from "../forms/utility";
 
 /**
  * disables the plate if not disabled; returns true or false depending on availiability
@@ -28,10 +26,13 @@ const enablePlate = function (): void {
 };
 /////////////////////////////////////////////////////////////////////////
 export const pressurePlatePushEvt = function ({ location }: { location: mc.Vector3 }) {
+  const player = wallRunTs.commonData["player"];
+
   switch (location.z) {
     // start
     case 30016:
       if (isPlateDisabled("first")) return;
+      player.playSound("note.pling");
       WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
       wallRunTs.startTimer();
       break;
@@ -47,10 +48,9 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     // goal
     case 30121:
       if (isPlateDisabled("goal")) return;
-      const player = wallRunTs.commonData["player"];
 
       player.setGameMode(mc.GameMode.spectator);
-      util.resetMap(wallRunTs, WallRunData, enablePlate);
+      util.onRunnerSuccess(wallRunTs, WallRunData, enablePlate);
       break;
   }
 };
@@ -72,12 +72,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
 
   // reset pb
   if (selection === 13) {
-    const { selection: confirmationSelection } = await confirmationForm(player, `Wall Run`);
-    if (confirmationSelection !== 15) return;
-
-    WallRunData.setData(DynamicPropertyID.WallRunner_PB, -1);
-    util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
+    util.resetPB(player, WallRunData, "Wall Run", "WallRunner");
   }
 
   // back to lobby
@@ -108,13 +103,7 @@ export const listener = function () {
     util.giveItems("wallRun");
     wallRunTs.clearBlocks();
   } else {
-    // going back to spawn
-    wallRunTs.stopTimer();
-    wallRunTs.clearBlocks();
-    WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
-    util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
-    util.giveItems("wallRun");
-    util.teleportation(locationData.wallRun);
     enablePlate();
+    util.onRunnerFail(WallRunData);
   }
 };

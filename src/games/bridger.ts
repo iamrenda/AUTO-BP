@@ -3,7 +3,6 @@ import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import * as form from "../forms/bridger";
 import { bridgerTs } from "../data/tempStorage";
-import { confirmationForm } from "../forms/utility";
 import { BridgerTypesID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { BridgerData, GameData } from "../data/dynamicProperty";
@@ -23,18 +22,14 @@ const HEIGHT_DIFF: Record<number, number> = {
   50: 5,
 };
 
-/**
- * where to start building telly practice
- */
+//where to start building telly practice
 const TELLYSTARTBASELOCATION: mc.Vector3 = {
   x: 10001,
   y: 101,
   z: 10004,
 };
 
-/**
- * the number of telly set to build for each mode
- */
+// the number of telly set to build for each mode
 const TELLYBUILDERNUMBER: {
   [key: string]: {
     [key: number]: number;
@@ -212,7 +207,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
 
   // set distance as dynamic property, set bridger mode for temp data
   GameData.setData("Distance", blocks);
-  util.setBridgerMode(<BridgerTypesID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}b`);
+  util.setBridgerMode(<BridgerTypesID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}blocks`);
 
   util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   util.updateFloatingText(BridgerData.getBundledData("Bridger"));
@@ -247,12 +242,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   // reset pb
   if (bridgerSelection === 14) {
     const distance = GameData.getData("Distance");
-    const { selection: confirmSelection } = await confirmationForm(player, `${distance} blocks`);
-    if (confirmSelection !== 15) return;
-
-    BridgerData.setData(DynamicPropertyID.Bridger_PB, -1);
-    util.confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
-    util.updateFloatingText(BridgerData.getBundledData("Bridger"));
+    util.resetPB(player, BridgerData, `${distance} blocks`, "Bridger");
   }
 
   // quit bridger
@@ -280,7 +270,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
     return;
   }
 
-  util.resetMap(bridgerTs, BridgerData, enablePlate);
+  util.onRunnerSuccess(bridgerTs, BridgerData, enablePlate);
 };
 
 export const listener = function () {
@@ -289,11 +279,5 @@ export const listener = function () {
   if (!(bridgerTs.commonData["player"].location.y <= 98) || bridgerTs.tempData["isPlateDisabled"]) return;
 
   // fail run
-  bridgerTs.stopTimer();
-  bridgerTs.clearBlocks();
-  bridgerTs.commonData["blocks"] = 0;
-  BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
-  util.updateFloatingText(BridgerData.getBundledData("Bridger"));
-  util.giveItems("straightBridger");
-  util.teleportation(data.locationData.straightBridger);
+  util.onRunnerFail(BridgerData);
 };

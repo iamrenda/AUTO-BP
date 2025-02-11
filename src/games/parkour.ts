@@ -3,9 +3,7 @@ import * as util from "../utilities/utilities";
 import { parkourForm } from "../forms/parkour";
 import { parkourTs } from "../data/tempStorage";
 import { ParkourData } from "../data/dynamicProperty";
-import { DynamicPropertyID, ParkourChapterID } from "../models/DynamicProperty";
-import { locationData } from "../data/staticData";
-import TeleportationLocation from "../models/TeleportationLocation";
+import { ParkourChapterID } from "../models/DynamicProperty";
 import minecraftID from "../models/minecraftID";
 
 type ExcludedBlocks = Record<ParkourChapterID, Set<minecraftID.MinecraftBlockIdIF>>;
@@ -56,6 +54,12 @@ const enablePlate = function (): void {
 export const parkourFormHandler = async function (player: mc.Player) {
   const { selection } = await parkourForm(player);
 
+  // reset pb
+  if (selection === 11) {
+    const parkourChapter = parkourTs.tempData["chapter"].substring(7).split("_").join(".");
+    util.resetPB(player, ParkourData, `Parkour ${parkourChapter}`, "Parkour");
+  }
+
   // back to lobby
   if (selection === 13) {
     util.backToLobbyKit(player, parkourTs);
@@ -76,7 +80,7 @@ export const pressurePlatePushEvt = function (block: mc.Block) {
     // end
     case "minecraft:light_weighted_pressure_plate":
       if (isPlateDisabled("end")) return;
-      util.resetMap(parkourTs, ParkourData, enablePlate);
+      util.onRunnerSuccess(parkourTs, ParkourData, enablePlate);
       break;
   }
 };
@@ -93,10 +97,6 @@ export const listener = function () {
     !parkourTs.tempData["autoReq"] &&
     blockUnder.isSolid
   ) {
-    parkourTs.stopTimer();
-    enablePlate();
-    ParkourData.addData(DynamicPropertyID.Parkour_Attempts);
-    util.teleportation(<TeleportationLocation>locationData[parkourTs.commonData["gameID"]]);
-    util.updateFloatingText(ParkourData.getBundledData("Parkour"));
+    util.onRunnerFail(ParkourData);
   }
 };

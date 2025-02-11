@@ -6,7 +6,7 @@ import GameID from "../models/GameID";
 import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "./scoreboard";
 import * as goalMessage from "./goalMessage";
-import { clearBlocksForm } from "../forms/utility";
+import { clearBlocksForm, confirmationForm } from "../forms/utility";
 import {
   BaseGameData,
   BedwarsRushData,
@@ -38,7 +38,9 @@ export const giveItems = function (gameid: GameID): void {
  * teleportation: teleport player
  */
 export const teleportation = function (loc: TeleportationLocation): void {
-  generalTs.commonData["player"].teleport(loc.position, { facingLocation: loc.facing });
+  if (!generalTs.commonData["player"].tryTeleport(loc.position, { facingLocation: loc.facing })) {
+    // CHECK
+  }
 };
 
 /**
@@ -265,7 +267,7 @@ export const showTitleBar = function (
 };
 
 // when accessing DynamicPropertyID
-const BaseGameDataString = new Map<BaseGameData, BundlableGameModeID>([
+const bundlableGameModeIDs = new Map<BaseGameData, BundlableGameModeID>([
   [BridgerData, "Bridger"],
   [BedwarsRushData, "BedwarsRush"],
   [WallRunData, "WallRunner"],
@@ -273,47 +275,48 @@ const BaseGameDataString = new Map<BaseGameData, BundlableGameModeID>([
 ]);
 
 // after req timeout finished
-const afterReq = function (
-  gameId: GameID,
-  data: typeof BaseGameData,
-  gameModeString: BundlableGameModeID,
-  plateEnable: () => void
-) {
+const afterReq = function (dataBase: typeof BaseGameData, plateEnable: () => void) {
+  const gameModeString = bundlableGameModeIDs.get(dataBase);
+  const { player, gameID } = generalTs.commonData;
+
   generalTs.clearBlocks();
+  player.setGameMode(mc.GameMode.survival);
   generalTs.commonData["blocks"] = 0;
-  generalTs.commonData["player"].setGameMode(mc.GameMode.survival);
   plateEnable();
-  giveItems(gameId);
-  teleportation(<TeleportationLocation>locationData[gameId]);
-  updateFloatingText(data.getBundledData(gameModeString));
+  giveItems(gameID);
+  teleportation(<TeleportationLocation>locationData[gameID]);
+  updateFloatingText(dataBase.getBundledData(gameModeString));
 };
 
 /**
- * reset map for games bru
- * @param {function plateEnable() enable plate}
+ * when the player gets a successful run
+ * @param {function} plateEnable: a fn to enable plate
  */
-export const resetMap = function (ts: TempStorage, data: typeof BaseGameData, plateEnable: () => void): void {
-  const gameModeString = BaseGameDataString.get(data);
+export const onRunnerSuccess = function (
+  ts: TempStorage,
+  dataBase: typeof BaseGameData,
+  plateEnable: () => void
+): void {
+  const gameModeString = bundlableGameModeIDs.get(dataBase);
 
-  const prevPB = data.getData(<DynamicPropertyID>`${gameModeString}_PB`);
-  const prevAvgTime = data.getData(<DynamicPropertyID>`${gameModeString}_AverageTime`);
-  const prevAttempts = data.getData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+  const prevPB = dataBase.getData(<DynamicPropertyID>`${gameModeString}_PB`);
+  const prevAvgTime = dataBase.getData(<DynamicPropertyID>`${gameModeString}_AverageTime`);
+  const prevAttempts = dataBase.getData(<DynamicPropertyID>`${gameModeString}_Attempts`);
 
   const player = generalTs.commonData["player"];
   const time = generalTs.commonData["ticks"];
-  const gameId = generalTs.commonData["gameID"];
 
   // stop timer
   ts.stopTimer();
 
   // add attempts and success attempts
-  data.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
-  data.addData(<DynamicPropertyID>`${gameModeString}_SuccessAttempts`);
+  dataBase.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+  dataBase.addData(<DynamicPropertyID>`${gameModeString}_SuccessAttempts`);
 
   // set pb
   if (isPB(prevPB, time)) {
     showMessage(true, time, prevPB);
-    data.setData(<DynamicPropertyID>`${gameModeString}_PB`, time);
+    dataBase.setData(<DynamicPropertyID>`${gameModeString}_PB`, time);
     showTitleBar(player, `§6Time§7: §f${tickToSec(time)}§r`, { subtitle: "§dNEW RECORD!!!" });
     player.playSound("random.levelup");
   } else {
@@ -323,11 +326,45 @@ export const resetMap = function (ts: TempStorage, data: typeof BaseGameData, pl
 
   // set avg time
   const newAvgTime = prevAvgTime === -1 ? time : (prevAvgTime * prevAttempts + time) / (prevAttempts + 1);
-  BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
+  dataBase.setData(<DynamicPropertyID>`${gameModeString}_AverageTime`, Math.round(newAvgTime * 100) / 100);
 
   // shoot fireworks
   shootFireworks(player.location);
 
   // auto req
-  ts.tempData["autoReq"] = mc.system.runTimeout(afterReq.bind(null, gameId, data, gameModeString, plateEnable), 80);
+  ts.tempData["autoReq"] = mc.system.runTimeout(afterReq.bind(null, dataBase, plateEnable), 80);
+};
+
+/**
+ * when the player gets a fail run
+ */
+export const onRunnerFail = function (dataBase: typeof BaseGameData) {
+  const gameModeString = bundlableGameModeIDs.get(dataBase);
+  const gameID = generalTs.commonData["gameID"];
+
+  generalTs.stopTimer();
+  generalTs.clearBlocks();
+  generalTs.commonData["blocks"] = 0;
+  dataBase.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+  updateFloatingText(dataBase.getBundledData(gameModeString));
+  giveItems(gameID);
+  teleportation(<TeleportationLocation>locationData[gameID]);
+};
+
+/**
+ * reset pb
+ */
+export const resetPB = async function (
+  player: mc.Player,
+  dataBase: typeof BaseGameData,
+  formTitle: string,
+  bundlableGameModeID: BundlableGameModeID
+) {
+  const { selection: confirmationSelection } = await confirmationForm(player, formTitle);
+  if (confirmationSelection !== 15) return;
+
+  const gameModeString = bundlableGameModeIDs.get(dataBase);
+  dataBase.setData(<DynamicPropertyID>`${gameModeString}_PB`, -1);
+  confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
+  updateFloatingText(dataBase.getBundledData(bundlableGameModeID));
 };
