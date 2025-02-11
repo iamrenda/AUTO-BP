@@ -1,6 +1,7 @@
 import * as mc from "@minecraft/server";
 import * as type from "../models/TempStorage";
 import { BridgerTypesID, ParkourChapterID } from "../models/DynamicProperty";
+import { sendMessage } from "../utilities/utilities";
 
 const commonDataInstance: type.CommonData = {
   player: mc.world.getAllPlayers()[0],
@@ -27,11 +28,30 @@ export class TempStorage<T = any> {
   }
 
   public clearBlocks(): void {
-    if (!this.commonData["storedLocations"].size) return;
-    [...this.commonData["storedLocations"]].map((location) =>
-      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air")
-    );
-    this.commonData["storedLocations"] = new Set();
+    const retryClear = () => {
+      if (!this.commonData["storedLocations"].size) return; // Stop if there are no blocks left
+
+      let failedLocations = new Set<mc.Vector3>();
+
+      [...this.commonData["storedLocations"]].forEach((location) => {
+        try {
+          mc.world.getDimension("overworld").setBlockType(location, "minecraft:air");
+        } catch (err) {
+          failedLocations.add(location);
+        }
+      });
+
+      if (failedLocations.size > 0) {
+        sendMessage("§cUnable to clear some blocks. Trying again.", "random.anvil_land");
+        this.commonData["storedLocations"] = failedLocations;
+        mc.system.runTimeout(retryClear, 60);
+      } else {
+        sendMessage("§aCleared Successfully", "random.orb");
+        this.commonData["storedLocations"] = new Set();
+      }
+    };
+
+    retryClear();
   }
 
   public startTimer(): void {

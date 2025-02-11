@@ -35,18 +35,25 @@ export const giveItems = function (gameid: GameID): void {
 };
 
 /**
- * teleportation: teleport player
+ * attempts to teleport player
  */
 export const teleportation = function (loc: TeleportationLocation): void {
-  if (!generalTs.commonData["player"].tryTeleport(loc.position, { facingLocation: loc.facing })) {
-    // CHECK
-  }
+  const attemptTeleport = () => {
+    const teleport = generalTs.commonData["player"].tryTeleport(loc.position, { facingLocation: loc.facing });
+
+    if (!teleport) {
+      sendMessage("Failed to teleport. Trying again. (Move closer to where you teleport)", "random.anvil_land");
+      mc.system.runTimeout(attemptTeleport, 60);
+    }
+  };
+
+  attemptTeleport();
 };
 
 /**
  * confirmMessage: show message with sound
  */
-export const confirmMessage = function (message: string = "", sound: string = ""): void {
+export const sendMessage = function (message: string = "", sound: string = ""): void {
   const player = generalTs.commonData["player"];
   if (message) player.sendMessage(message);
   if (sound) player.playSound(sound);
@@ -245,7 +252,7 @@ export const clearBlocks = async function (player: mc.Player) {
   if (selection !== 13) return;
 
   StoredBlocksClass.clearBlocks();
-  confirmMessage("§aWe have cleared the blocks!", "random.orb");
+  sendMessage("§aWe have cleared the blocks!", "random.orb");
 };
 
 /**
@@ -365,6 +372,6 @@ export const resetPB = async function (
 
   const gameModeString = bundlableGameModeIDs.get(dataBase);
   dataBase.setData(<DynamicPropertyID>`${gameModeString}_PB`, -1);
-  confirmMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
+  sendMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
   updateFloatingText(dataBase.getBundledData(bundlableGameModeID));
 };

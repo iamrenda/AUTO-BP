@@ -59,14 +59,14 @@ export const fistReduceFormHandler = async function (player: mc.Player) {
       case "Running":
         fistReduceTs.tempData["gameModeStatus"] = "Paused";
         ReducerBot.bot.triggerEvent("auto:pause");
-        util.confirmMessage("§6Bot is now paused!", "random.glass");
+        util.sendMessage("§6Bot is now paused!", "random.glass");
         break;
 
       // about to continue
       case "Paused":
         fistReduceTs.tempData["gameModeStatus"] = "Running";
         ReducerBot.bot.triggerEvent("auto:reduce");
-        util.confirmMessage("§2Bot is now resumed!", "random.glass");
+        util.sendMessage("§2Bot is now resumed!", "random.glass");
         break;
     }
   }
@@ -82,7 +82,7 @@ export const fistReduceFormHandler = async function (player: mc.Player) {
     }
     fistReduceFormHandler(player);
 
-    util.confirmMessage("", "random.orb");
+    util.sendMessage("", "random.orb");
   }
 
   // back to lobby
@@ -155,7 +155,7 @@ const resetMap = function (whoDied: "player" | "bot") {
 
   if (whoDied === "player") {
     util.giveItems("normalFistReduce");
-    util.confirmMessage("", "random.pop");
+    util.sendMessage("", "random.pop");
     fistReduceTs.tempData["hitCount"] = 0;
 
     if (gameID === "normalFistReduce") {

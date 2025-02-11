@@ -11,7 +11,7 @@ import { ParkourChapterID } from "../models/DynamicProperty";
  */
 const warnUnclearedBlocks = function (player: mc.Player): void {
   if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
-  util.confirmMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
+  util.sendMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
   util.showTitleBar(player, "§cUncleared blocks Detected");
 };
 

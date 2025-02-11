@@ -36,7 +36,7 @@ const updateKnockBackForm = async function (player: mc.Player, numHit: number) {
 
   clutcherTs.tempData["clutchHits"][clutchSelection] = prevStrength !== 3 ? prevStrength + 1 : 1;
 
-  if (canceled) return util.confirmMessage("§aThe clutcher settings is now saved!", "random.orb");
+  if (canceled) return util.sendMessage("§aThe clutcher settings is now saved!", "random.orb");
   await updateKnockBackForm(player, numHit);
 };
 
@@ -59,7 +59,7 @@ const resetClutcher = function () {
 const playerFall = function () {
   // if fail during countdown
   if (!clutcherTs.tempData["hitTimer"] && clutcherTs.tempData["countDown"]) {
-    util.confirmMessage("§8Count down canceled", "note.guitar");
+    util.sendMessage("§8Count down canceled", "note.guitar");
     clutcherTs.tempData["sec"] = 3;
   }
 
@@ -163,7 +163,7 @@ export const clutcherFormHandler = async function (player: mc.Player) {
 
     if (generalSelection === 10) {
       clutcherTs.tempData["clutchShiftStart"] = !clutcherTs.tempData["clutchShiftStart"];
-      util.confirmMessage(
+      util.sendMessage(
         `§a"Shift + Right Click" to start is now §6${
           clutcherTs.tempData["clutchShiftStart"] ? "Enabled" : "Disabled"
         }§a!`,

@@ -91,7 +91,7 @@ const handleTellyPractice = function (
   const newDistance = newDistanceArg ?? GameData.getData("Distance");
 
   if (prevTellyMode === newTellyMode && !newDistance)
-    return util.confirmMessage("§4The telly practice has already been changed!", "random.anvil_land");
+    return util.sendMessage("§4The telly practice has already been changed!", "random.anvil_land");
 
   // clearing previous mode
   if (prevTellyMode === "Telly") {
@@ -124,9 +124,9 @@ const handleTellyPractice = function (
   if (prevDistanceArg || newDistanceArg) return;
 
   GameData.setData("TellyPractice", newTellyMode);
-  if (newTellyMode === "None") util.confirmMessage(`§aTelly practice mode has now been §cDisabled!`, "random.orb");
-  else if (prevTellyMode === "None") util.confirmMessage(`§aTelly practice mode has now been Enabled!`, "random.orb");
-  else util.confirmMessage(`§aThe change has now been made!`, "random.orb");
+  if (newTellyMode === "None") util.sendMessage(`§aTelly practice mode has now been §cDisabled!`, "random.orb");
+  else if (prevTellyMode === "None") util.sendMessage(`§aTelly practice mode has now been Enabled!`, "random.orb");
+  else util.sendMessage(`§aThe change has now been made!`, "random.orb");
 };
 
 /**
@@ -196,7 +196,7 @@ const fillAndPlace = function (
 const handleDistanceChange = function (blocks: IslandDistance): void {
   // check whether player clicked on the same distance
   if (GameData.getData("Distance") === blocks)
-    return util.confirmMessage("§4The distance has already been changed!", "random.anvil_land");
+    return util.sendMessage("§4The distance has already been changed!", "random.anvil_land");
 
   fillAndPlace(
     data.structures[bridgerTs.tempData["bridgerDirection"]],
@@ -209,7 +209,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
   GameData.setData("Distance", blocks);
   util.setBridgerMode(<BridgerTypesID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}blocks`);
 
-  util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
+  util.sendMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   util.updateFloatingText(BridgerData.getBundledData("Bridger"));
 };
 
@@ -236,7 +236,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
 
     bridgerTs.tempData["blockBridger"] = blockObj.texture;
     util.giveItems(`straightBridger`);
-    util.confirmMessage(`§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
+    util.sendMessage(`§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
   }
 
   // reset pb

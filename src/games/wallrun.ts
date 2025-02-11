@@ -41,7 +41,7 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     case 30075:
       if (isPlateDisabled("checkpoint")) return;
       if (!wallRunTs.tempData["wallRunIsCheckPointEnabled"]) return;
-      util.confirmMessage("§aCheckPoint Saved!", "random.orb");
+      util.sendMessage("§aCheckPoint Saved!", "random.orb");
       wallRunTs.tempData["isCheckPointSaved"] = true;
       break;
 
@@ -66,7 +66,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
     if (generalSelection === 10) {
       const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
       wallRunTs.tempData["wallRunIsCheckPointEnabled"] = !isCheckPointEnabled;
-      util.confirmMessage(`§aCheckpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`, "random.orb");
+      util.sendMessage(`§aCheckpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`, "random.orb");
     }
   }
 
@@ -95,7 +95,7 @@ export const listener = function () {
 
   if (wallRunTs.tempData["isCheckPointSaved"]) {
     // going back to checkpoint
-    util.confirmMessage("§7Teleporting back to the checkpoint...");
+    util.sendMessage("§7Teleporting back to the checkpoint...");
     util.teleportation({
       position: { x: 30009.5, y: 106, z: 30077.5 },
       facing: { x: 30009.5, y: 106, z: 30078 },
