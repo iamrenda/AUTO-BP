@@ -42,7 +42,7 @@ export const teleportation = function (loc: TeleportationLocation): void {
     const teleport = generalTs.commonData["player"].tryTeleport(loc.position, { facingLocation: loc.facing });
 
     if (!teleport) {
-      sendMessage("Failed to teleport. Trying again. (Move closer to where you teleport)", "random.anvil_land");
+      sendMessage("§cFailed to teleport. Trying again.", "random.anvil_land");
       mc.system.runTimeout(attemptTeleport, 60);
     }
   };

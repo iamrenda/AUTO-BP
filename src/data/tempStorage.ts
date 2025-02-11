@@ -11,6 +11,8 @@ const commonDataInstance: type.CommonData = {
   blocks: 0,
   timer: undefined,
   ticks: 0,
+
+  byPass: false,
 };
 
 export class TempStorage<T = any> {
@@ -46,7 +48,7 @@ export class TempStorage<T = any> {
         this.commonData["storedLocations"] = failedLocations;
         mc.system.runTimeout(retryClear, 60);
       } else {
-        sendMessage("§aCleared Successfully", "random.orb");
+        sendMessage("§aBlocks cleared successfully", "random.orb");
         this.commonData["storedLocations"] = new Set();
       }
     };

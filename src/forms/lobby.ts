@@ -115,6 +115,7 @@ export const lobbyCreditForm = async function (player: Player): Promise<ActionFo
    §7- §6Bridger Map: §fBrody Bigwood
    §7- §6Bedwars Rush Map: §fBdoggy617
    §7- §6Fist Reduce Map: §fPlatzangst
+   §7- §6Parkour Map: §fCringeginge
   
 `
     )

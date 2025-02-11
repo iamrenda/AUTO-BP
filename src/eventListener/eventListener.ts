@@ -190,6 +190,18 @@ mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
     fistReduce.fistReduceAttackEvt(hurtEntity, damageSource);
 });
 
+// gamemode change
+mc.world.beforeEvents.playerGameModeChange.subscribe(({ toGameMode, player }) =>
+  !generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative
+    ? mc.system.run(() => {
+        if (generalTs.commonData["gameID"] !== "clutcher") player.setGameMode(mc.GameMode.survival);
+        else {
+          player.setGameMode(9);
+        }
+      })
+    : ""
+);
+
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
 const listenerMap: { [key: string]: () => void } = {

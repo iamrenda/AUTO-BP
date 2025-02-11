@@ -11,6 +11,8 @@ export type CommonData = {
   blocks: number;
   timer: number | undefined;
   ticks: number;
+
+  byPass: boolean; // allow bypassing gamemode change
 };
 
 export type BridgerTempStorage = {

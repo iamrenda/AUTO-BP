@@ -44,7 +44,14 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
   }
 
   // clutcher
-  if (selection === 13) handleNavigation(player, "clutcher", data.locationData.clutcher[0]);
+  if (selection === 13) {
+    generalTs.commonData["byPass"] = true;
+    player.setGameMode(mc.GameMode.creative);
+    player.setGameMode(9);
+    generalTs.commonData["byPass"] = false;
+    handleNavigation(player, "clutcher", data.locationData.clutcher[0]);
+    util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "random.anvil_use");
+  }
 
   // wall run
   if (selection === 15) handleNavigation(player, "wallRun", data.locationData.wallRun);
@@ -85,12 +92,16 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
 };
 
 export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
+  const i = new mc.ItemStack("minecraft:white_wool", 1);
+  i.lockMode = mc.ItemLockMode.inventory;
+  generalTs.commonData["player"].getComponent("inventory").container.addItem(i);
+
   mc.system.runTimeout(() => {
     try {
       mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock");
       generalTs.commonData["storedLocations"].delete(location);
     } catch (e) {}
-  }, 60);
+  }, 40);
 };
 
 export const launchingStickHandler = function (player: mc.Player) {
