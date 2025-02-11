@@ -1,7 +1,6 @@
 import { world, Vector3 } from "@minecraft/server";
-import { DynamicPropertyID, BridgerTicksID, GameDataID } from "../models/DynamicProperty";
-import { generalTs, bridgerTs } from "./tempStorage";
-import { getBridgerMode } from "../utilities/utilities";
+import { DynamicPropertyID, BridgerTypesID, GameDataID, ParkourChapterID } from "../models/DynamicProperty";
+import { generalTs, bridgerTs, parkourTs } from "./tempStorage";
 
 /////////////////////////////////////////////////////////////////
 export class DynamicProperty {
@@ -26,36 +25,36 @@ export class DynamicProperty {
       },
 
       [DynamicPropertyID.Bridger_PB]: {
-        [BridgerTicksID.straight16blocks]: -1,
-        [BridgerTicksID.straight21blocks]: -1,
-        [BridgerTicksID.straight50blocks]: -1,
-        [BridgerTicksID.inclined16blocks]: -1,
-        [BridgerTicksID.inclined21blocks]: -1,
-        [BridgerTicksID.inclined50blocks]: -1,
+        [BridgerTypesID.straight16blocks]: -1,
+        [BridgerTypesID.straight21blocks]: -1,
+        [BridgerTypesID.straight50blocks]: -1,
+        [BridgerTypesID.inclined16blocks]: -1,
+        [BridgerTypesID.inclined21blocks]: -1,
+        [BridgerTypesID.inclined50blocks]: -1,
       },
       [DynamicPropertyID.Bridger_Attempts]: {
-        [BridgerTicksID.straight16blocks]: 0,
-        [BridgerTicksID.straight21blocks]: 0,
-        [BridgerTicksID.straight50blocks]: 0,
-        [BridgerTicksID.inclined16blocks]: 0,
-        [BridgerTicksID.inclined21blocks]: 0,
-        [BridgerTicksID.inclined50blocks]: 0,
+        [BridgerTypesID.straight16blocks]: 0,
+        [BridgerTypesID.straight21blocks]: 0,
+        [BridgerTypesID.straight50blocks]: 0,
+        [BridgerTypesID.inclined16blocks]: 0,
+        [BridgerTypesID.inclined21blocks]: 0,
+        [BridgerTypesID.inclined50blocks]: 0,
       },
       [DynamicPropertyID.Bridger_SuccessAttempts]: {
-        [BridgerTicksID.straight16blocks]: 0,
-        [BridgerTicksID.straight21blocks]: 0,
-        [BridgerTicksID.straight50blocks]: 0,
-        [BridgerTicksID.inclined16blocks]: 0,
-        [BridgerTicksID.inclined21blocks]: 0,
-        [BridgerTicksID.inclined50blocks]: 0,
+        [BridgerTypesID.straight16blocks]: 0,
+        [BridgerTypesID.straight21blocks]: 0,
+        [BridgerTypesID.straight50blocks]: 0,
+        [BridgerTypesID.inclined16blocks]: 0,
+        [BridgerTypesID.inclined21blocks]: 0,
+        [BridgerTypesID.inclined50blocks]: 0,
       },
       [DynamicPropertyID.Bridger_AverageTime]: {
-        [BridgerTicksID.straight16blocks]: -1,
-        [BridgerTicksID.straight21blocks]: -1,
-        [BridgerTicksID.straight50blocks]: -1,
-        [BridgerTicksID.inclined16blocks]: -1,
-        [BridgerTicksID.inclined21blocks]: -1,
-        [BridgerTicksID.inclined50blocks]: -1,
+        [BridgerTypesID.straight16blocks]: -1,
+        [BridgerTypesID.straight21blocks]: -1,
+        [BridgerTypesID.straight50blocks]: -1,
+        [BridgerTypesID.inclined16blocks]: -1,
+        [BridgerTypesID.inclined21blocks]: -1,
+        [BridgerTypesID.inclined50blocks]: -1,
       },
 
       [DynamicPropertyID.WallRunner_PB]: -1,
@@ -67,6 +66,27 @@ export class DynamicProperty {
       [DynamicPropertyID.BedwarsRush_Attempts]: 0,
       [DynamicPropertyID.BedwarsRush_SuccessAttempts]: 0,
       [DynamicPropertyID.BedwarsRush_AverageTime]: -1,
+
+      [DynamicPropertyID.Parkour_PB]: {
+        [ParkourChapterID.chapter1_1]: -1,
+        [ParkourChapterID.chapter1_2]: -1,
+        [ParkourChapterID.chapter1_3]: -1,
+      },
+      [DynamicPropertyID.Parkour_Attempts]: {
+        [ParkourChapterID.chapter1_1]: 0,
+        [ParkourChapterID.chapter1_2]: 0,
+        [ParkourChapterID.chapter1_3]: 0,
+      },
+      [DynamicPropertyID.Parkour_SuccessAttempts]: {
+        [ParkourChapterID.chapter1_1]: 0,
+        [ParkourChapterID.chapter1_2]: 0,
+        [ParkourChapterID.chapter1_3]: 0,
+      },
+      [DynamicPropertyID.Parkour_AverageTime]: {
+        [ParkourChapterID.chapter1_1]: -1,
+        [ParkourChapterID.chapter1_2]: -1,
+        [ParkourChapterID.chapter1_3]: -1,
+      },
     };
     this.dynamicData = defaultData;
     world.setDynamicProperty("auto:dynamicData", JSON.stringify(defaultData));
@@ -89,7 +109,7 @@ export abstract class BaseGameData extends DynamicProperty {
   /**
    * returns an object containing pb, avgTime, attempts, and success attempts
    */
-  public static getBundledData(gameId: "Bridger" | "WallRunner" | "BedwarsRush"): {
+  public static getBundledData(gameId: "Bridger" | "WallRunner" | "BedwarsRush" | "Parkour"): {
     pb: number;
     avgTime: number;
     attempts: number;
@@ -139,21 +159,35 @@ export class GameData extends DynamicProperty {
 
 export class BridgerData extends BaseGameData {
   public static getData(id: DynamicPropertyID): number {
-    return this.dynamicData[id][getBridgerMode()];
+    return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
   }
 
   public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id][getBridgerMode()] = data;
+    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
   }
 
   public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id][getBridgerMode()]++;
+    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]]++;
   }
 }
 
 export class WallRunData extends BaseGameData {}
 
 export class BedwarsRushData extends BaseGameData {}
+
+export class ParkourData extends BaseGameData {
+  public static getData(id: DynamicPropertyID): number {
+    return this.dynamicData[id][parkourTs.tempData["chapter"]];
+  }
+
+  public static setData(id: DynamicPropertyID, data: number): void {
+    this.dynamicData[id][parkourTs.tempData["chapter"]] = data;
+  }
+
+  public static addData(id: DynamicPropertyID): void {
+    this.dynamicData[id][parkourTs.tempData["chapter"]]++;
+  }
+}
 
 export class StoredBlocksClass {
   public static clearBlocks(): void {

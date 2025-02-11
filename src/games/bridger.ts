@@ -5,7 +5,7 @@ import * as form from "../forms/bridger";
 import TeleportationLocation from "../models/TeleportationLocation";
 import { bridgerTs } from "../data/tempStorage";
 import { confirmationForm } from "../forms/utility";
-import { BridgerTicksID } from "../models/DynamicProperty";
+import { BridgerTypesID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { BridgerData, GameData } from "../data/dynamicProperty";
 import minecraftID from "../models/minecraftID";
@@ -70,7 +70,6 @@ const setAverageTime = function (newTime: number) {
  */
 const resetBridger = function (): void {
   bridgerTs.commonData["blocks"] = 0;
-  bridgerTs.commonData["ticks"] = 0;
 };
 
 /**
@@ -262,7 +261,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
 
   // set distance as dynamic property, set bridger mode for temp data
   GameData.setData("Distance", blocks);
-  util.setBridgerMode(<BridgerTicksID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}b`);
+  util.setBridgerMode(<BridgerTypesID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}b`);
 
   util.confirmMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
   util.updateFloatingText(BridgerData.getBundledData("Bridger"));

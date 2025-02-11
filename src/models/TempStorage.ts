@@ -1,0 +1,65 @@
+import * as mc from "@minecraft/server";
+import GameID from "./GameID";
+import minecraftID from "./minecraftID";
+import { BridgerTypesID, ParkourChapterID } from "./DynamicProperty";
+
+export type CommonData = {
+  player: mc.Player;
+  gameID: GameID;
+  storedLocations: Set<mc.Vector3>;
+  storedLocationsGameID: GameID;
+  blocks: number;
+  timer: number | undefined;
+  ticks: number;
+};
+
+export type BridgerTempStorage = {
+  blockBridger: minecraftID.MinecraftBlockIdIF;
+  bridgerMode: BridgerTypesID;
+  bridgerDirection: "straight" | "inclined";
+  isPlateDisabled: boolean;
+  autoReq?: number;
+};
+
+export type ClutcherTempStorage = {
+  clutchHits: number[];
+  clutchShiftStart: boolean;
+
+  isListening: boolean;
+  distance: number;
+  startLocation: mc.Vector3 | null;
+  endLocation: mc.Vector3 | null;
+
+  countDown: number | null;
+  hitTimer: number | null;
+  sec: number;
+  hitIndex: number;
+
+  teleportationIndex: number;
+};
+
+export type WallRunTempStorage = {
+  wallRunIsCheckPointEnabled: boolean;
+
+  isPlateDisabled: {
+    first: boolean;
+    checkpoint: boolean;
+    goal: boolean;
+  };
+  isCheckPointSaved: boolean;
+};
+
+export type FistReduceTempStorage = {
+  gameModeStatus: "Starting" | "Running" | "Paused";
+  numHits: "Single" | "Double" | "Triple";
+  hitCount: number;
+};
+
+export type ParkourTempStorage = {
+  chapter: ParkourChapterID;
+  isPlateDisabled: {
+    start: boolean;
+    end: boolean;
+  };
+  autoReq: number;
+};

@@ -20,7 +20,6 @@ const isPlateDisabled = function (plate: "first" | "checkpoint" | "goal"): boole
  * resets map
  */
 const resetWallRunner = function () {
-  wallRunTs.commonData["ticks"] = 0;
   wallRunTs.tempData["isCheckPointSaved"] = false;
 
   Object.keys(wallRunTs.tempData["isPlateDisabled"]).map(
@@ -101,7 +100,7 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
       setAverageTime(ticks);
 
       util.shootFireworks(player.location);
-      wallRunTs.tempData["autoReq"] = mc.system.runTimeout(enablePlate, 80);
+      mc.system.runTimeout(enablePlate, 80);
 
       WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
       WallRunData.addData(DynamicPropertyID.WallRunner_SuccessAttempts);

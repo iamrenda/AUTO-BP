@@ -6,6 +6,9 @@ type GameID =
   | "wallRun"
   | "bedwarsRush"
   | "normalFistReduce"
-  | "limitlessFistReduce";
+  | "limitlessFistReduce"
+  | "parkour1_1"
+  | "parkour1_2"
+  | "parkour1_3";
 
 export default GameID;

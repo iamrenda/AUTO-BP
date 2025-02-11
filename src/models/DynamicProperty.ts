@@ -15,15 +15,26 @@ export enum DynamicPropertyID {
   BedwarsRush_Attempts = "BedwarsRush_Attempts",
   BedwarsRush_SuccessAttempts = "BedwarsRush_SuccessAttempts",
   BedwarsRush_AverageTime = "BedwarsRush_AverageTime",
+
+  Parkour_PB = "Parkour_PB",
+  Parkour_Attempts = "Parkour_Attempts",
+  Parkour_SuccessAttempts = "Parkour_SuccessAttempts",
+  Parkour_AverageTime = "Parkour_AverageTime",
 }
 
-export enum BridgerTicksID {
+export enum BridgerTypesID {
   straight16blocks = "straight16blocks",
   straight21blocks = "straight21blocks",
   straight50blocks = "straight50blocks",
   inclined16blocks = "inclined16blocks",
   inclined21blocks = "inclined21blocks",
   inclined50blocks = "inclined50blocks",
+}
+
+export enum ParkourChapterID {
+  chapter1_1 = "chapter1_1",
+  chapter1_2 = "chapter1_2",
+  chapter1_3 = "chapter1_3",
 }
 
 export enum GameDataID {

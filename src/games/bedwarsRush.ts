@@ -16,7 +16,6 @@ const setAverageTime = function (newTime: number) {
 };
 
 const resetBedwarsRusher = function () {
-  bedwarsRushTs.commonData["ticks"] = 0;
   bedwarsRushTs.commonData["blocks"] = 0;
 };
 

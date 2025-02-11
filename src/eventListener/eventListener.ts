@@ -6,6 +6,7 @@ import * as clutcher from "../games/clutcher";
 import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
+import * as parkour from "../games/parkour";
 import { bridgerTs, generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
@@ -44,10 +45,6 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
       bookHandlers(player);
       break;
 
-    case "minecraft:guster_banner_pattern":
-      lobby.statsFormHandler(player);
-      break;
-
     case "minecraft:flint":
       util.teleportation(locationData.lobby);
       mc.system.run(() => util.confirmMessage("", "mob.endermen.portal"));
@@ -71,6 +68,9 @@ const bookHandlers = (player: mc.Player) => {
       bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
       normalFistReduce: fistReduce.fistReduceFormHandler,
       limitlessFistReduce: fistReduce.fistReduceFormHandler,
+      parkour1_1: parkour.parkourFormHandler,
+      parkour1_2: parkour.parkourFormHandler,
+      parkour1_3: parkour.parkourFormHandler,
     };
     formHandlers[gameID](player);
   }
@@ -86,6 +86,9 @@ const eventMap: { [key in GameID]: (block: any) => void } = {
   bedwarsRush: bedwarsRush.placingBlockEvt,
   normalFistReduce: fistReduce.placingBlockEvt,
   limitlessFistReduce: fistReduce.placingBlockEvt,
+  parkour1_1: undefined,
+  parkour1_2: undefined,
+  parkour1_3: undefined,
 };
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   const eventHandler = eventMap[generalTs.commonData["gameID"]];
@@ -101,6 +104,11 @@ mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): vo
       break;
     case "wallRun":
       wallRun.pressurePlatePushEvt(block);
+      break;
+    case "parkour1_1":
+    case "parkour1_2":
+    case "parkour1_3":
+      parkour.pressurePlatePushEvt(block);
       break;
   }
 });
@@ -151,14 +159,13 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
 
-// breaking a block (before event)
 const hasCoordinates = function (loc: mc.Vector3) {
   return [...bridgerTs.commonData["storedLocations"]].some(
     (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
   );
 };
 
-// breaking a block (after event)
+// breaking a block (before event)
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
   switch (generalTs.commonData["gameID"]) {
     case "straightBridger":
@@ -191,6 +198,9 @@ const listenerMap: { [key: string]: () => void } = {
   clutcher: clutcher.listener,
   wallRun: wallRun.listener,
   bedwarsRush: bedwarsRush.listener,
+  parkour1_1: parkour.listener,
+  parkour1_2: parkour.listener,
+  parkour1_3: parkour.listener,
 };
 mc.system.runInterval((): void => {
   const listener = listenerMap[generalTs.commonData["gameID"]];

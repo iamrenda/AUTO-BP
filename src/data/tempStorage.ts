@@ -1,69 +1,23 @@
 import * as mc from "@minecraft/server";
-import { BridgerTicksID } from "../models/DynamicProperty";
-import GameID from "../models/GameID";
-import minecraftID from "../models/minecraftID";
+import * as type from "../models/TempStorage";
+import { BridgerTypesID, ParkourChapterID } from "../models/DynamicProperty";
 
-/////////////////////////////////////////////////////
-type CommonData = {
-  player: mc.Player;
-  gameID: GameID;
-  storedLocations: Set<mc.Vector3>;
-  storedLocationsGameID: GameID;
-  blocks: number;
-  timer: number | undefined;
-  ticks: number;
+const commonDataInstance: type.CommonData = {
+  player: mc.world.getAllPlayers()[0],
+  gameID: "lobby",
+  storedLocations: new Set(),
+  storedLocationsGameID: undefined,
+  blocks: 0,
+  timer: undefined,
+  ticks: 0,
 };
-
-type BridgerTempStorage = {
-  blockBridger: minecraftID.MinecraftBlockIdIF;
-  bridgerMode: BridgerTicksID;
-  bridgerDirection: "straight" | "inclined";
-  isPlateDisabled: boolean;
-  autoReq?: number;
-};
-
-type ClutcherTempStorage = {
-  clutchHits: number[];
-  clutchShiftStart: boolean;
-
-  isListening: boolean;
-  distance: number;
-  startLocation: mc.Vector3 | null;
-  endLocation: mc.Vector3 | null;
-
-  countDown: number | null;
-  hitTimer: number | null;
-  sec: number;
-  hitIndex: number;
-
-  teleportationIndex: number;
-};
-
-type WallRunTempStorage = {
-  wallRunIsCheckPointEnabled: boolean;
-  autoReq: number | undefined;
-
-  isPlateDisabled: {
-    first: boolean;
-    checkpoint: boolean;
-    goal: boolean;
-  };
-  isCheckPointSaved: boolean;
-};
-
-type FistReduceTempStorage = {
-  gameModeStatus: "Starting" | "Running" | "Paused";
-  numHits: "Single" | "Double" | "Triple";
-  hitCount: number;
-};
-/////////////////////////////////////////////////////
 
 export class TempStorage<T = any> {
   public name: string;
-  public commonData: CommonData;
+  public commonData: type.CommonData;
   public tempData: T;
 
-  constructor(name: string, commonData: CommonData) {
+  constructor(name: string, commonData: type.CommonData) {
     this.name = name;
     this.commonData = commonData;
   }
@@ -81,6 +35,7 @@ export class TempStorage<T = any> {
   }
 
   public startTimer(): void {
+    this.commonData["ticks"] = 0;
     this.commonData["timer"] = mc.system.runInterval(() => this.commonData["timer"] && this.commonData["ticks"]++);
   }
 
@@ -91,16 +46,16 @@ export class TempStorage<T = any> {
   }
 }
 
-class Bridger extends TempStorage<BridgerTempStorage> {
-  constructor(commonData: CommonData) {
+class Bridger extends TempStorage<type.BridgerTempStorage> {
+  constructor(commonData: type.CommonData) {
     super("Bridger", commonData);
     this.tempData = this.setDefaultTempData();
   }
 
-  public setDefaultTempData(): BridgerTempStorage {
+  public setDefaultTempData(): type.BridgerTempStorage {
     return {
       blockBridger: "minecraft:sandstone",
-      bridgerMode: BridgerTicksID.straight16blocks,
+      bridgerMode: BridgerTypesID.straight16blocks,
       bridgerDirection: "straight",
       isPlateDisabled: false,
       autoReq: undefined,
@@ -108,13 +63,13 @@ class Bridger extends TempStorage<BridgerTempStorage> {
   }
 }
 
-class Clutcher extends TempStorage<ClutcherTempStorage> {
-  constructor(commonData: CommonData) {
+class Clutcher extends TempStorage<type.ClutcherTempStorage> {
+  constructor(commonData: type.CommonData) {
     super("Clutcher", commonData);
     this.tempData = this.setDefaultTempData();
   }
 
-  public setDefaultTempData(): ClutcherTempStorage {
+  public setDefaultTempData(): type.ClutcherTempStorage {
     return {
       clutchHits: [1],
       clutchShiftStart: true,
@@ -140,16 +95,15 @@ class Clutcher extends TempStorage<ClutcherTempStorage> {
   }
 }
 
-class WallRun extends TempStorage<WallRunTempStorage> {
-  constructor(commonData: CommonData) {
+class WallRun extends TempStorage<type.WallRunTempStorage> {
+  constructor(commonData: type.CommonData) {
     super("WallRunner", commonData);
     this.tempData = this.setDefaultTempData();
   }
 
-  public setDefaultTempData(): WallRunTempStorage {
+  public setDefaultTempData(): type.WallRunTempStorage {
     return {
       wallRunIsCheckPointEnabled: true,
-      autoReq: undefined,
 
       isPlateDisabled: {
         first: false,
@@ -162,7 +116,7 @@ class WallRun extends TempStorage<WallRunTempStorage> {
 }
 
 class BedwarsRush extends TempStorage {
-  constructor(commonData: CommonData) {
+  constructor(commonData: type.CommonData) {
     super("BedwarsRush", commonData);
     this.tempData = this.setDefaultTempData();
   }
@@ -172,13 +126,13 @@ class BedwarsRush extends TempStorage {
   }
 }
 
-class FistReduce extends TempStorage {
-  constructor(commonData: CommonData) {
+class FistReduce extends TempStorage<type.FistReduceTempStorage> {
+  constructor(commonData: type.CommonData) {
     super("FistReduce", commonData);
     this.tempData = this.setDefaultTempData();
   }
 
-  public setDefaultTempData(): FistReduceTempStorage {
+  public setDefaultTempData(): type.FistReduceTempStorage {
     return {
       gameModeStatus: "Starting",
       hitCount: 0,
@@ -187,15 +141,23 @@ class FistReduce extends TempStorage {
   }
 }
 
-const commonDataInstance: CommonData = {
-  player: mc.world.getAllPlayers()[0],
-  gameID: "lobby",
-  storedLocations: new Set(),
-  storedLocationsGameID: undefined,
-  blocks: 0,
-  timer: undefined,
-  ticks: 0,
-};
+class Parkour extends TempStorage<type.ParkourTempStorage> {
+  constructor(commonData: type.CommonData) {
+    super("Parkour", commonData);
+    this.tempData = this.setDefaultTempData();
+  }
+
+  public setDefaultTempData(): type.ParkourTempStorage {
+    return {
+      chapter: ParkourChapterID.chapter1_1,
+      isPlateDisabled: {
+        start: false,
+        end: false,
+      },
+      autoReq: undefined,
+    };
+  }
+}
 
 export const generalTs = new TempStorage("general", commonDataInstance);
 export const bridgerTs = new Bridger(commonDataInstance);
@@ -203,3 +165,4 @@ export const clutcherTs = new Clutcher(commonDataInstance);
 export const wallRunTs = new WallRun(commonDataInstance);
 export const bedwarsRushTs = new BedwarsRush(commonDataInstance);
 export const fistReduceTs = new FistReduce(commonDataInstance);
+export const parkourTs = new Parkour(commonDataInstance);

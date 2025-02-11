@@ -2,11 +2,10 @@ import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
-import { generalTs, bridgerTs } from "../data/tempStorage";
+import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
 import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
-import { BedwarsRushData, BridgerData, WallRunData } from "../data/dynamicProperty";
-
+import { ParkourChapterID } from "../models/DynamicProperty";
 /**
  * if uncleared block detected, it shows the warning
  */
@@ -66,6 +65,23 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
       util.displayScoreboard("limitlessFistReduce");
     }
   }
+
+  // parkour
+  if (selection === 31) {
+    const { selection: bridgerDirSelection, canceled } = await form.parkourChapterForm(player);
+    if (canceled) return;
+
+    if (bridgerDirSelection === 11) {
+      parkourTs.tempData["chapter"] = ParkourChapterID.chapter1_1;
+      handleNavigation(player, "parkour1_1", data.locationData["parkour1_1"]);
+    } else if (bridgerDirSelection === 13) {
+      parkourTs.tempData["chapter"] = ParkourChapterID.chapter1_2;
+      handleNavigation(player, "parkour1_2", data.locationData["parkour1_2"]);
+    } else if (bridgerDirSelection === 15) {
+      parkourTs.tempData["chapter"] = ParkourChapterID.chapter1_3;
+      handleNavigation(player, "parkour1_3", data.locationData["parkour1_3"]);
+    }
+  }
 };
 
 export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
@@ -87,20 +103,4 @@ export const launchingStickHandler = function (player: mc.Player) {
 
 export const creditFormHandler = function (player: mc.Player) {
   form.lobbyCreditForm(player);
-};
-
-export const statsFormHandler = async function (player: mc.Player) {
-  const { selection } = await form.lobbyStatsGamemodeForm(player);
-
-  switch (selection) {
-    case 11:
-      form.lobbyStatsForm(player, BridgerData, "Bridger");
-      break;
-    case 13:
-      form.lobbyStatsForm(player, WallRunData, "WallRunner");
-      break;
-    case 15:
-      form.lobbyStatsForm(player, BedwarsRushData, "BedwarsRush");
-      break;
-  }
 };

@@ -1,8 +1,8 @@
 import * as util from "../utilities/utilities";
 import { VERSION } from "./staticData";
-import { BridgerData, WallRunData } from "./dynamicProperty";
+import { BridgerData, ParkourData, WallRunData } from "./dynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { generalTs, bridgerTs, wallRunTs, clutcherTs, fistReduceTs } from "./tempStorage";
+import { generalTs, bridgerTs, wallRunTs, clutcherTs, fistReduceTs, parkourTs, bedwarsRushTs } from "./tempStorage";
 import { BedwarsRushData } from "./dynamicProperty";
 
 export const lobbyScoreboard = function (): string {
@@ -18,6 +18,7 @@ export const lobbyScoreboard = function (): string {
    Wallrun
    Bedwars Rush
    Fist Reduce
+   Parkour
              
  §7- §6Discord:§r
    .gg/4NRYhCYykk
@@ -82,7 +83,7 @@ export const bedwarsRushScoreboard = function (): string {
    ${util.tickToSec(bridgerTs.commonData["ticks"])}
     
  §7- §6Blocks:§r
-   ${bridgerTs.commonData["blocks"]}
+   ${bedwarsRushTs.commonData["blocks"]}
 §7-------------------§r
  §8§oVersion ${VERSION} | ${util.today}`;
 };
@@ -97,6 +98,24 @@ export const fistReduceScoreboard = function (): string {
              
  §7- §6Discord§r
    .gg/4NRYhCYykk
+§7-------------------§r
+ §8§oVersion ${VERSION} | ${util.today}`;
+};
+
+export const parkourScoreboard = function (): string {
+  const pb = ParkourData.getData(DynamicPropertyID.Parkour_PB);
+  const chapter = parkourTs.tempData["chapter"];
+
+  return `      §b§lAUTO World§r
+§7-------------------§r
+ §7- §6Chapter:§r
+   ${chapter.substring(7).split("_").join(".")}
+
+ §7- §6Personal Best:§r
+   ${util.tickToSec(pb)}
+    
+ §7- §6Time:§r
+   ${util.tickToSec(parkourTs.commonData["ticks"])}
 §7-------------------§r
  §8§oVersion ${VERSION} | ${util.today}`;
 };

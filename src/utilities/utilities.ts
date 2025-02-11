@@ -1,11 +1,11 @@
 import * as mc from "@minecraft/server";
-import { BridgerTicksID } from "../models/DynamicProperty";
+import { BridgerTypesID } from "../models/DynamicProperty";
 import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
 import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "../data/scoreboard";
-import * as goalMessage from "../data/goalMessage";
+import * as goalMessage from "./goalMessage";
 import { clearBlocksForm } from "../forms/utility";
 import { StoredBlocksClass } from "../data/dynamicProperty";
 
@@ -55,15 +55,8 @@ export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(d
 /**
  * sets bridger mode
  */
-export const setBridgerMode = function (game: BridgerTicksID): void {
+export const setBridgerMode = function (game: BridgerTypesID): void {
   bridgerTs.tempData["bridgerMode"] = game;
-};
-
-/**
- * gets bridger mode
- */
-export const getBridgerMode = function (): BridgerTicksID {
-  return bridgerTs.tempData["bridgerMode"];
 };
 
 /**
@@ -96,6 +89,9 @@ export const displayScoreboard = function (gameId: GameID): void {
     bedwarsRush: scoreboard.bedwarsRushScoreboard,
     normalFistReduce: scoreboard.fistReduceScoreboard,
     limitlessFistReduce: scoreboard.fistReduceScoreboard,
+    parkour1_1: scoreboard.parkourScoreboard,
+    parkour1_2: scoreboard.parkourScoreboard,
+    parkour1_3: scoreboard.parkourScoreboard,
   };
 
   const display = scoreboards[gameId];
@@ -121,8 +117,6 @@ export const backToLobbyKit = function (player: mc.Player, tempDataClass: TempSt
  */
 export const getFloatingEntity = function (): mc.Entity {
   switch (generalTs.commonData["gameID"]) {
-    case "lobby":
-      break;
     case "straightBridger":
       return mc.world.getDimension("overworld").getEntities({
         location: { x: 9997.91, y: 101.59, z: 10004.76 },
@@ -141,6 +135,21 @@ export const getFloatingEntity = function (): mc.Entity {
     case "bedwarsRush":
       return mc.world.getDimension("overworld").getEntities({
         location: { x: 40093.53, y: 102.19, z: 40032.97 },
+        excludeFamilies: ["player"],
+      })[0];
+    case "parkour1_1":
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 60049.04, y: 85.0, z: 60084.73 },
+        excludeFamilies: ["player"],
+      })[0];
+    case "parkour1_2":
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 60041.96, y: 101.0, z: 60061.3 },
+        excludeFamilies: ["player"],
+      })[0];
+    case "parkour1_3":
+      return mc.world.getDimension("overworld").getEntities({
+        location: { x: 60072.82, y: 79.0, z: 60058.43 },
         excludeFamilies: ["player"],
       })[0];
   }
@@ -183,17 +192,25 @@ export const updateFloatingText = function ({ pb, avgTime, attempts, successAtte
 };
 
 /**
- * shows the result of the bridging
+ * shows the result of a run
  */
 export const showMessage = function (isPB: boolean, time: number, prevPB: number): void {
-  const gameId = generalTs.commonData["gameID"];
-  switch (gameId) {
+  const { gameID, player } = generalTs.commonData;
+
+  switch (gameID) {
     case "straightBridger":
     case "inclinedBridger":
-      generalTs.commonData["player"].sendMessage(goalMessage.bridgerMessage(isPB, time, prevPB));
+      player.sendMessage(goalMessage.bridgerMessage(isPB, time, prevPB));
       break;
+
     case "wallRun":
-      generalTs.commonData["player"].sendMessage(goalMessage.wallRunMessage(isPB, time, prevPB));
+      player.sendMessage(goalMessage.wallRunMessage(isPB, time, prevPB));
+      break;
+
+    case "parkour1_1":
+    case "parkour1_2":
+    case "parkour1_3":
+      player.sendMessage(goalMessage.wallRunMessage(isPB, time, prevPB));
       break;
   }
 };

@@ -7,5 +7,6 @@ import "./eventListener/eventListener";
 // import { DynamicProperty } from "./data/dynamicProperty";
 
 // mc.world.afterEvents.chatSend.subscribe(() => {
-//   DynamicProperty.resetDynamicData();
+//     DynamicProperty.resetDynamicData();
+//   mc.world.sendMessage(`${mc.world.getDynamicProperty("auto:dynamicData")}`);
 // });

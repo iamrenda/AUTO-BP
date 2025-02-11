@@ -26,8 +26,7 @@ export const getInvData = function (game: GameID): ItemInfo[] {
       { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
       { item: "minecraft:white_wool", quantity: 64, slot: 1, name: "§fWhite Wool" },
       { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
-      { item: "minecraft:book", quantity: 1, slot: 6, name: "§dCredits" },
-      { item: "minecraft:guster_banner_pattern", quantity: 1, slot: 7, name: "§5Your Stats" },
+      { item: "minecraft:book", quantity: 1, slot: 7, name: "§dCredits" },
       { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },
     ];
   if (game === "straightBridger" || game === "inclinedBridger")
@@ -60,6 +59,8 @@ export const getInvData = function (game: GameID): ItemInfo[] {
       { item: "minecraft:sandstone", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ];
+  if (game === "parkour1_1" || game === "parkour1_2" || game === "parkour1_3")
+    return [{ item: "minecraft:book", quantity: 1, slot: 8 }];
 };
 
 /**
@@ -74,6 +75,9 @@ type LocationData = {
   bedwarsRush: TeleportationLocation;
   normalFistReduce: TeleportationLocation;
   limitlessFistReduce: TeleportationLocation;
+  parkour1_1: TeleportationLocation;
+  parkour1_2: TeleportationLocation;
+  parkour1_3: TeleportationLocation;
 };
 
 export const locationData: LocationData = {
@@ -145,6 +149,42 @@ export const locationData: LocationData = {
       x: 50008.5,
       y: 320,
       z: 50015,
+    },
+  },
+  parkour1_1: {
+    position: {
+      x: 60053.5,
+      y: 86,
+      z: 60084.5,
+    },
+    facing: {
+      x: 60053,
+      y: 86,
+      z: 60084,
+    },
+  },
+  parkour1_2: {
+    position: {
+      x: 60040.5,
+      y: 102,
+      z: 60058.5,
+    },
+    facing: {
+      x: 60041,
+      y: 102,
+      z: 60059,
+    },
+  },
+  parkour1_3: {
+    position: {
+      x: 60077.5,
+      y: 80,
+      z: 60059.5,
+    },
+    facing: {
+      x: 60075.5,
+      y: 80,
+      z: 60058.5,
     },
   },
 };
