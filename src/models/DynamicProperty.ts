@@ -42,3 +42,5 @@ export enum GameDataID {
   inclinedDistance = "inclinedDistance",
   straightTellyPractice = "straightTellyPractice",
 }
+
+export type BundlableGameModeID = "Bridger" | "WallRunner" | "BedwarsRush" | "Parkour";

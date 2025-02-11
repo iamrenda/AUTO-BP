@@ -2,7 +2,6 @@ import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import * as form from "../forms/bridger";
-import TeleportationLocation from "../models/TeleportationLocation";
 import { bridgerTs } from "../data/tempStorage";
 import { confirmationForm } from "../forms/utility";
 import { BridgerTypesID } from "../models/DynamicProperty";
@@ -52,60 +51,12 @@ const TELLYBUILDERNUMBER: {
     50: 15,
   },
 };
-
 /////////////////////////////////////////////////////////
 /**
- * sets a new average time for dynamic property
- */
-const setAverageTime = function (newTime: number) {
-  const prevAvgTime = BridgerData.getData(DynamicPropertyID.Bridger_AverageTime);
-  const attempts = BridgerData.getData(DynamicPropertyID.Bridger_Attempts);
-  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
-
-  BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
-};
-
-/**
- * reset bridger data
- */
-const resetBridger = function (): void {
-  bridgerTs.commonData["blocks"] = 0;
-};
-
-/**
- * resets the map (clearing temp data, blocks, and teleporting)
- */
-const resetMap = function (wasAttempt: boolean = true): void {
-  const gameId = bridgerTs.commonData["gameID"];
-
-  wasAttempt
-    ? util.teleportation(<TeleportationLocation>data.locationData[gameId])
-    : util.teleportation(data.locationData.lobby);
-
-  if (wasAttempt) util.updateFloatingText(BridgerData.getBundledData("Bridger"));
-
-  bridgerTs.clearBlocks();
-
-  resetBridger();
-};
-
-/**
  * re-enable pressure plate (disabled temp when plate is pressed)
- * @param {Boolean} cancelTimer - whether canceling timer to resetMap is necessary or not
  */
-const enablePlate = function (cancelTimer: boolean = false): void {
+const enablePlate = function (): void {
   bridgerTs.tempData["isPlateDisabled"] = false;
-  if (cancelTimer) mc.system.clearRun(bridgerTs.tempData["autoReq"]);
-  resetMap();
-  util.giveItems("straightBridger");
-};
-
-/**
- * adds attmps (and success attmps) depending on the input
- */
-const updateAttemptData = function (isSuccess: boolean): void {
-  BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
-  isSuccess ? BridgerData.addData(DynamicPropertyID.Bridger_SuccessAttempts) : "";
 };
 
 /**
@@ -305,63 +256,44 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   }
 
   // quit bridger
-  if (bridgerSelection === 16) {
-    resetMap(false);
-    util.backToLobbyKit(player, bridgerTs);
-  }
+  if (bridgerSelection === 16) util.backToLobbyKit(player, bridgerTs);
 };
 
 export const placingBlockEvt = function (block: mc.Block) {
-  if (!bridgerTs.commonData["blocks"] && !bridgerTs.commonData["timer"]) bridgerTs.startTimer();
+  if (!bridgerTs.commonData["blocks"]) bridgerTs.startTimer();
 
   bridgerTs.commonData["blocks"]++;
   bridgerTs.commonData["storedLocations"].add(block.location);
 };
 
 export const pressurePlatePushEvt = function (player: mc.Player) {
-  if (bridgerTs.tempData.isPlateDisabled) return;
+  if (bridgerTs.tempData["isPlateDisabled"]) return;
+  bridgerTs.tempData["isPlateDisabled"] = true;
 
-  const ticks = bridgerTs.commonData.ticks;
-  bridgerTs.tempData.isPlateDisabled = true;
-
-  bridgerTs.stopTimer();
-  updateAttemptData(true);
-
-  util.shootFireworks(player.location);
-
-  bridgerTs.tempData.autoReq = mc.system.runTimeout(enablePlate, 80);
+  const time = bridgerTs.commonData.ticks;
 
   // if telly practice
   if (GameData.getData("TellyPractice") !== "None" && bridgerTs.tempData["bridgerDirection"] !== "inclined") {
     player.playSound("random.orb");
-    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
-    util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
+    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(time)}§r`);
+    util.showMessage(false, time, BridgerData.getData(DynamicPropertyID.Bridger_PB));
     return;
   }
 
-  if (util.isPB(BridgerData.getData(DynamicPropertyID.Bridger_PB), ticks)) {
-    BridgerData.setData(DynamicPropertyID.Bridger_PB, ticks);
-    util.showMessage(true, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
-    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
-    player.playSound("random.levelup");
-  } else {
-    util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
-    util.showMessage(false, ticks, BridgerData.getData(DynamicPropertyID.Bridger_PB));
-    player.playSound("random.orb");
-  }
-
-  setAverageTime(ticks);
+  util.resetMap(bridgerTs, BridgerData, enablePlate);
 };
 
 export const listener = function () {
   util.displayScoreboard("straightBridger");
 
-  if (!(bridgerTs.commonData["player"].location.y <= 99)) return;
-  if (bridgerTs.tempData["isPlateDisabled"]) enablePlate(true);
-  else {
-    bridgerTs.stopTimer();
-    updateAttemptData(false);
-    util.giveItems("straightBridger");
-    resetMap();
-  }
+  if (!(bridgerTs.commonData["player"].location.y <= 98) || bridgerTs.tempData["isPlateDisabled"]) return;
+
+  // fail run
+  bridgerTs.stopTimer();
+  bridgerTs.clearBlocks();
+  bridgerTs.commonData["blocks"] = 0;
+  BridgerData.addData(DynamicPropertyID.Bridger_Attempts);
+  util.updateFloatingText(BridgerData.getBundledData("Bridger"));
+  util.giveItems("straightBridger");
+  util.teleportation(data.locationData.straightBridger);
 };

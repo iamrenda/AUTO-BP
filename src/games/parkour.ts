@@ -44,22 +44,15 @@ const isPlateDisabled = function (plate: "start" | "end"): boolean {
   return false;
 };
 
-const setAverageTime = function (newTime: number) {
-  const prevAvgTime = ParkourData.getData(DynamicPropertyID.Parkour_AverageTime);
-  const attempts = ParkourData.getData(DynamicPropertyID.Parkour_Attempts);
-  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
-
-  ParkourData.setData(DynamicPropertyID.Parkour_AverageTime, Math.round(newAvgTime * 100) / 100);
-};
-
 /**
  * re-enable pressure plate (disabled temp when plate is pressed)
  */
 const enablePlate = function (): void {
   parkourTs.tempData["isPlateDisabled"].start = false;
   parkourTs.tempData["isPlateDisabled"].end = false;
+  parkourTs.tempData["autoReq"] = undefined;
 };
-
+//////////////////////////////////////////////////
 export const parkourFormHandler = async function (player: mc.Player) {
   const { selection } = await parkourForm(player);
 
@@ -77,37 +70,13 @@ export const pressurePlatePushEvt = function (block: mc.Block) {
     case "minecraft:polished_blackstone_pressure_plate":
       if (isPlateDisabled("start")) return;
       player.playSound("note.pling");
-      ParkourData.addData(DynamicPropertyID.Parkour_Attempts);
       parkourTs.startTimer();
       break;
 
     // end
     case "minecraft:light_weighted_pressure_plate":
       if (isPlateDisabled("end")) return;
-      parkourTs.stopTimer();
-      ParkourData.addData(DynamicPropertyID.Parkour_SuccessAttempts);
-
-      const ticks = parkourTs.commonData["ticks"];
-
-      if (util.isPB(ParkourData.getData(DynamicPropertyID.Parkour_PB), ticks)) {
-        ParkourData.setData(DynamicPropertyID.Parkour_PB, ticks);
-        util.showMessage(true, ticks, ParkourData.getData(DynamicPropertyID.Parkour_PB));
-        player.playSound("random.levelup");
-        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
-      } else {
-        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
-        util.showMessage(false, ticks, ParkourData.getData(DynamicPropertyID.Parkour_PB));
-      }
-
-      setAverageTime(ticks);
-      parkourTs.tempData["autoReq"] = mc.system.runTimeout(() => {
-        enablePlate();
-        parkourTs.tempData["autoReq"] = undefined;
-        util.teleportation(<TeleportationLocation>locationData[parkourTs.commonData["gameID"]]);
-      }, 80);
-
-      util.updateFloatingText(ParkourData.getBundledData("Parkour"));
-      util.shootFireworks(player.location);
+      util.resetMap(parkourTs, ParkourData, enablePlate);
       break;
   }
 };
@@ -125,7 +94,8 @@ export const listener = function () {
     blockUnder.isSolid
   ) {
     parkourTs.stopTimer();
-    parkourTs.tempData["isPlateDisabled"].start = false;
+    enablePlate();
+    ParkourData.addData(DynamicPropertyID.Parkour_Attempts);
     util.teleportation(<TeleportationLocation>locationData[parkourTs.commonData["gameID"]]);
     util.updateFloatingText(ParkourData.getBundledData("Parkour"));
   }

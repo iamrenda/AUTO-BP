@@ -1,6 +1,12 @@
 import { world, Vector3 } from "@minecraft/server";
-import { DynamicPropertyID, BridgerTypesID, GameDataID, ParkourChapterID } from "../models/DynamicProperty";
-import { generalTs, bridgerTs, parkourTs } from "./tempStorage";
+import {
+  DynamicPropertyID,
+  BridgerTypesID,
+  GameDataID,
+  ParkourChapterID,
+  BundlableGameModeID,
+} from "../models/DynamicProperty";
+import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
 
 /////////////////////////////////////////////////////////////////
 export class DynamicProperty {
@@ -109,7 +115,7 @@ export abstract class BaseGameData extends DynamicProperty {
   /**
    * returns an object containing pb, avgTime, attempts, and success attempts
    */
-  public static getBundledData(gameId: "Bridger" | "WallRunner" | "BedwarsRush" | "Parkour"): {
+  public static getBundledData(gameId: BundlableGameModeID): {
     pb: number;
     avgTime: number;
     attempts: number;

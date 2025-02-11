@@ -95,6 +95,31 @@ mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   if (eventHandler) eventHandler(block);
 });
 
+const hasCoordinates = function (loc: mc.Vector3) {
+  return [...bridgerTs.commonData["storedLocations"]].some(
+    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
+  );
+};
+
+// breaking a block (before event)
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
+  switch (generalTs.commonData["gameID"]) {
+    case "straightBridger":
+    case "inclinedBridger":
+      if (hasCoordinates(e.block.location)) e.cancel = false;
+      else e.cancel = true;
+      break;
+
+    case "bedwarsRush":
+      if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
+      e.cancel = true;
+      break;
+
+    default:
+      e.cancel = true;
+  }
+});
+
 // pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
   switch (generalTs.commonData["gameID"]) {
@@ -158,31 +183,6 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 
 // interaction with block
 // mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
-
-const hasCoordinates = function (loc: mc.Vector3) {
-  return [...bridgerTs.commonData["storedLocations"]].some(
-    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
-  );
-};
-
-// breaking a block (before event)
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-    case "inclinedBridger":
-      if (hasCoordinates(e.block.location)) e.cancel = false;
-      else e.cancel = true;
-      break;
-
-    case "bedwarsRush":
-      if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
-      e.cancel = true;
-      break;
-
-    default:
-    // e.cancel = true;
-  }
-});
 
 // entity attack
 mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {

@@ -17,47 +17,15 @@ const isPlateDisabled = function (plate: "first" | "checkpoint" | "goal"): boole
 };
 
 /**
- * resets map
+ * re-enable pressure plate (disabled temp when plate is pressed)
  */
-const resetWallRunner = function () {
+const enablePlate = function (): void {
   wallRunTs.tempData["isCheckPointSaved"] = false;
-
   Object.keys(wallRunTs.tempData["isPlateDisabled"]).map(
     (plate) =>
       (wallRunTs.tempData["isPlateDisabled"][plate as keyof (typeof wallRunTs.tempData)["isPlateDisabled"]] = false)
   );
 };
-
-/**
- * resets map
- */
-const resetMap = function () {
-  wallRunTs.stopTimer();
-  wallRunTs.clearBlocks();
-  resetWallRunner();
-  util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
-  util.giveItems("wallRun");
-  util.teleportation(locationData.wallRun);
-};
-
-const setAverageTime = function (newTime: number) {
-  const prevAvgTime = WallRunData.getData(DynamicPropertyID.WallRunner_AverageTime);
-  const attempts = WallRunData.getData(DynamicPropertyID.WallRunner_Attempts);
-  const newAvgTime = prevAvgTime === -1 ? newTime : (prevAvgTime * attempts + newTime) / (attempts + 1);
-
-  WallRunData.setData(DynamicPropertyID.WallRunner_AverageTime, Math.round(newAvgTime * 100) / 100);
-};
-
-/**
- * re-enable pressure plate (disabled temp when plate is pressed)
- */
-const enablePlate = function (): void {
-  wallRunTs.tempData["isPlateDisabled"].goal = false;
-  wallRunTs.commonData["player"].setGameMode(mc.GameMode.survival);
-  util.giveItems("wallRun");
-  resetMap();
-};
-
 /////////////////////////////////////////////////////////////////////////
 export const pressurePlatePushEvt = function ({ location }: { location: mc.Vector3 }) {
   switch (location.z) {
@@ -80,30 +48,9 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     case 30121:
       if (isPlateDisabled("goal")) return;
       const player = wallRunTs.commonData["player"];
-      const ticks = wallRunTs.commonData["ticks"];
-
-      wallRunTs.stopTimer();
-      wallRunTs.clearBlocks();
 
       player.setGameMode(mc.GameMode.spectator);
-
-      if (util.isPB(WallRunData.getData(DynamicPropertyID.WallRunner_PB), ticks)) {
-        WallRunData.setData(DynamicPropertyID.WallRunner_PB, ticks);
-        util.showMessage(true, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
-        player.playSound("random.levelup");
-        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
-      } else {
-        util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(ticks)}§r`);
-        util.showMessage(false, ticks, WallRunData.getData(DynamicPropertyID.WallRunner_PB));
-      }
-
-      setAverageTime(ticks);
-
-      util.shootFireworks(player.location);
-      mc.system.runTimeout(enablePlate, 80);
-
-      WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
-      WallRunData.addData(DynamicPropertyID.WallRunner_SuccessAttempts);
+      util.resetMap(wallRunTs, WallRunData, enablePlate);
       break;
   }
 };
@@ -150,7 +97,9 @@ export const listener = function () {
   util.displayScoreboard("wallRun");
 
   if (!(player.location.y < 98) || player.getGameMode() === mc.GameMode.spectator) return;
+
   if (wallRunTs.tempData["isCheckPointSaved"]) {
+    // going back to checkpoint
     util.confirmMessage("§7Teleporting back to the checkpoint...");
     util.teleportation({
       position: { x: 30009.5, y: 106, z: 30077.5 },
@@ -158,5 +107,14 @@ export const listener = function () {
     });
     util.giveItems("wallRun");
     wallRunTs.clearBlocks();
-  } else resetMap();
+  } else {
+    // going back to spawn
+    wallRunTs.stopTimer();
+    wallRunTs.clearBlocks();
+    WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
+    util.updateFloatingText(WallRunData.getBundledData("WallRunner"));
+    util.giveItems("wallRun");
+    util.teleportation(locationData.wallRun);
+    enablePlate();
+  }
 };

@@ -1,9 +1,17 @@
-import * as util from "../utilities/utilities";
-import { VERSION } from "./staticData";
-import { BridgerData, ParkourData, WallRunData } from "./dynamicProperty";
+import * as util from "./utilities";
+import { VERSION } from "../data/staticData";
+import { BridgerData, ParkourData, WallRunData } from "../data/dynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
-import { generalTs, bridgerTs, wallRunTs, clutcherTs, fistReduceTs, parkourTs, bedwarsRushTs } from "./tempStorage";
-import { BedwarsRushData } from "./dynamicProperty";
+import {
+  generalTs,
+  bridgerTs,
+  wallRunTs,
+  clutcherTs,
+  fistReduceTs,
+  parkourTs,
+  bedwarsRushTs,
+} from "../data/tempStorage";
+import { BedwarsRushData } from "../data/dynamicProperty";
 
 export const lobbyScoreboard = function (): string {
   const nameTag = generalTs.commonData["player"].nameTag;

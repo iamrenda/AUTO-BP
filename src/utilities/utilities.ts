@@ -1,13 +1,20 @@
 import * as mc from "@minecraft/server";
-import { BridgerTypesID } from "../models/DynamicProperty";
+import { BridgerTypesID, BundlableGameModeID, DynamicPropertyID } from "../models/DynamicProperty";
 import { getInvData, locationData, VERSION } from "../data/staticData";
 import TeleportationLocation from "../models/TeleportationLocation";
 import GameID from "../models/GameID";
 import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
-import * as scoreboard from "../data/scoreboard";
+import * as scoreboard from "./scoreboard";
 import * as goalMessage from "./goalMessage";
 import { clearBlocksForm } from "../forms/utility";
-import { StoredBlocksClass } from "../data/dynamicProperty";
+import {
+  BaseGameData,
+  BedwarsRushData,
+  BridgerData,
+  ParkourData,
+  StoredBlocksClass,
+  WallRunData,
+} from "../data/dynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -106,6 +113,7 @@ export const backToLobbyKit = function (player: mc.Player, tempDataClass: TempSt
   generalTs.commonData["gameID"] = "lobby";
   generalTs.commonData["ticks"] = 0;
   tempDataClass.tempData = tempDataClass.setDefaultTempData();
+  tempDataClass.clearBlocks();
   player.setGameMode(mc.GameMode.survival);
   giveItems("lobby");
   displayScoreboard("lobby");
@@ -254,4 +262,72 @@ export const showTitleBar = function (
   const { fadeInDuration = 20, fadeOutDuration = 20, stayDuration = 60, subtitle = "" } = displayOption;
   player.onScreenDisplay.setTitle(title, { fadeInDuration, fadeOutDuration, stayDuration });
   if (subtitle) player.onScreenDisplay.updateSubtitle(subtitle);
+};
+
+// when accessing DynamicPropertyID
+const BaseGameDataString = new Map<BaseGameData, BundlableGameModeID>([
+  [BridgerData, "Bridger"],
+  [BedwarsRushData, "BedwarsRush"],
+  [WallRunData, "WallRunner"],
+  [ParkourData, "Parkour"],
+]);
+
+// after req timeout finished
+const afterReq = function (
+  gameId: GameID,
+  data: typeof BaseGameData,
+  gameModeString: BundlableGameModeID,
+  plateEnable: () => void
+) {
+  generalTs.clearBlocks();
+  generalTs.commonData["blocks"] = 0;
+  generalTs.commonData["player"].setGameMode(mc.GameMode.survival);
+  plateEnable();
+  giveItems(gameId);
+  teleportation(<TeleportationLocation>locationData[gameId]);
+  updateFloatingText(data.getBundledData(gameModeString));
+};
+
+/**
+ * reset map for games bru
+ * @param {function plateEnable() enable plate}
+ */
+export const resetMap = function (ts: TempStorage, data: typeof BaseGameData, plateEnable: () => void): void {
+  const gameModeString = BaseGameDataString.get(data);
+
+  const prevPB = data.getData(<DynamicPropertyID>`${gameModeString}_PB`);
+  const prevAvgTime = data.getData(<DynamicPropertyID>`${gameModeString}_AverageTime`);
+  const prevAttempts = data.getData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+
+  const player = generalTs.commonData["player"];
+  const time = generalTs.commonData["ticks"];
+  const gameId = generalTs.commonData["gameID"];
+
+  // stop timer
+  ts.stopTimer();
+
+  // add attempts and success attempts
+  data.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+  data.addData(<DynamicPropertyID>`${gameModeString}_SuccessAttempts`);
+
+  // set pb
+  if (isPB(prevPB, time)) {
+    showMessage(true, time, prevPB);
+    data.setData(<DynamicPropertyID>`${gameModeString}_PB`, time);
+    showTitleBar(player, `§6Time§7: §f${tickToSec(time)}§r`, { subtitle: "§dNEW RECORD!!!" });
+    player.playSound("random.levelup");
+  } else {
+    showTitleBar(player, `§6Time§7: §f${tickToSec(time)}§r`);
+    showMessage(false, time, prevPB);
+  }
+
+  // set avg time
+  const newAvgTime = prevAvgTime === -1 ? time : (prevAvgTime * prevAttempts + time) / (prevAttempts + 1);
+  BridgerData.setData(DynamicPropertyID.Bridger_AverageTime, Math.round(newAvgTime * 100) / 100);
+
+  // shoot fireworks
+  shootFireworks(player.location);
+
+  // auto req
+  ts.tempData["autoReq"] = mc.system.runTimeout(afterReq.bind(null, gameId, data, gameModeString, plateEnable), 80);
 };

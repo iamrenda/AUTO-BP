@@ -18,7 +18,6 @@ export type BridgerTempStorage = {
   bridgerMode: BridgerTypesID;
   bridgerDirection: "straight" | "inclined";
   isPlateDisabled: boolean;
-  autoReq?: number;
 };
 
 export type ClutcherTempStorage = {

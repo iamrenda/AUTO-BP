@@ -58,7 +58,6 @@ class Bridger extends TempStorage<type.BridgerTempStorage> {
       bridgerMode: BridgerTypesID.straight16blocks,
       bridgerDirection: "straight",
       isPlateDisabled: false,
-      autoReq: undefined,
     };
   }
 }
