@@ -6,14 +6,6 @@ import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
 import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
 import { ParkourChapterID } from "../models/DynamicProperty";
-/**
- * if uncleared block detected, it shows the warning
- */
-const warnUnclearedBlocks = function (player: mc.Player): void {
-  if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
-  util.sendMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
-  util.showTitleBar(player, "§cUncleared blocks Detected");
-};
 
 /**
  * handling navigation for lobby
@@ -22,7 +14,7 @@ const handleNavigation = (player: mc.Player, gameId: GameID, locationData: Telep
   generalTs.commonData["gameID"] = gameId;
   util.giveItems(gameId);
   util.teleportation(locationData);
-  warnUnclearedBlocks(player);
+  util.warnUnclearedBlocks(player);
 };
 
 export const nagivatorFormHandler = async function (player: mc.Player) {
@@ -50,7 +42,7 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     player.setGameMode(9);
     generalTs.commonData["byPass"] = false;
     handleNavigation(player, "clutcher", data.locationData.clutcher[0]);
-    util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "random.anvil_use");
+    util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "note.bell");
   }
 
   // wall run
@@ -95,6 +87,7 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
   const i = new mc.ItemStack("minecraft:white_wool", 1);
   i.lockMode = mc.ItemLockMode.inventory;
   generalTs.commonData["player"].getComponent("inventory").container.addItem(i);
+  bridgerTs.commonData["storedLocations"].add(location);
 
   mc.system.runTimeout(() => {
     try {

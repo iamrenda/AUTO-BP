@@ -61,7 +61,7 @@ export const parkourFormHandler = async function (player: mc.Player) {
   }
 
   // back to lobby
-  if (selection === 13) {
+  if (selection === 15) {
     util.backToLobbyKit(player, parkourTs);
   }
 };
@@ -79,7 +79,7 @@ export const pressurePlatePushEvt = function (block: mc.Block) {
 
     // end
     case "minecraft:light_weighted_pressure_plate":
-      if (isPlateDisabled("end")) return;
+      if (isPlateDisabled("end") || !parkourTs.tempData["isPlateDisabled"]["start"]) return;
       util.onRunnerSuccess(parkourTs, ParkourData, enablePlate);
       break;
   }
@@ -98,5 +98,6 @@ export const listener = function () {
     blockUnder.isSolid
   ) {
     util.onRunnerFail(ParkourData);
+    enablePlate();
   }
 };

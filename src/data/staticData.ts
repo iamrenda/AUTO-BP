@@ -85,12 +85,12 @@ export const locationData: LocationData = {
     facing: { x: 91.5, y: 262.0, z: 64 },
   },
   straightBridger: {
-    position: { x: 10001.5, y: 101, z: 10001.5 },
-    facing: { x: 10001.5, y: 101, z: 10002 },
+    position: { x: 10000.5, y: 100, z: 10001.5 },
+    facing: { x: 10000.5, y: 100, z: 10002 },
   },
   inclinedBridger: {
-    position: { x: 9966.5, y: 102, z: 10002.5 },
-    facing: { x: 9966, y: 102, z: 10003 },
+    position: { x: 9968.5, y: 100, z: 10000.5 },
+    facing: { x: 9968, y: 100, z: 10001 },
   },
   clutcher: [
     {

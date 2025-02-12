@@ -2,7 +2,7 @@ import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import * as form from "../forms/bridger";
-import { bridgerTs } from "../data/tempStorage";
+import { bridgerTs, generalTs } from "../data/tempStorage";
 import { BridgerTypesID } from "../models/DynamicProperty";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { BridgerData, GameData } from "../data/dynamicProperty";
@@ -12,8 +12,8 @@ type IslandDistance = 16 | 21 | 50;
 /////////////////////////////////////////////////////////
 
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
-  straight: { x: 9997, y: 86, z: 10005 },
-  inclined: { x: 9958, y: 92, z: 10004 },
+  straight: { x: 9995, y: 89, z: 10005 },
+  inclined: { x: 9957, y: 89, z: 10002 },
 };
 
 const HEIGHT_DIFF: Record<number, number> = {
@@ -24,8 +24,8 @@ const HEIGHT_DIFF: Record<number, number> = {
 
 //where to start building telly practice
 const TELLYSTARTBASELOCATION: mc.Vector3 = {
-  x: 10001,
-  y: 101,
+  x: 10000,
+  y: 99,
   z: 10004,
 };
 
@@ -166,13 +166,13 @@ const fillAndPlace = function (
   if (distance1 === 50) fillAirLocation.start = getLocation(direction, 50);
 
   if (direction === "straight") {
-    fillAirLocation.end.x = fillAirLocation.start.x + 10;
-    fillAirLocation.end.y = fillAirLocation.start.y + 23;
-    fillAirLocation.end.z = fillAirLocation.start.z + 10;
+    fillAirLocation.end.x = fillAirLocation.start.x + 12;
+    fillAirLocation.end.y = fillAirLocation.start.y + 38;
+    fillAirLocation.end.z = fillAirLocation.start.z + 11;
   } else {
-    fillAirLocation.end.x = fillAirLocation.start.x + 10;
-    fillAirLocation.end.y = fillAirLocation.start.y + 18;
-    fillAirLocation.end.z = fillAirLocation.start.z + 9;
+    fillAirLocation.end.x = fillAirLocation.start.x + 11;
+    fillAirLocation.end.y = fillAirLocation.start.y + 38;
+    fillAirLocation.end.z = fillAirLocation.start.z + 11;
   }
 
   dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
@@ -265,8 +265,10 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
   // if telly practice
   if (GameData.getData("TellyPractice") !== "None" && bridgerTs.tempData["bridgerDirection"] !== "inclined") {
     player.playSound("random.orb");
+    generalTs.stopTimer();
     util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(time)}§r`);
     util.showMessage(false, time, BridgerData.getData(DynamicPropertyID.Bridger_PB));
+    mc.system.runTimeout(util.afterReq.bind(null, BridgerData, enablePlate), 80);
     return;
   }
 
@@ -276,7 +278,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
 export const listener = function () {
   util.displayScoreboard("straightBridger");
 
-  if (!(bridgerTs.commonData["player"].location.y <= 98) || bridgerTs.tempData["isPlateDisabled"]) return;
+  if (!(bridgerTs.commonData["player"].location.y <= 96) || bridgerTs.tempData["isPlateDisabled"]) return;
 
   // fail run
   util.onRunnerFail(BridgerData);

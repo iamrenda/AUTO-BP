@@ -153,6 +153,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["storedLocationsGameID"] = <GameID>mc.world.getDynamicProperty("auto:storedBlocksGameID");
   DynamicProperty.fetchData();
   util.backToLobbyKit(player, generalTs);
+  util.warnUnclearedBlocks(player);
 });
 
 // leaving the world
@@ -191,16 +192,12 @@ mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
 });
 
 // gamemode change
-mc.world.beforeEvents.playerGameModeChange.subscribe(({ toGameMode, player }) =>
-  !generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative
-    ? mc.system.run(() => {
-        if (generalTs.commonData["gameID"] !== "clutcher") player.setGameMode(mc.GameMode.survival);
-        else {
-          player.setGameMode(9);
-        }
-      })
-    : ""
-);
+// mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {
+//   if (!generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative) {
+//     const gameMode = generalTs.commonData["gameID"] === "clutcher" ? 9 : mc.GameMode.survival;
+//     player.setGameMode(gameMode);
+//   }
+// });
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

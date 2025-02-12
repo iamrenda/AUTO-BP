@@ -48,7 +48,6 @@ export class TempStorage<T = any> {
         this.commonData["storedLocations"] = failedLocations;
         mc.system.runTimeout(retryClear, 60);
       } else {
-        sendMessage("§aBlocks cleared successfully", "random.orb");
         this.commonData["storedLocations"] = new Set();
       }
     };

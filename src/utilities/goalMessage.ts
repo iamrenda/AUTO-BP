@@ -41,8 +41,9 @@ export const wallRunMessage = function (isPB: boolean, time: number, prevPB: num
 
 export const parkourMessage = function (isPB: boolean, time: number, prevPB: number): string {
   const pb = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
+
   const difference =
-    pb !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";
+    prevPB !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";
   const chapter = parkourTs.tempData["chapter"];
 
   const baseMessage = `

@@ -4,6 +4,7 @@ import * as form from "../forms/wallrun";
 import { wallRunTs } from "../data/tempStorage";
 import { DynamicPropertyID } from "../models/DynamicProperty";
 import { WallRunData } from "../data/dynamicProperty";
+import { locationData } from "../data/staticData";
 
 /**
  * disables the plate if not disabled; returns true or false depending on availiability
@@ -90,6 +91,8 @@ export const listener = function () {
   const player = wallRunTs.commonData["player"];
 
   util.displayScoreboard("wallRun");
+
+  if (player.location.z > 30140) return util.teleportation(locationData.wallRun);
 
   if (!(player.location.y < 98) || player.getGameMode() === mc.GameMode.spectator) return;
 

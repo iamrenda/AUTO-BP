@@ -141,7 +141,7 @@ export const getFloatingEntity = function (): mc.Entity {
       })[0];
     case "inclinedBridger":
       return mc.world.getDimension("overworld").getEntities({
-        location: { x: 9960.73, y: 100.97, z: 10003.64 },
+        location: { x: 9997.88, y: 100.0, z: 10005.43 },
         excludeFamilies: ["player"],
       })[0];
     case "wallRun":
@@ -199,7 +199,7 @@ type FloatingTextParams = {
 };
 export const updateFloatingText = function ({ pb, avgTime, attempts, successAttempts }: FloatingTextParams) {
   const player = generalTs.commonData["player"];
-  const displayText = `§b${player.nameTag} - §7§oVersion ${VERSION}§r
+  const displayText = `§b${player.nameTag} §7§o- Version ${VERSION}§r
 §6Personal Best: §f${tickToSec(pb)}
 §6Average Time: §f${tickToSec(avgTime)}
 §6Attempts: §f${attempts}
@@ -227,7 +227,7 @@ export const showMessage = function (isPB: boolean, time: number, prevPB: number
     case "parkour1_1":
     case "parkour1_2":
     case "parkour1_3":
-      player.sendMessage(goalMessage.wallRunMessage(isPB, time, prevPB));
+      player.sendMessage(goalMessage.parkourMessage(isPB, time, prevPB));
       break;
   }
 };
@@ -282,7 +282,7 @@ const bundlableGameModeIDs = new Map<BaseGameData, BundlableGameModeID>([
 ]);
 
 // after req timeout finished
-const afterReq = function (dataBase: typeof BaseGameData, plateEnable: () => void) {
+export const afterReq = function (dataBase: typeof BaseGameData, plateEnable: () => void) {
   const gameModeString = bundlableGameModeIDs.get(dataBase);
   const { player, gameID } = generalTs.commonData;
 
@@ -306,9 +306,11 @@ export const onRunnerSuccess = function (
 ): void {
   const gameModeString = bundlableGameModeIDs.get(dataBase);
 
-  const prevPB = dataBase.getData(<DynamicPropertyID>`${gameModeString}_PB`);
-  const prevAvgTime = dataBase.getData(<DynamicPropertyID>`${gameModeString}_AverageTime`);
-  const prevAttempts = dataBase.getData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+  const {
+    pb: prevPB,
+    avgTime: prevAvgTime,
+    successAttempts: prevSuccessAttempts,
+  } = dataBase.getBundledData(gameModeString);
 
   const player = generalTs.commonData["player"];
   const time = generalTs.commonData["ticks"];
@@ -332,7 +334,7 @@ export const onRunnerSuccess = function (
   }
 
   // set avg time
-  const newAvgTime = prevAvgTime === -1 ? time : (prevAvgTime * prevAttempts + time) / (prevAttempts + 1);
+  const newAvgTime = prevAvgTime === -1 ? time : (prevAvgTime * prevSuccessAttempts + time) / (prevSuccessAttempts + 1);
   dataBase.setData(<DynamicPropertyID>`${gameModeString}_AverageTime`, Math.round(newAvgTime * 100) / 100);
 
   // shoot fireworks
@@ -374,4 +376,13 @@ export const resetPB = async function (
   dataBase.setData(<DynamicPropertyID>`${gameModeString}_PB`, -1);
   sendMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
   updateFloatingText(dataBase.getBundledData(bundlableGameModeID));
+};
+
+/**
+ * if uncleared block detected, it shows the warning
+ */
+export const warnUnclearedBlocks = function (player: mc.Player): void {
+  if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
+  sendMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
+  showTitleBar(player, "§cUncleared blocks Detected");
 };
