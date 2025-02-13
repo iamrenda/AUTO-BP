@@ -2,7 +2,6 @@ import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as form from "../forms/wallrun";
 import { wallRunTs } from "../data/tempStorage";
-import { DynamicPropertyID } from "../models/DynamicProperty";
 import { WallRunData } from "../data/dynamicProperty";
 import { locationData } from "../data/staticData";
 
@@ -34,7 +33,6 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
     case 30016:
       if (isPlateDisabled("first")) return;
       player.playSound("note.pling");
-      WallRunData.addData(DynamicPropertyID.WallRunner_Attempts);
       wallRunTs.startTimer();
       break;
 

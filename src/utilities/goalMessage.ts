@@ -48,7 +48,7 @@ export const parkourMessage = function (isPB: boolean, time: number, prevPB: num
 
   const baseMessage = `
 §7----------------------------§r 
-    §bParkour ${chapter}§r §8§o- Version ${VERSION}§r
+    §bParkour ${chapter.substring(7).split("_").join(".")}§r §8§o- Version ${VERSION}§r
   
     §6${isPB ? "Your Previous Best" : "Your Personal Best"}:§r §f${util.tickToSec(isPB ? prevPB : pb)}§f
     §6Time Recorded:§r §f${util.tickToSec(time)}§r ${difference}§r`;

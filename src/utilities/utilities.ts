@@ -349,14 +349,14 @@ export const onRunnerSuccess = function (
 /**
  * when the player gets a fail run
  */
-export const onRunnerFail = function (dataBase: typeof BaseGameData) {
+export const onRunnerFail = function (dataBase: typeof BaseGameData, addAttempt = true) {
   const gameModeString = bundlableGameModeIDs.get(dataBase);
   const gameID = generalTs.commonData["gameID"];
 
   generalTs.stopTimer();
   generalTs.clearBlocks();
   generalTs.commonData["blocks"] = 0;
-  dataBase.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
+  if (addAttempt) dataBase.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
   updateFloatingText(dataBase.getBundledData(gameModeString));
   giveItems(gameID);
   teleportation(<TeleportationLocation>locationData[gameID]);

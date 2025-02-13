@@ -281,5 +281,5 @@ export const listener = function () {
   if (!(bridgerTs.commonData["player"].location.y <= 96) || bridgerTs.tempData["isPlateDisabled"]) return;
 
   // fail run
-  util.onRunnerFail(BridgerData);
+  util.onRunnerFail(BridgerData, false);
 };
