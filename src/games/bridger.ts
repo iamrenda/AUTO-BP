@@ -281,5 +281,7 @@ export const listener = function () {
   if (!(bridgerTs.commonData["player"].location.y <= 96) || bridgerTs.tempData["isPlateDisabled"]) return;
 
   // fail run
-  util.onRunnerFail(BridgerData, false);
+  if (GameData.getData("TellyPractice") !== "None" && bridgerTs.tempData["bridgerDirection"] !== "inclined")
+    util.onRunnerFail(BridgerData, false);
+  else util.onRunnerFail(BridgerData, true);
 };

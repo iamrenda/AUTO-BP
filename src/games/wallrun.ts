@@ -62,7 +62,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
     const { selection: generalSelection } = await form.wallRunGeneralForm(player);
 
     // saved checkpoint
-    if (generalSelection === 10) {
+    if (generalSelection === 11) {
       const isCheckPointEnabled = wallRunTs.tempData["wallRunIsCheckPointEnabled"];
       wallRunTs.tempData["wallRunIsCheckPointEnabled"] = !isCheckPointEnabled;
       util.sendMessage(`§aCheckpoint is now ${!isCheckPointEnabled ? "§aEnabled!" : "§cDisabled!"}`, "random.orb");
