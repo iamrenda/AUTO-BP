@@ -3,13 +3,33 @@ import * as form from "../forms/clutcher";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import { clutcherTs } from "../data/tempStorage";
+import TeleportationLocation from "../models/TeleportationLocation";
 
 /////////////////////////////////////////////////////////
+const clutcherTpLocation: TeleportationLocation[] = [
+  {
+    position: { x: 19999.5, y: 104, z: 20002.5 },
+    facing: { x: 19999.5, y: 104, z: 20003 },
+  },
+  {
+    position: { x: 19978.5, y: 104, z: 20031.5 },
+    facing: { x: 19979, y: 104, z: 20031.5 },
+  },
+  {
+    position: { x: 20007.5, y: 103, z: 20052.5 },
+    facing: { x: 20007.5, y: 103, z: 20052 },
+  },
+  {
+    position: { x: 20027.5, y: 104, z: 20023.5 },
+    facing: { x: 20027, y: 104, z: 20023.5 },
+  },
+];
+
 /**
  * teleport player to counter clockwise location
  */
 const teleportToCounterClockwise = function () {
-  const location = data.locationData.clutcher[clutcherTs.tempData["teleportationIndex"]];
+  const location = clutcherTpLocation[clutcherTs.tempData["teleportationIndex"]];
   util.teleportation(location);
   clutcherTs.tempData["teleportationIndex"] =
     clutcherTs.tempData["teleportationIndex"] === 3 ? 0 : clutcherTs.tempData["teleportationIndex"] + 1;

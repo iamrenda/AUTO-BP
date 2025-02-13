@@ -62,24 +62,7 @@ export const getInvData = function (game: GameID): ItemInfo[] {
     return [{ item: "minecraft:book", quantity: 1, slot: 8 }];
 };
 
-/**
- * locationData: lcoation to teleport when player joining to a game
- */
-type LocationData = {
-  lobby: TeleportationLocation;
-  straightBridger: TeleportationLocation;
-  inclinedBridger: TeleportationLocation;
-  clutcher: TeleportationLocation[];
-  wallRun: TeleportationLocation;
-  bedwarsRush: TeleportationLocation;
-  normalFistReduce: TeleportationLocation;
-  limitlessFistReduce: TeleportationLocation;
-  parkour1_1: TeleportationLocation;
-  parkour1_2: TeleportationLocation;
-  parkour1_3: TeleportationLocation;
-};
-
-export const locationData: LocationData = {
+export const locationData: Record<GameID, TeleportationLocation> = {
   lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
     facing: { x: 91.5, y: 262.0, z: 64 },
@@ -92,24 +75,10 @@ export const locationData: LocationData = {
     position: { x: 9968.5, y: 100, z: 10000.5 },
     facing: { x: 9968, y: 100, z: 10001 },
   },
-  clutcher: [
-    {
-      position: { x: 19999.5, y: 104, z: 20002.5 },
-      facing: { x: 19999.5, y: 104, z: 20003 },
-    },
-    {
-      position: { x: 19978.5, y: 104, z: 20031.5 },
-      facing: { x: 19979, y: 104, z: 20031.5 },
-    },
-    {
-      position: { x: 20007.5, y: 103, z: 20052.5 },
-      facing: { x: 20007.5, y: 103, z: 20052 },
-    },
-    {
-      position: { x: 20027.5, y: 104, z: 20023.5 },
-      facing: { x: 20027, y: 104, z: 20023.5 },
-    },
-  ],
+  clutcher: {
+    position: { x: 19999.5, y: 104, z: 20002.5 },
+    facing: { x: 19999.5, y: 104, z: 20003 },
+  },
   wallRun: {
     position: { x: 30009.5, y: 105, z: 30013.5 },
     facing: { x: 30009.5, y: 105, z: 30014 },

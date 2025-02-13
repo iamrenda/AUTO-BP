@@ -11,6 +11,7 @@ import { ParkourChapterID } from "../models/DynamicProperty";
  * handling navigation for lobby
  */
 const handleNavigation = (player: mc.Player, gameId: GameID, locationData: TeleportationLocation) => {
+  generalTs.clearBlocks();
   generalTs.commonData["gameID"] = gameId;
   util.giveItems(gameId);
   util.teleportation(locationData);
@@ -41,7 +42,7 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     player.setGameMode(mc.GameMode.creative);
     player.setGameMode(9);
     generalTs.commonData["byPass"] = false;
-    handleNavigation(player, "clutcher", data.locationData.clutcher[0]);
+    handleNavigation(player, "clutcher", data.locationData.clutcher);
     util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "note.bell");
   }
 
