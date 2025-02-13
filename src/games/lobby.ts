@@ -5,7 +5,8 @@ import TeleportationLocation from "../models/TeleportationLocation";
 import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
 import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
-import { ParkourChapterID } from "../models/DynamicProperty";
+import { BridgerTypesID, ParkourChapterID } from "../models/DynamicProperty";
+import { GameData } from "../data/dynamicProperty";
 
 /**
  * handling navigation for lobby
@@ -28,11 +29,17 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     if (canceled) return;
 
     if (bridgerDirSelection === 11) {
-      handleNavigation(player, "straightBridger", data.locationData.straightBridger);
+      const distance = GameData.getData("Distance", "straight");
+
       bridgerTs.tempData["bridgerDirection"] = "straight";
+      bridgerTs.tempData["bridgerMode"] = <BridgerTypesID>`straight${distance}blocks`;
+      handleNavigation(player, "straightBridger", data.locationData.straightBridger);
     } else if (bridgerDirSelection === 15) {
-      handleNavigation(player, "inclinedBridger", data.locationData.inclinedBridger);
+      const distance = GameData.getData("Distance", "inclined");
+
       bridgerTs.tempData["bridgerDirection"] = "inclined";
+      bridgerTs.tempData["bridgerMode"] = <BridgerTypesID>`inclined${distance}blocks`;
+      handleNavigation(player, "inclinedBridger", data.locationData.inclinedBridger);
     }
   }
 

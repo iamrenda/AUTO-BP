@@ -152,8 +152,8 @@ export abstract class BaseGameData extends DynamicProperty {
 }
 
 export class GameData extends DynamicProperty {
-  public static getData(gameDataType: "Distance" | "TellyPractice") {
-    const direction = bridgerTs.tempData["bridgerDirection"];
+  public static getData(gameDataType: "Distance" | "TellyPractice", argDistance?: "straight" | "inclined") {
+    const direction = argDistance ?? bridgerTs.tempData["bridgerDirection"];
     return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
   }
 
