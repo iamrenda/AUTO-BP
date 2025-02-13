@@ -182,9 +182,6 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
   }
 });
 
-// interaction with block
-// mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.block.isSolid));
-
 // entity attack
 mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
   if (generalTs.commonData["gameID"] === "normalFistReduce" || generalTs.commonData["gameID"] === "limitlessFistReduce")
@@ -192,12 +189,12 @@ mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
 });
 
 // gamemode change
-// mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {
-//   if (!generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative) {
-//     const gameMode = generalTs.commonData["gameID"] === "clutcher" ? 9 : mc.GameMode.survival;
-//     player.setGameMode(gameMode);
-//   }
-// });
+mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {
+  if (!generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative) {
+    const gameMode = generalTs.commonData["gameID"] === "clutcher" ? 9 : mc.GameMode.survival;
+    player.setGameMode(gameMode);
+  }
+});
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
@@ -230,3 +227,5 @@ mc.system.runInterval((): void => {
       break;
   }
 }, 10);
+
+mc.system.runInterval(DynamicProperty.postData, 600);

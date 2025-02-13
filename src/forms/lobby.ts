@@ -112,7 +112,7 @@ export const lobbyCreditForm = async function (player: Player): Promise<ActionFo
  §b§oPersonal thank you to:§r
    §7- §6Chest UI: §fHerobrine643928
    §7- §6Personal Scoreboard: §fPMK / Nodu
-   §7- §6Bridger Map: §fBrody Bigwood
+   §7- §6Bridger Map: §fBridger.land
    §7- §6Bedwars Rush Map: §fBdoggy617
    §7- §6Fist Reduce Map: §fPlatzangst
    §7- §6Parkour Map: §fCringeginge

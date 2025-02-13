@@ -13,13 +13,13 @@ export class DynamicProperty {
   protected static dynamicData = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
 
   public static postData(): void {
-    const json = JSON.stringify(this.dynamicData);
+    const json = JSON.stringify(DynamicProperty.dynamicData);
     world.setDynamicProperty("auto:dynamicData", json);
   }
 
   public static fetchData(): void {
     const json = world.getDynamicProperty("auto:dynamicData");
-    this.dynamicData = JSON.parse(String(json));
+    DynamicProperty.dynamicData = JSON.parse(String(json));
   }
 
   public static resetDynamicData(): void {

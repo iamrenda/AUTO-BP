@@ -11,6 +11,7 @@ import {
   BaseGameData,
   BedwarsRushData,
   BridgerData,
+  DynamicProperty,
   ParkourData,
   StoredBlocksClass,
   WallRunData,
@@ -124,6 +125,7 @@ export const backToLobbyKit = function (player: mc.Player, tempDataClass: TempSt
   tempDataClass.tempData = tempDataClass.setDefaultTempData();
   tempDataClass.clearBlocks();
   player.setGameMode(mc.GameMode.survival);
+  DynamicProperty.postData();
   giveItems("lobby");
   displayScoreboard("lobby");
   teleportation(locationData.lobby);
