@@ -90,6 +90,7 @@ const eventMap: { [key in GameID]: (block: any) => void } = {
   parkour1_2: undefined,
   parkour1_3: undefined,
 };
+
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   const eventHandler = eventMap[generalTs.commonData["gameID"]];
   if (eventHandler) eventHandler(block);
