@@ -11,11 +11,13 @@ import minecraftID from "../models/minecraftID";
 type IslandDistance = 16 | 21 | 50;
 /////////////////////////////////////////////////////////
 
+// the location to start placing the structure blocks
 const BASE_LOCATION: Record<"straight" | "inclined", mc.Vector3> = {
-  straight: { x: 9995, y: 89, z: 10005 },
-  inclined: { x: 9957, y: 89, z: 10002 },
+  straight: { x: 9998, y: 91, z: 10004 },
+  inclined: { x: 9957, y: 91, z: 10003 },
 };
 
+// height difference of bridgers
 const HEIGHT_DIFF: Record<number, number> = {
   16: 1,
   21: 2,
@@ -45,6 +47,12 @@ const TELLYBUILDERNUMBER: {
     21: 5,
     50: 15,
   },
+};
+
+// structure names
+const structures = {
+  straight: "straightDefault",
+  inclined: "inclinedDefault",
 };
 /////////////////////////////////////////////////////////
 /**
@@ -166,13 +174,13 @@ const fillAndPlace = function (
   if (distance1 === 50) fillAirLocation.start = getLocation(direction, 50);
 
   if (direction === "straight") {
-    fillAirLocation.end.x = fillAirLocation.start.x + 12;
-    fillAirLocation.end.y = fillAirLocation.start.y + 38;
+    fillAirLocation.end.x = fillAirLocation.start.x + 10;
+    fillAirLocation.end.y = fillAirLocation.start.y + 18;
     fillAirLocation.end.z = fillAirLocation.start.z + 11;
   } else {
-    fillAirLocation.end.x = fillAirLocation.start.x + 11;
-    fillAirLocation.end.y = fillAirLocation.start.y + 38;
-    fillAirLocation.end.z = fillAirLocation.start.z + 11;
+    fillAirLocation.end.x = fillAirLocation.start.x + 7;
+    fillAirLocation.end.y = fillAirLocation.start.y + 16;
+    fillAirLocation.end.z = fillAirLocation.start.z + 7;
   }
 
   dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
@@ -199,7 +207,7 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
     return util.sendMessage("§4The distance has already been changed!", "random.anvil_land");
 
   fillAndPlace(
-    data.structures[bridgerTs.tempData["bridgerDirection"]],
+    structures[bridgerTs.tempData["bridgerDirection"]],
     bridgerTs.tempData["bridgerDirection"],
     GameData.getData("Distance"),
     blocks

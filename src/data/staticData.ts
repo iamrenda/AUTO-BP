@@ -68,12 +68,12 @@ export const locationData: Record<GameID, TeleportationLocation> = {
     facing: { x: 91.5, y: 262.0, z: 64 },
   },
   straightBridger: {
-    position: { x: 10000.5, y: 100, z: 10001.5 },
-    facing: { x: 10000.5, y: 100, z: 10002 },
+    position: { x: 10002.5, y: 102, z: 10000.5 },
+    facing: { x: 10002.5, y: 102, z: 10001 },
   },
   inclinedBridger: {
-    position: { x: 9968.5, y: 100, z: 10000.5 },
-    facing: { x: 9968, y: 100, z: 10001 },
+    position: { x: 9965.5, y: 102, z: 10001.5 },
+    facing: { x: 9965, y: 102, z: 10002 },
   },
   clutcher: {
     position: { x: 19999.5, y: 104, z: 20002.5 },
@@ -172,16 +172,6 @@ export const formBlocks: DisplayBlockIF[] = [
   { blockName: "Crying Obsidian", texture: "minecraft:crying_obsidian" },
   { blockName: "Barrier Block", texture: "minecraft:barrier" },
 ];
-
-/**
- * for bridger
- * name: name of the structure to display
- * file: file name to load
- */
-export const structures = {
-  straight: "straightDefault",
-  inclined: "inclinedDefault",
-};
 
 /**
  * for clutcher

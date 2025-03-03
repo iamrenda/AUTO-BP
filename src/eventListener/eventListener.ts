@@ -7,7 +7,7 @@ import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
 import * as parkour from "../games/parkour";
-import { bridgerTs, generalTs } from "../data/tempStorage";
+import { generalTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
 import { locationData } from "../data/staticData";
@@ -77,49 +77,49 @@ const bookHandlers = (player: mc.Player) => {
 };
 
 // placing a block
-const eventMap: { [key in GameID]: (block: any) => void } = {
-  lobby: lobby.placingBlockEvt,
-  straightBridger: bridger.placingBlockEvt,
-  inclinedBridger: bridger.placingBlockEvt,
-  clutcher: clutcher.placingBlockEvt,
-  wallRun: wallRun.placingBlockEvt,
-  bedwarsRush: bedwarsRush.placingBlockEvt,
-  normalFistReduce: fistReduce.placingBlockEvt,
-  limitlessFistReduce: fistReduce.placingBlockEvt,
-  parkour1_1: undefined,
-  parkour1_2: undefined,
-  parkour1_3: undefined,
-};
+// const eventMap: { [key in GameID]: (block: any) => void } = {
+//   lobby: lobby.placingBlockEvt,
+//   straightBridger: bridger.placingBlockEvt,
+//   inclinedBridger: bridger.placingBlockEvt,
+//   clutcher: clutcher.placingBlockEvt,
+//   wallRun: wallRun.placingBlockEvt,
+//   bedwarsRush: bedwarsRush.placingBlockEvt,
+//   normalFistReduce: fistReduce.placingBlockEvt,
+//   limitlessFistReduce: fistReduce.placingBlockEvt,
+//   parkour1_1: undefined,
+//   parkour1_2: undefined,
+//   parkour1_3: undefined,
+// };
 
-mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
-  const eventHandler = eventMap[generalTs.commonData["gameID"]];
-  if (eventHandler) eventHandler(block);
-});
+// mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
+//   const eventHandler = eventMap[generalTs.commonData["gameID"]];
+//   if (eventHandler) eventHandler(block);
+// });
 
-const hasCoordinates = function (loc: mc.Vector3) {
-  return [...bridgerTs.commonData["storedLocations"]].some(
-    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
-  );
-};
+// const hasCoordinates = function (loc: mc.Vector3) {
+//   return [...bridgerTs.commonData["storedLocations"]].some(
+//     (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
+//   );
+// };
 
 // breaking a block (before event)
-mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-    case "inclinedBridger":
-      if (hasCoordinates(e.block.location)) e.cancel = false;
-      else e.cancel = true;
-      break;
+// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
+//   switch (generalTs.commonData["gameID"]) {
+//     case "straightBridger":
+//     case "inclinedBridger":
+//       if (hasCoordinates(e.block.location)) e.cancel = false;
+//       else e.cancel = true;
+//       break;
 
-    case "bedwarsRush":
-      if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
-      e.cancel = true;
-      break;
+//     case "bedwarsRush":
+//       if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
+//       e.cancel = true;
+//       break;
 
-    default:
-      e.cancel = true;
-  }
-});
+//     default:
+//       e.cancel = true;
+//   }
+// });
 
 // pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
@@ -190,12 +190,12 @@ mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
 });
 
 // gamemode change
-mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {
-  if (!generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative) {
-    const gameMode = generalTs.commonData["gameID"] === "clutcher" ? 9 : mc.GameMode.survival;
-    player.setGameMode(gameMode);
-  }
-});
+// mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {
+//   if (!generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative) {
+//     const gameMode = generalTs.commonData["gameID"] === "clutcher" ? 9 : mc.GameMode.survival;
+//     player.setGameMode(gameMode);
+//   }
+// });
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick

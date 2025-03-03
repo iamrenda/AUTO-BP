@@ -28,9 +28,7 @@ module.exports = {
   externals: {
     "@minecraft/server": "@minecraft/server",
     "@minecraft/server-ui": "@minecraft/server-ui",
-    "@minecraft/server-admin": "@minecraft/server-admin",
     "@minecraft/server-gametest": "@minecraft/server-gametest",
-    "@minecraft/server-net": "@minecraft/server-net",
     "@minecraft/server-common": "@minecraft/server-common",
     "@minecraft/debug-utilities": "@minecraft/debug-utilities",
   },
