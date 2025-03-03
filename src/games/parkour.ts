@@ -57,7 +57,7 @@ export const parkourFormHandler = async function (player: mc.Player) {
   // reset pb
   if (selection === 11) {
     const parkourChapter = parkourTs.tempData["chapter"].substring(7).split("_").join(".");
-    util.resetPB(player, ParkourData, `Parkour ${parkourChapter}`, "Parkour");
+    util.resetPB(player, ParkourData, `Parkour ${parkourChapter}`);
   }
 
   // back to lobby

@@ -9,7 +9,7 @@ export const bedWarsRushFormHandler = async function (player: mc.Player) {
 
   // reset pb
   if (selection === 11) {
-    util.resetPB(player, BedwarsRushData, "Bedwars Rush", "BedwarsRush");
+    util.resetPB(player, BedwarsRushData, "Bedwars Rush");
   }
 
   // back to lobby

@@ -7,10 +7,11 @@ import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
 import * as parkour from "../games/parkour";
-import { generalTs } from "../data/tempStorage";
-import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import GameID from "../models/GameID";
+import { generalTs, bridgerTs } from "../data/tempStorage";
+import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 import { locationData } from "../data/staticData";
+import { statsForm } from "../forms/utility";
 
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
@@ -77,49 +78,51 @@ const bookHandlers = (player: mc.Player) => {
 };
 
 // placing a block
-// const eventMap: { [key in GameID]: (block: any) => void } = {
-//   lobby: lobby.placingBlockEvt,
-//   straightBridger: bridger.placingBlockEvt,
-//   inclinedBridger: bridger.placingBlockEvt,
-//   clutcher: clutcher.placingBlockEvt,
-//   wallRun: wallRun.placingBlockEvt,
-//   bedwarsRush: bedwarsRush.placingBlockEvt,
-//   normalFistReduce: fistReduce.placingBlockEvt,
-//   limitlessFistReduce: fistReduce.placingBlockEvt,
-//   parkour1_1: undefined,
-//   parkour1_2: undefined,
-//   parkour1_3: undefined,
-// };
+const eventMap: { [key in GameID]: (block: any) => void } = {
+  lobby: lobby.placingBlockEvt,
+  straightBridger: bridger.placingBlockEvt,
+  inclinedBridger: bridger.placingBlockEvt,
+  clutcher: clutcher.placingBlockEvt,
+  wallRun: wallRun.placingBlockEvt,
+  bedwarsRush: bedwarsRush.placingBlockEvt,
+  normalFistReduce: fistReduce.placingBlockEvt,
+  limitlessFistReduce: fistReduce.placingBlockEvt,
+  parkour1_1: undefined,
+  parkour1_2: undefined,
+  parkour1_3: undefined,
+};
 
-// mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
-//   const eventHandler = eventMap[generalTs.commonData["gameID"]];
-//   if (eventHandler) eventHandler(block);
-// });
+mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
+  const eventHandler = eventMap[generalTs.commonData["gameID"]];
+  if (eventHandler) {
+    eventHandler(block);
+  }
+});
 
-// const hasCoordinates = function (loc: mc.Vector3) {
-//   return [...bridgerTs.commonData["storedLocations"]].some(
-//     (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
-//   );
-// };
+const hasCoordinates = function (loc: mc.Vector3) {
+  return [...bridgerTs.commonData["storedLocations"]].some(
+    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
+  );
+};
 
 // breaking a block (before event)
-// mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
-//   switch (generalTs.commonData["gameID"]) {
-//     case "straightBridger":
-//     case "inclinedBridger":
-//       if (hasCoordinates(e.block.location)) e.cancel = false;
-//       else e.cancel = true;
-//       break;
+mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
+  switch (generalTs.commonData["gameID"]) {
+    case "straightBridger":
+    case "inclinedBridger":
+      if (hasCoordinates(e.block.location)) e.cancel = false;
+      else e.cancel = true;
+      break;
 
-//     case "bedwarsRush":
-//       if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
-//       e.cancel = true;
-//       break;
+    case "bedwarsRush":
+      if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
+      e.cancel = true;
+      break;
 
-//     default:
-//       e.cancel = true;
-//   }
-// });
+    default:
+      e.cancel = true;
+  }
+});
 
 // pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
@@ -187,6 +190,14 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
   if (generalTs.commonData["gameID"] === "normalFistReduce" || generalTs.commonData["gameID"] === "limitlessFistReduce")
     fistReduce.fistReduceAttackEvt(hurtEntity, damageSource);
+});
+
+// right-click npc
+mc.world.beforeEvents.playerInteractWithEntity.subscribe((e) => {
+  if (e.target.typeId !== "auto:customnpc") return;
+  e.cancel = true;
+
+  mc.system.run(async () => await statsForm(e.player, generalTs.commonData["gameID"]));
 });
 
 // gamemode change

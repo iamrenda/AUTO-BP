@@ -43,4 +43,12 @@ export enum GameDataID {
   straightTellyPractice = "straightTellyPractice",
 }
 
+// BUNDLED DATAS
+export type BundleData = {
+  pbTicks: number;
+  avgTicks: number;
+  attempts: number;
+  successAttempts: number;
+};
+
 export type BundlableGameModeID = "Bridger" | "WallRunner" | "BedwarsRush" | "Parkour";

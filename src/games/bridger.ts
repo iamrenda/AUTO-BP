@@ -218,7 +218,6 @@ const handleDistanceChange = function (blocks: IslandDistance): void {
   util.setBridgerMode(<BridgerTypesID>`${bridgerTs.tempData["bridgerDirection"]}${blocks}blocks`);
 
   util.sendMessage(`§aThe distance is now§r §6${blocks} blocks§r§a!`, "random.orb");
-  util.updateFloatingText(BridgerData.getBundledData("Bridger"));
 };
 
 /////////////////////////////////////////////////////////
@@ -250,7 +249,7 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   // reset pb
   if (bridgerSelection === 14) {
     const distance = GameData.getData("Distance");
-    util.resetPB(player, BridgerData, `${distance} blocks`, "Bridger");
+    util.resetPB(player, BridgerData, `${distance} blocks`);
   }
 
   // quit bridger
@@ -276,7 +275,7 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
     generalTs.stopTimer();
     util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(time)}§r`);
     util.showMessage(false, time, BridgerData.getData(DynamicPropertyID.Bridger_PB));
-    mc.system.runTimeout(util.afterReq.bind(null, BridgerData, enablePlate), 80);
+    mc.system.runTimeout(util.afterReq.bind(null, enablePlate), 80);
     return;
   }
 

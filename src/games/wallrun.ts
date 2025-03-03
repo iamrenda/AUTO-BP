@@ -71,7 +71,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
 
   // reset pb
   if (selection === 13) {
-    util.resetPB(player, WallRunData, "Wall Run", "WallRunner");
+    util.resetPB(player, WallRunData, "Wall Run");
   }
 
   // back to lobby

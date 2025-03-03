@@ -5,6 +5,7 @@ import {
   GameDataID,
   ParkourChapterID,
   BundlableGameModeID,
+  BundleData,
 } from "../models/DynamicProperty";
 import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
 
@@ -115,15 +116,10 @@ export abstract class BaseGameData extends DynamicProperty {
   /**
    * returns an object containing pb, avgTime, attempts, and success attempts
    */
-  public static getBundledData(gameId: BundlableGameModeID): {
-    pb: number;
-    avgTime: number;
-    attempts: number;
-    successAttempts: number;
-  } {
+  public static getBundledData(gameId: BundlableGameModeID): BundleData {
     let bundledData = {
-      pb: -1,
-      avgTime: -1,
+      pbTicks: -1,
+      avgTicks: -1,
       attempts: 0,
       successAttempts: 0,
     };
@@ -133,16 +129,16 @@ export abstract class BaseGameData extends DynamicProperty {
 
       switch (dynamicPropertyID) {
         case `${gameId}_PB`:
-          bundledData.pb = this.getData(<DynamicPropertyID>`${gameId}_PB`);
+          bundledData.pbTicks = this.getData(<DynamicPropertyID>`${gameId}_PB`);
+          break;
+        case `${gameId}_AverageTime`:
+          bundledData.avgTicks = this.getData(<DynamicPropertyID>`${gameId}_AverageTime`);
           break;
         case `${gameId}_Attempts`:
           bundledData.attempts = this.getData(<DynamicPropertyID>`${gameId}_Attempts`);
           break;
         case `${gameId}_SuccessAttempts`:
           bundledData.successAttempts = this.getData(<DynamicPropertyID>`${gameId}_SuccessAttempts`);
-          break;
-        case `${gameId}_AverageTime`:
-          bundledData.avgTime = this.getData(<DynamicPropertyID>`${gameId}_AverageTime`);
           break;
       }
     });
