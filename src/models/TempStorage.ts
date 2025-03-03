@@ -1,7 +1,7 @@
 import * as mc from "@minecraft/server";
 import GameID from "./GameID";
 import minecraftID from "./minecraftID";
-import { BridgerTypesID, ParkourChapterID } from "./DynamicProperty";
+import { IslandDireciton, IslandDistance, TellyMode } from "./Bridger";
 
 export type CommonData = {
   player: mc.Player;
@@ -17,8 +17,9 @@ export type CommonData = {
 
 export type BridgerTempStorage = {
   blockBridger: minecraftID.MinecraftBlockIdIF;
-  bridgerMode: BridgerTypesID;
-  bridgerDirection: "straight" | "inclined";
+  bridgerDirection: IslandDireciton;
+  bridgerDistance: IslandDistance;
+  tellyMode: TellyMode;
   isPlateDisabled: boolean;
 };
 
@@ -57,7 +58,6 @@ export type FistReduceTempStorage = {
 };
 
 export type ParkourTempStorage = {
-  chapter: ParkourChapterID;
   isPlateDisabled: {
     start: boolean;
     end: boolean;

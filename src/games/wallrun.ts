@@ -2,8 +2,6 @@ import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as form from "../forms/wallrun";
 import { wallRunTs } from "../data/tempStorage";
-import { WallRunData } from "../data/dynamicProperty";
-import { locationData } from "../data/staticData";
 
 /**
  * disables the plate if not disabled; returns true or false depending on availiability
@@ -49,7 +47,7 @@ export const pressurePlatePushEvt = function ({ location }: { location: mc.Vecto
       if (isPlateDisabled("goal")) return;
 
       player.setGameMode(mc.GameMode.spectator);
-      util.onRunnerSuccess(wallRunTs, WallRunData, enablePlate);
+      util.onRunnerSuccess("Wall_Run", wallRunTs, enablePlate);
       break;
   }
 };
@@ -71,7 +69,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
 
   // reset pb
   if (selection === 13) {
-    util.resetPB(player, WallRunData, "Wall Run");
+    util.resetPB(player, "Wall_Run");
   }
 
   // back to lobby
@@ -86,25 +84,22 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
 };
 
 export const listener = function () {
-  const player = wallRunTs.commonData["player"];
+  const { player, gameID } = wallRunTs.commonData;
 
-  util.displayScoreboard("wallRun");
+  util.displayScoreboard("Wall_Run");
 
-  if (player.location.z > 30140) return util.teleportation(locationData.wallRun);
+  if (player.location.z > 30140) return util.teleportation(gameID);
 
   if (!(player.location.y < 98) || player.getGameMode() === mc.GameMode.spectator) return;
 
   if (wallRunTs.tempData["isCheckPointSaved"]) {
     // going back to checkpoint
     util.sendMessage("§7Teleporting back to the checkpoint...");
-    util.teleportation({
-      position: { x: 30009.5, y: 106, z: 30077.5 },
-      facing: { x: 30009.5, y: 106, z: 30078 },
-    });
-    util.giveItems("wallRun");
+    player.teleport({ x: 30009.5, y: 106, z: 30077.5 }, { facingLocation: { x: 30009.5, y: 106, z: 30078 } });
+    util.giveItems("Wall_Run");
     wallRunTs.clearBlocks();
   } else {
     enablePlate();
-    util.onRunnerFail(WallRunData);
+    util.onRunnerFail("Wall_Run");
   }
 };

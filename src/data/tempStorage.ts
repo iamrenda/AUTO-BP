@@ -1,11 +1,10 @@
 import * as mc from "@minecraft/server";
 import * as type from "../models/TempStorage";
-import { BridgerTypesID, ParkourChapterID } from "../models/DynamicProperty";
 import { sendMessage } from "../utilities/utilities";
 
 const commonDataInstance: type.CommonData = {
   player: mc.world.getAllPlayers()[0],
-  gameID: "lobby",
+  gameID: "Lobby",
   storedLocations: new Set(),
   storedLocationsGameID: undefined,
   blocks: 0,
@@ -76,8 +75,9 @@ class Bridger extends TempStorage<type.BridgerTempStorage> {
   public setDefaultTempData(): type.BridgerTempStorage {
     return {
       blockBridger: "minecraft:sandstone",
-      bridgerMode: BridgerTypesID.straight16blocks,
-      bridgerDirection: "straight",
+      bridgerDirection: "Straight",
+      bridgerDistance: 16,
+      tellyMode: "None",
       isPlateDisabled: false,
     };
   }
@@ -169,7 +169,6 @@ class Parkour extends TempStorage<type.ParkourTempStorage> {
 
   public setDefaultTempData(): type.ParkourTempStorage {
     return {
-      chapter: ParkourChapterID.chapter1_1,
       isPlateDisabled: {
         start: false,
         end: false,

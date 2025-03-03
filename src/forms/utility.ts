@@ -3,8 +3,8 @@ import { ActionFormData, ActionFormResponse } from "@minecraft/server-ui";
 import { VERSION } from "../data/staticData";
 import * as util from "../utilities/utilities";
 import ChestFormData from "../formExtensions/forms";
-import GameID from "../models/GameID";
-import { getGameInfo } from "../utilities/mapping";
+import { BundlableGameID } from "../models/GameID";
+import { BaseGameData } from "../data/dynamicProperty";
 
 export const confirmationForm = async function (player: Player, title: string): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
@@ -24,9 +24,12 @@ export const clearBlocksForm = async function (player: Player): Promise<ActionFo
   return await form.show(player);
 };
 
-export const statsForm = async function (player: Player, gameID: GameID): Promise<ActionFormResponse> {
-  const { name: gamemodeName, bundlableID, baseData } = getGameInfo(gameID);
-  const { pbTicks, avgTicks, attempts, successAttempts } = baseData.getBundledData(bundlableID);
+export const statsForm = async function <T extends BundlableGameID>(
+  player: Player,
+  bundlableGameID: T
+): Promise<ActionFormResponse> {
+  const subCategory = util.getCurrentSubCategory();
+  const { pbTicks, avgTicks, attempts, successAttempts } = BaseGameData.getBundledData(bundlableGameID, subCategory);
 
   const form = new ActionFormData()
     .title("Stats")
@@ -34,7 +37,7 @@ export const statsForm = async function (player: Player, gameID: GameID): Promis
       `§3§lAUTO World§r §8- Version ${VERSION}§r
 
  §bIgn: §f${player.nameTag}
- §bGamemode: §f${gamemodeName}
+ §bGamemode: §f${util.nameGenerator(bundlableGameID)}
 
    §7- §6Personal Best: §f${util.tickToSec(pbTicks)}
    §7- §6Average Time: §f${util.tickToSec(avgTicks)}

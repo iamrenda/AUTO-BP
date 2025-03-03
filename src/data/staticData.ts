@@ -1,6 +1,6 @@
 import MinecraftID from "../models/minecraftID";
 import ItemInfo from "../models/ItemInfo";
-import GameID from "../models/GameID";
+import GameID, { ParentGameID } from "../models/GameID";
 import { bridgerTs } from "./tempStorage";
 import TeleportationLocation from "../models/TeleportationLocation";
 
@@ -17,73 +17,83 @@ type ClutchStrengthIF = {
 
 ////////////////////
 // EXPORTS
-/**
- * getInvData: get inventory data for giveItems
- */
-export const getInvData = function (game: GameID): ItemInfo[] {
-  if (game === "lobby")
-    return [
-      { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
-      { item: "minecraft:white_wool", quantity: 63, slot: 1 },
-      { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
-      { item: "minecraft:book", quantity: 1, slot: 7, name: "§dCredits" },
-      { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },
-    ];
-  if (game === "straightBridger" || game === "inclinedBridger")
-    return [
-      { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
-      { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
-      { item: "minecraft:diamond_pickaxe", quantity: 1, name: "§3Miner's Pickaxe" },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ];
-  if (game === "clutcher")
-    return [
-      { item: "minecraft:sandstone", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ];
-  if (game === "wallRun")
-    return [
-      { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ];
-  if (game === "bedwarsRush")
-    return [
-      { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ];
-  if (game === "normalFistReduce" || game === "limitlessFistReduce")
-    return [
-      { item: "minecraft:sandstone", quantity: 64 },
-      { item: "minecraft:sandstone", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
-    ];
-  if (game === "parkour1_1" || game === "parkour1_2" || game === "parkour1_3")
-    return [{ item: "minecraft:book", quantity: 1, slot: 8 }];
+export const InventoryData: Record<ParentGameID, ItemInfo[]> = {
+  Lobby: [
+    { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
+    { item: "minecraft:white_wool", quantity: 63, slot: 1 },
+    { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
+    { item: "minecraft:book", quantity: 1, slot: 7, name: "§dCredits" },
+    { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },
+  ],
+  Bridger: [
+    { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
+    { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
+    { item: "minecraft:diamond_pickaxe", quantity: 1, name: "§3Miner's Pickaxe" },
+    { item: "minecraft:book", quantity: 1, slot: 8 },
+  ],
+  Clutcher: [
+    { item: "minecraft:sandstone", quantity: 64 },
+    { item: "minecraft:book", quantity: 1, slot: 8 },
+  ],
+  Wall_Run: [
+    { item: "minecraft:white_wool", quantity: 64 },
+    { item: "minecraft:book", quantity: 1, slot: 8 },
+  ],
+  Bedwars_Rush: [
+    { item: "minecraft:white_wool", quantity: 64 },
+    { item: "minecraft:white_wool", quantity: 64 },
+    { item: "minecraft:book", quantity: 1, slot: 8 },
+  ],
+  Fist_Reduce: [
+    { item: "minecraft:sandstone", quantity: 64 },
+    { item: "minecraft:sandstone", quantity: 64 },
+    { item: "minecraft:book", quantity: 1, slot: 8 },
+  ],
+  Parkour: [{ item: "minecraft:book", quantity: 1, slot: 8 }],
 };
 
 export const locationData: Record<GameID, TeleportationLocation> = {
-  lobby: {
+  Lobby: {
     position: { x: 91.5, y: 262.0, z: 63.5 },
     facing: { x: 91.5, y: 262.0, z: 64 },
   },
-  straightBridger: {
+
+  Bridger$Straight_16_blocks: {
     position: { x: 10002.5, y: 102, z: 10000.5 },
     facing: { x: 10002.5, y: 102, z: 10001 },
   },
-  inclinedBridger: {
+  Bridger$Straight_21_blocks: {
+    position: { x: 10002.5, y: 102, z: 10000.5 },
+    facing: { x: 10002.5, y: 102, z: 10001 },
+  },
+  Bridger$Straight_50_blocks: {
+    position: { x: 10002.5, y: 102, z: 10000.5 },
+    facing: { x: 10002.5, y: 102, z: 10001 },
+  },
+  Bridger$Inclined_16_blocks: {
     position: { x: 9965.5, y: 102, z: 10001.5 },
     facing: { x: 9965, y: 102, z: 10002 },
   },
-  clutcher: {
+  Bridger$Inclined_21_blocks: {
+    position: { x: 9965.5, y: 102, z: 10001.5 },
+    facing: { x: 9965, y: 102, z: 10002 },
+  },
+  Bridger$Inclined_50_blocks: {
+    position: { x: 9965.5, y: 102, z: 10001.5 },
+    facing: { x: 9965, y: 102, z: 10002 },
+  },
+
+  Clutcher: {
     position: { x: 19999.5, y: 104, z: 20002.5 },
     facing: { x: 19999.5, y: 104, z: 20003 },
   },
-  wallRun: {
+
+  Wall_Run$Ancient: {
     position: { x: 30009.5, y: 105, z: 30013.5 },
     facing: { x: 30009.5, y: 105, z: 30014 },
   },
-  bedwarsRush: {
+
+  Bedwars_Rush$Custom_Map: {
     position: {
       x: 40097.5,
       y: 102,
@@ -95,7 +105,7 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       z: 40029.5,
     },
   },
-  normalFistReduce: {
+  Fist_Reduce$Normal: {
     position: {
       x: 50008.5,
       y: 102,
@@ -107,7 +117,7 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       z: 50015,
     },
   },
-  limitlessFistReduce: {
+  Fist_Reduce$LIMITLESS: {
     position: {
       x: 50008.5,
       y: 320,
@@ -119,7 +129,7 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       z: 50015,
     },
   },
-  parkour1_1: {
+  "Parkour$Chapter_1.1": {
     position: {
       x: 60053.5,
       y: 86,
@@ -131,7 +141,7 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       z: 60084,
     },
   },
-  parkour1_2: {
+  "Parkour$Chapter_1.2": {
     position: {
       x: 60040.5,
       y: 102,
@@ -143,7 +153,7 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       z: 60059,
     },
   },
-  parkour1_3: {
+  "Parkour$Chapter_1.3": {
     position: {
       x: 60077.5,
       y: 80,
@@ -161,7 +171,7 @@ export const locationData: Record<GameID, TeleportationLocation> = {
  * blockName: block's name to display
  * texture: block's texture's name
  */
-export const formBlocks: DisplayBlockIF[] = [
+export const bridgerBlocks: DisplayBlockIF[] = [
   { blockName: "Sandstone", texture: "minecraft:sandstone" },
   { blockName: "Oak Planks", texture: "minecraft:oak_planks" },
   { blockName: "Bamboo Planks", texture: "minecraft:bamboo_planks" },

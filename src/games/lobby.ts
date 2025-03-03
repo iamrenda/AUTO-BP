@@ -1,21 +1,17 @@
 import * as form from "../forms/lobby";
 import * as util from "../utilities/utilities";
-import * as data from "../data/staticData";
-import TeleportationLocation from "../models/TeleportationLocation";
-import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
 import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
-import { BridgerTypesID, ParkourChapterID } from "../models/DynamicProperty";
-import { GameData } from "../data/dynamicProperty";
+import { generalTs, bridgerTs } from "../data/tempStorage";
 
 /**
  * handling navigation for lobby
  */
-const handleNavigation = (player: mc.Player, gameId: GameID, locationData: TeleportationLocation) => {
+const handleNavigation = (player: mc.Player, gameID: GameID) => {
   generalTs.clearBlocks();
-  generalTs.commonData["gameID"] = gameId;
-  util.giveItems(gameId);
-  util.teleportation(locationData);
+  generalTs.commonData["gameID"] = gameID;
+  util.giveItems(util.getCurrentParentCategory());
+  util.teleportation(gameID);
   util.warnUnclearedBlocks(player);
 };
 
@@ -28,18 +24,13 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
 
     if (canceled) return;
 
+    bridgerTs.tempData["bridgerDistance"] = 16;
     if (bridgerDirSelection === 11) {
-      const distance = GameData.getData("Distance", "straight");
-
-      bridgerTs.tempData["bridgerDirection"] = "straight";
-      bridgerTs.tempData["bridgerMode"] = <BridgerTypesID>`straight${distance}blocks`;
-      handleNavigation(player, "straightBridger", data.locationData.straightBridger);
+      bridgerTs.tempData["bridgerDirection"] = "Straight";
+      handleNavigation(player, "Bridger$Straight_16_blocks");
     } else if (bridgerDirSelection === 15) {
-      const distance = GameData.getData("Distance", "inclined");
-
-      bridgerTs.tempData["bridgerDirection"] = "inclined";
-      bridgerTs.tempData["bridgerMode"] = <BridgerTypesID>`inclined${distance}blocks`;
-      handleNavigation(player, "inclinedBridger", data.locationData.inclinedBridger);
+      bridgerTs.tempData["bridgerDirection"] = "Inclined";
+      handleNavigation(player, "Bridger$Inclined_16_blocks");
     }
   }
 
@@ -49,27 +40,26 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     player.setGameMode(mc.GameMode.creative);
     player.setGameMode(9);
     generalTs.commonData["byPass"] = false;
-    handleNavigation(player, "clutcher", data.locationData.clutcher);
+    handleNavigation(player, "Clutcher");
     util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "note.bell");
   }
 
   // wall run
-  if (selection === 15) handleNavigation(player, "wallRun", data.locationData.wallRun);
+  if (selection === 15) handleNavigation(player, "Wall_Run$Ancient");
 
   // bedwars rush
-  if (selection === 21) handleNavigation(player, "bedwarsRush", data.locationData.bedwarsRush);
+  if (selection === 21) handleNavigation(player, "Bedwars_Rush$Custom_Map");
 
   // fist reduce
   if (selection === 23) {
     const { selection: bridgerDirSelection, canceled } = await form.fistReduceModeForm(player);
     if (canceled) return;
 
+    util.displayScoreboard("Fist_Reduce");
     if (bridgerDirSelection === 11) {
-      handleNavigation(player, "normalFistReduce", data.locationData.normalFistReduce);
-      util.displayScoreboard("normalFistReduce");
+      handleNavigation(player, "Fist_Reduce$Normal");
     } else if (bridgerDirSelection === 15) {
-      handleNavigation(player, "limitlessFistReduce", data.locationData.limitlessFistReduce);
-      util.displayScoreboard("limitlessFistReduce");
+      handleNavigation(player, "Fist_Reduce$LIMITLESS");
     }
   }
 
@@ -79,14 +69,11 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     if (canceled) return;
 
     if (bridgerDirSelection === 11) {
-      parkourTs.tempData["chapter"] = ParkourChapterID.chapter1_1;
-      handleNavigation(player, "parkour1_1", data.locationData["parkour1_1"]);
+      handleNavigation(player, "Parkour$Chapter_1.1");
     } else if (bridgerDirSelection === 13) {
-      parkourTs.tempData["chapter"] = ParkourChapterID.chapter1_2;
-      handleNavigation(player, "parkour1_2", data.locationData["parkour1_2"]);
+      handleNavigation(player, "Parkour$Chapter_1.2");
     } else if (bridgerDirSelection === 15) {
-      parkourTs.tempData["chapter"] = ParkourChapterID.chapter1_3;
-      handleNavigation(player, "parkour1_3", data.locationData["parkour1_3"]);
+      handleNavigation(player, "Parkour$Chapter_1.3");
     }
   }
 };

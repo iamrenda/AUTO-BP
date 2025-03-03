@@ -1,29 +1,19 @@
 import * as mc from "@minecraft/server";
-import { BridgerTypesID, BundlableGameModeID, DynamicPropertyID } from "../models/DynamicProperty";
-import { getInvData, locationData } from "../data/staticData";
-import TeleportationLocation from "../models/TeleportationLocation";
-import GameID from "../models/GameID";
-import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
+import { InventoryData, locationData } from "../data/staticData";
+import GameID, { BundlableGameID, ParentGameID, SubCategory } from "../models/GameID";
+import { generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "./scoreboard";
 import * as goalMessage from "./goalMessage";
 import { clearBlocksForm, confirmationForm } from "../forms/utility";
-import {
-  BaseGameData,
-  BedwarsRushData,
-  BridgerData,
-  DynamicProperty,
-  ParkourData,
-  StoredBlocksClass,
-  WallRunData,
-} from "../data/dynamicProperty";
+import { BaseGameData, DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  */
-export const giveItems = function (gameid: GameID): void {
+export const giveItems = function (parentGameID: ParentGameID): void {
   const player = generalTs.commonData["player"];
   const container = player.getComponent("inventory").container;
-  const itemArr = getInvData(gameid);
+  const itemArr = InventoryData[parentGameID];
 
   container.clearAll();
 
@@ -38,9 +28,10 @@ export const giveItems = function (gameid: GameID): void {
 /**
  * attempts to teleport player
  */
-export const teleportation = function (loc: TeleportationLocation): void {
+export const teleportation = function (gameID: GameID): void {
   const attemptTeleport = () => {
-    const teleport = generalTs.commonData["player"].tryTeleport(loc.position, { facingLocation: loc.facing });
+    const location = locationData[gameID];
+    const teleport = generalTs.commonData["player"].tryTeleport(location.position, { facingLocation: location.facing });
 
     if (!teleport) {
       sendMessage("§cFailed to teleport. Trying again.", "random.anvil_land");
@@ -70,13 +61,6 @@ export const today = `${String(date.getMonth() + 1).padStart(2, "0")}/${String(d
 )}/${String(date.getFullYear()).slice(-2)}`;
 
 /**
- * sets bridger mode
- */
-export const setBridgerMode = function (game: BridgerTypesID): void {
-  bridgerTs.tempData["bridgerMode"] = game;
-};
-
-/**
  * get the distance (rounded) between 2 location vector3 (ignoring y vector)
  */
 export const calculateDistance = function (location1: mc.Vector3, location2: mc.Vector3): number {
@@ -96,22 +80,17 @@ export const tickToSec = function (ticks: number): string {
 /**
  * display lobby scoreboard
  */
-export const displayScoreboard = function (gameId: GameID): void {
-  const scoreboards = {
-    lobby: scoreboard.lobbyScoreboard,
-    straightBridger: scoreboard.bridgerScoreboard,
-    inclinedBridger: scoreboard.bridgerScoreboard,
-    clutcher: scoreboard.clutcherScoreboard,
-    wallRun: scoreboard.wallRunScoreboard,
-    bedwarsRush: scoreboard.bedwarsRushScoreboard,
-    normalFistReduce: scoreboard.fistReduceScoreboard,
-    limitlessFistReduce: scoreboard.fistReduceScoreboard,
-    parkour1_1: scoreboard.parkourScoreboard,
-    parkour1_2: scoreboard.parkourScoreboard,
-    parkour1_3: scoreboard.parkourScoreboard,
-  };
-
-  const display = scoreboards[gameId];
+const scoreboards: Record<ParentGameID, () => string> = {
+  Lobby: scoreboard.lobbyScoreboard,
+  Bridger: scoreboard.bridgerScoreboard,
+  Clutcher: scoreboard.clutcherScoreboard,
+  Wall_Run: scoreboard.wallRunScoreboard,
+  Bedwars_Rush: scoreboard.bedwarsRushScoreboard,
+  Fist_Reduce: scoreboard.fistReduceScoreboard,
+  Parkour: scoreboard.parkourScoreboard,
+};
+export const displayScoreboard = function (parentGameID: ParentGameID): void {
+  const display = scoreboards[parentGameID];
   generalTs.commonData["player"].onScreenDisplay.setActionBar(display());
 };
 
@@ -120,58 +99,15 @@ export const displayScoreboard = function (gameId: GameID): void {
  */
 export const backToLobbyKit = function (player: mc.Player, tempDataClass: TempStorage) {
   generalTs.stopTimer();
-  generalTs.commonData["gameID"] = "lobby";
+  generalTs.commonData["gameID"] = "Lobby";
   generalTs.commonData["ticks"] = 0;
   tempDataClass.tempData = tempDataClass.setDefaultTempData();
   tempDataClass.clearBlocks();
   player.setGameMode(mc.GameMode.survival);
   DynamicProperty.postData();
-  giveItems("lobby");
-  displayScoreboard("lobby");
-  teleportation(locationData.lobby);
-};
-
-/**
- * floating entity grabber
- */
-export const getFloatingEntity = function (): mc.Entity {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 9997.91, y: 101.59, z: 10004.76 },
-        excludeFamilies: ["player"],
-      })[0];
-    case "inclinedBridger":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 9963.6, y: 100.0, z: 10000.8 },
-        excludeFamilies: ["player"],
-      })[0];
-    case "wallRun":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 30007.61, y: 106.12, z: 30015.16 },
-        excludeFamilies: ["player"],
-      })[0];
-    case "bedwarsRush":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 40093.53, y: 102.19, z: 40032.97 },
-        excludeFamilies: ["player"],
-      })[0];
-    case "parkour1_1":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 60049.04, y: 85.0, z: 60084.73 },
-        excludeFamilies: ["player"],
-      })[0];
-    case "parkour1_2":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 60041.96, y: 101.0, z: 60061.3 },
-        excludeFamilies: ["player"],
-      })[0];
-    case "parkour1_3":
-      return mc.world.getDimension("overworld").getEntities({
-        location: { x: 60072.82, y: 79.0, z: 60058.43 },
-        excludeFamilies: ["player"],
-      })[0];
-  }
+  giveItems("Lobby");
+  displayScoreboard("Lobby");
+  teleportation("Lobby");
 };
 
 /**
@@ -193,25 +129,20 @@ export const differenceMs = function (ms1: number, ms2: number): string {
 /**
  * shows the result of a run
  */
-export const showMessage = function (isPB: boolean, time: number, prevPB: number): void {
-  const { gameID, player } = generalTs.commonData;
+export const showMessage = function (
+  bundlableGameID: BundlableGameID,
+  isPB: boolean,
+  time: number,
+  prevPB: number
+): void {
+  const messages: Record<BundlableGameID, string> = {
+    Bridger: goalMessage.bridgerMessage(isPB, time, prevPB),
+    Wall_Run: goalMessage.wallRunMessage(isPB, time, prevPB),
+    Bedwars_Rush: goalMessage.bedwarsRushMessage(isPB, time, prevPB),
+    Parkour: goalMessage.parkourMessage(isPB, time, prevPB),
+  };
 
-  switch (gameID) {
-    case "straightBridger":
-    case "inclinedBridger":
-      player.sendMessage(goalMessage.bridgerMessage(isPB, time, prevPB));
-      break;
-
-    case "wallRun":
-      player.sendMessage(goalMessage.wallRunMessage(isPB, time, prevPB));
-      break;
-
-    case "parkour1_1":
-    case "parkour1_2":
-    case "parkour1_3":
-      player.sendMessage(goalMessage.parkourMessage(isPB, time, prevPB));
-      break;
-  }
+  sendMessage(messages[bundlableGameID]);
 };
 
 /**
@@ -255,24 +186,16 @@ export const showTitleBar = function (
   if (subtitle) player.onScreenDisplay.updateSubtitle(subtitle);
 };
 
-// when accessing DynamicPropertyID
-const bundlableGameModeIDs = new Map<BaseGameData, BundlableGameModeID>([
-  [BridgerData, "Bridger"],
-  [BedwarsRushData, "BedwarsRush"],
-  [WallRunData, "WallRunner"],
-  [ParkourData, "Parkour"],
-]);
-
 // after req timeout finished
-export const afterReq = function (plateEnable: () => void) {
+export const afterReq = function (parentGameID: ParentGameID, plateEnable: () => void) {
   const { player, gameID } = generalTs.commonData;
 
   generalTs.clearBlocks();
   player.setGameMode(mc.GameMode.survival);
   generalTs.commonData["blocks"] = 0;
   plateEnable();
-  giveItems(gameID);
-  teleportation(<TeleportationLocation>locationData[gameID]);
+  giveItems(parentGameID);
+  teleportation(gameID);
 };
 
 /**
@@ -280,74 +203,75 @@ export const afterReq = function (plateEnable: () => void) {
  * @param {function} plateEnable: a fn to enable plate
  */
 export const onRunnerSuccess = function (
+  bundlableGameID: BundlableGameID,
   ts: TempStorage,
-  dataBase: typeof BaseGameData,
   plateEnable: () => void
 ): void {
-  const gameModeString = bundlableGameModeIDs.get(dataBase);
-
+  const { ticks, player } = ts.commonData;
+  const subCategory = getCurrentSubCategory();
   const {
     pbTicks: prevPB,
     avgTicks: prevAvgTime,
     successAttempts: prevSuccessAttempts,
-  } = dataBase.getBundledData(gameModeString);
-
-  const player = generalTs.commonData["player"];
-  const time = generalTs.commonData["ticks"];
+  } = BaseGameData.getBundledData(bundlableGameID, subCategory);
 
   // stop timer
   ts.stopTimer();
 
   // add attempts and success attempts
-  dataBase.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
-  dataBase.addData(<DynamicPropertyID>`${gameModeString}_SuccessAttempts`);
+  BaseGameData.addData(bundlableGameID, subCategory, "attempts");
+  BaseGameData.addData(bundlableGameID, subCategory, "successAttempts");
 
   // set pb
-  if (isPB(prevPB, time)) {
-    showMessage(true, time, prevPB);
-    dataBase.setData(<DynamicPropertyID>`${gameModeString}_PB`, time);
-    showTitleBar(player, `§6Time§7: §f${tickToSec(time)}§r`, { subtitle: "§dNEW RECORD!!!" });
+  if (isPB(prevPB, ticks)) {
+    showMessage(bundlableGameID, true, ticks, prevPB);
+    BaseGameData.setData(bundlableGameID, subCategory, "pbTicks", ticks);
+    showTitleBar(player, `§6Time§7: §f${tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
     player.playSound("random.levelup");
   } else {
-    showTitleBar(player, `§6Time§7: §f${tickToSec(time)}§r`);
-    showMessage(false, time, prevPB);
+    showTitleBar(player, `§6Time§7: §f${tickToSec(ticks)}§r`);
+    showMessage(bundlableGameID, false, ticks, prevPB);
   }
 
   // set avg time
-  const newAvgTime = prevAvgTime === -1 ? time : (prevAvgTime * prevSuccessAttempts + time) / (prevSuccessAttempts + 1);
-  dataBase.setData(<DynamicPropertyID>`${gameModeString}_AverageTime`, Math.round(newAvgTime * 100) / 100);
+  const newAvgTime =
+    prevAvgTime === -1 ? ticks : (prevAvgTime * prevSuccessAttempts + ticks) / (prevSuccessAttempts + 1);
+  BaseGameData.setData(bundlableGameID, subCategory, "avgTicks", Math.round(newAvgTime * 100) / 100);
 
   // shoot fireworks
   shootFireworks(player.location);
 
   // auto req
-  ts.tempData["autoReq"] = mc.system.runTimeout(afterReq.bind(null, plateEnable), 80);
+  ts.tempData["autoReq"] = mc.system.runTimeout(afterReq.bind(null, bundlableGameID, plateEnable), 80);
 };
 
 /**
  * when the player gets a fail run
  */
-export const onRunnerFail = function (dataBase: typeof BaseGameData, addAttempt = true) {
-  const gameModeString = bundlableGameModeIDs.get(dataBase);
+export const onRunnerFail = function <T extends BundlableGameID>(bundlableGameID: T, addAttempt = true) {
   const gameID = generalTs.commonData["gameID"];
+  const subCategory = getCurrentSubCategory();
+
+  if (addAttempt) {
+    BaseGameData.addData(bundlableGameID, subCategory, "attempts");
+  }
 
   generalTs.stopTimer();
   generalTs.clearBlocks();
   generalTs.commonData["blocks"] = 0;
-  if (addAttempt) dataBase.addData(<DynamicPropertyID>`${gameModeString}_Attempts`);
-  giveItems(gameID);
-  teleportation(<TeleportationLocation>locationData[gameID]);
+  giveItems(bundlableGameID);
+  teleportation(gameID);
 };
 
 /**
  * reset pb
  */
-export const resetPB = async function (player: mc.Player, dataBase: typeof BaseGameData, formTitle: string) {
-  const { selection: confirmationSelection } = await confirmationForm(player, formTitle);
+export const resetPB = async function <T extends BundlableGameID>(player: mc.Player, bundlableGameID: T) {
+  const { selection: confirmationSelection } = await confirmationForm(player, nameGenerator(bundlableGameID));
+  const subCategory = getCurrentSubCategory();
   if (confirmationSelection !== 15) return;
 
-  const gameModeString = bundlableGameModeIDs.get(dataBase);
-  dataBase.setData(<DynamicPropertyID>`${gameModeString}_PB`, -1);
+  BaseGameData.setData(bundlableGameID, subCategory, "pbTicks", -1);
   sendMessage("§aSuccess! Your personal best score has been reset!", "random.orb");
 };
 
@@ -358,4 +282,29 @@ export const warnUnclearedBlocks = function (player: mc.Player): void {
   if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
   sendMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
   showTitleBar(player, "§cUncleared blocks Detected");
+};
+
+/**
+ * gets the parent category based on the gameID (If there's a `$`, return everything after it. If there's no `$`, return the original string.)
+ */
+export const getCurrentSubCategory = function (): SubCategory<BundlableGameID> {
+  const { gameID } = generalTs.commonData;
+  const split = gameID.split("$");
+  return <SubCategory<BundlableGameID>>split[1] ?? undefined;
+};
+
+/**
+ * gets the parent category based on the gameID (If there's a `$`, return everything after it. If there's no `$`, return the original string.)
+ */
+export const getCurrentParentCategory = function (): ParentGameID {
+  const { gameID } = generalTs.commonData;
+  const split = gameID.split("$");
+  return <ParentGameID>split[0] ?? undefined;
+};
+
+/**
+ * _ to " "
+ */
+export const nameGenerator = function (input: string): string {
+  return input.replace(/_/g, " ");
 };

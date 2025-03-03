@@ -2,7 +2,6 @@ import * as mc from "@minecraft/server";
 import { fistReduceForm } from "../forms/fistReduce";
 import * as util from "../utilities/utilities";
 import { fistReduceTs } from "../data/tempStorage";
-import { locationData } from "../data/staticData";
 
 /**
  * applying knockback to player from knockback
@@ -50,7 +49,7 @@ export const fistReduceFormHandler = async function (player: mc.Player) {
       // about to start
       case "Starting":
         ReducerBot.defineBot();
-        fistReduceTs.commonData["gameID"] === "normalFistReduce" ? teleportBot("normal") : teleportBot("limitless");
+        fistReduceTs.commonData["gameID"] === "Fist_Reduce$Normal" ? teleportBot("normal") : teleportBot("limitless");
         ReducerBot.bot.triggerEvent("auto:reduce");
         fistReduceTs.tempData["gameModeStatus"] = "Running";
         break;
@@ -154,18 +153,18 @@ const resetMap = function (whoDied: "player" | "bot") {
   const gameID = fistReduceTs.commonData["gameID"];
 
   if (whoDied === "player") {
-    util.giveItems("normalFistReduce");
+    util.giveItems("Fist_Reduce");
     util.sendMessage("", "random.pop");
     fistReduceTs.tempData["hitCount"] = 0;
 
-    if (gameID === "normalFistReduce") {
-      util.teleportation(locationData.normalFistReduce);
+    if (gameID === "Fist_Reduce$Normal") {
+      util.teleportation("Fist_Reduce$Normal");
       teleportBot("normal");
     } else {
-      util.teleportation(locationData.limitlessFistReduce);
+      util.teleportation("Fist_Reduce$LIMITLESS");
       teleportBot("limitless");
     }
-  } else gameID === "normalFistReduce" ? teleportBot("normal") : teleportBot("limitless");
+  } else gameID === "Fist_Reduce$Normal" ? teleportBot("normal") : teleportBot("limitless");
 };
 
 export const slowListener = function (mode: "normal" | "limitless") {

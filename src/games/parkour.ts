@@ -2,29 +2,30 @@ import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import { parkourForm } from "../forms/parkour";
 import { parkourTs } from "../data/tempStorage";
-import { ParkourData } from "../data/dynamicProperty";
-import { ParkourChapterID } from "../models/DynamicProperty";
 import minecraftID from "../models/minecraftID";
+import GameID from "../models/GameID";
 
-type ExcludedBlocks = Record<ParkourChapterID, Set<minecraftID.MinecraftBlockIdIF>>;
+type ParkourGameID = Extract<GameID, "Parkour$Chapter_1.1" | "Parkour$Chapter_1.2" | "Parkour$Chapter_1.3">;
+
+type ExcludedBlocks = Record<ParkourGameID, Set<minecraftID.MinecraftBlockIdIF>>;
 
 const dimension = mc.world.getDimension("overworld");
 
 const excludedBlocks: ExcludedBlocks = {
-  [ParkourChapterID.chapter1_1]: new Set([
+  "Parkour$Chapter_1.1": new Set([
     "minecraft:air",
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
     "minecraft:verdant_froglight",
     "minecraft:slime",
   ]),
-  [ParkourChapterID.chapter1_2]: new Set([
+  "Parkour$Chapter_1.2": new Set([
     "minecraft:air",
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
     "minecraft:ochre_froglight",
   ]),
-  [ParkourChapterID.chapter1_3]: new Set([
+  "Parkour$Chapter_1.3": new Set([
     "minecraft:air",
     "minecraft:polished_blackstone_pressure_plate",
     "minecraft:light_weighted_pressure_plate",
@@ -56,8 +57,7 @@ export const parkourFormHandler = async function (player: mc.Player) {
 
   // reset pb
   if (selection === 11) {
-    const parkourChapter = parkourTs.tempData["chapter"].substring(7).split("_").join(".");
-    util.resetPB(player, ParkourData, `Parkour ${parkourChapter}`);
+    util.resetPB(player, "Parkour");
   }
 
   // back to lobby
@@ -80,24 +80,24 @@ export const pressurePlatePushEvt = function (block: mc.Block) {
     // end
     case "minecraft:light_weighted_pressure_plate":
       if (isPlateDisabled("end") || !parkourTs.tempData["isPlateDisabled"]["start"]) return;
-      util.onRunnerSuccess(parkourTs, ParkourData, enablePlate);
+      util.onRunnerSuccess("Parkour", parkourTs, enablePlate);
       break;
   }
 };
 
 export const listener = function () {
-  util.displayScoreboard(parkourTs.commonData["gameID"]);
+  util.displayScoreboard("Parkour");
 
   const playerLocation = parkourTs.commonData["player"].location;
   const blockUnder = dimension.getBlock({ x: playerLocation.x, y: playerLocation.y - 1, z: playerLocation.z });
-  const parkourID = parkourTs.tempData["chapter"];
+  const parkourID = <ParkourGameID>parkourTs.commonData["gameID"];
 
   if (
     !excludedBlocks[parkourID].has(<minecraftID.MinecraftBlockIdIF>blockUnder.typeId) &&
     !parkourTs.tempData["autoReq"] &&
     blockUnder.isSolid
   ) {
-    util.onRunnerFail(ParkourData);
+    util.onRunnerFail("Parkour");
     enablePlate();
   }
 };

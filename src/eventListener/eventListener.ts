@@ -7,10 +7,9 @@ import * as wallRun from "../games/wallrun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
 import * as parkour from "../games/parkour";
-import GameID from "../models/GameID";
+import GameID, { BundlableGameID, ParentGameID } from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
 import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
-import { locationData } from "../data/staticData";
 import { statsForm } from "../forms/utility";
 
 const eatGhead = (player: mc.Player): void => {
@@ -33,6 +32,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
   // ghead
   if (item.typeId === "auto:ghead") return eatGhead(player);
 
+  const parentGameID = util.getCurrentParentCategory();
   switch (item.typeId) {
     case "minecraft:stick":
       lobby.launchingStickHandler(player);
@@ -43,57 +43,51 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
       break;
 
     case "minecraft:book":
-      bookHandlers(player);
+      bookHandlers(player, parentGameID);
       break;
 
     case "minecraft:flint":
-      util.teleportation(locationData.lobby);
+      util.teleportation("Lobby");
       mc.system.run(() => util.sendMessage("", "mob.endermen.portal"));
       break;
   }
 });
 
 // book right-click handler
-const bookHandlers = (player: mc.Player) => {
+const bookHandlers = (player: mc.Player, parentGameID: ParentGameID) => {
   const gameID = generalTs.commonData["gameID"];
   const storedGameID = generalTs.commonData["storedLocationsGameID"];
 
-  if (storedGameID === gameID) util.clearBlocks(player);
-  else {
-    const formHandlers: { [key in GameID]: (player: mc.Player) => void } = {
-      lobby: lobby.creditFormHandler,
-      straightBridger: bridger.bridgerFormHandler,
-      inclinedBridger: bridger.bridgerFormHandler,
-      clutcher: clutcher.clutcherFormHandler,
-      wallRun: wallRun.wallRunFormHandler,
-      bedwarsRush: bedwarsRush.bedWarsRushFormHandler,
-      normalFistReduce: fistReduce.fistReduceFormHandler,
-      limitlessFistReduce: fistReduce.fistReduceFormHandler,
-      parkour1_1: parkour.parkourFormHandler,
-      parkour1_2: parkour.parkourFormHandler,
-      parkour1_3: parkour.parkourFormHandler,
+  if (storedGameID === gameID) {
+    util.clearBlocks(player);
+  } else {
+    const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
+      Lobby: lobby.creditFormHandler,
+      Bridger: bridger.bridgerFormHandler,
+      Clutcher: clutcher.clutcherFormHandler,
+      Wall_Run: wallRun.wallRunFormHandler,
+      Bedwars_Rush: bedwarsRush.bedWarsRushFormHandler,
+      Fist_Reduce: fistReduce.fistReduceFormHandler,
+      Parkour: parkour.parkourFormHandler,
     };
-    formHandlers[gameID](player);
+    formHandlers[parentGameID](player);
   }
 };
 
 // placing a block
-const eventMap: { [key in GameID]: (block: any) => void } = {
-  lobby: lobby.placingBlockEvt,
-  straightBridger: bridger.placingBlockEvt,
-  inclinedBridger: bridger.placingBlockEvt,
-  clutcher: clutcher.placingBlockEvt,
-  wallRun: wallRun.placingBlockEvt,
-  bedwarsRush: bedwarsRush.placingBlockEvt,
-  normalFistReduce: fistReduce.placingBlockEvt,
-  limitlessFistReduce: fistReduce.placingBlockEvt,
-  parkour1_1: undefined,
-  parkour1_2: undefined,
-  parkour1_3: undefined,
+const eventMap: Record<ParentGameID, (block: mc.Block) => void> = {
+  Lobby: lobby.placingBlockEvt,
+  Bridger: bridger.placingBlockEvt,
+  Clutcher: clutcher.placingBlockEvt,
+  Wall_Run: wallRun.placingBlockEvt,
+  Bedwars_Rush: bedwarsRush.placingBlockEvt,
+  Fist_Reduce: fistReduce.placingBlockEvt,
+  Parkour: undefined,
 };
 
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
-  const eventHandler = eventMap[generalTs.commonData["gameID"]];
+  const parentGameID = util.getCurrentParentCategory();
+  const eventHandler = eventMap[parentGameID];
   if (eventHandler) {
     eventHandler(block);
   }
@@ -107,14 +101,15 @@ const hasCoordinates = function (loc: mc.Vector3) {
 
 // breaking a block (before event)
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-    case "inclinedBridger":
+  const parentGameID = util.getCurrentParentCategory();
+
+  switch (parentGameID) {
+    case "Bridger":
       if (hasCoordinates(e.block.location)) e.cancel = false;
       else e.cancel = true;
       break;
 
-    case "bedwarsRush":
+    case "Bedwars_Rush":
       if (e.block.typeId === "minecraft:bed") bedwarsRush.breakingBlockEvt(e.player);
       e.cancel = true;
       break;
@@ -126,17 +121,16 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
 
 // pushed a pressureplate
 mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
-  switch (generalTs.commonData["gameID"]) {
-    case "straightBridger":
-    case "inclinedBridger":
+  const parentGameID = util.getCurrentParentCategory();
+
+  switch (parentGameID) {
+    case "Bridger":
       bridger.pressurePlatePushEvt(<mc.Player>player);
       break;
-    case "wallRun":
+    case "Wall_Run":
       wallRun.pressurePlatePushEvt(block);
       break;
-    case "parkour1_1":
-    case "parkour1_2":
-    case "parkour1_3":
+    case "Parkour":
       parkour.pressurePlatePushEvt(block);
       break;
   }
@@ -173,7 +167,7 @@ mc.world.beforeEvents.playerLeave.subscribe(() => {
 mc.world.beforeEvents.chatSend.subscribe((event) => {
   const { message, sender: player } = event;
 
-  if (message.includes("AUTO!") && generalTs.commonData["gameID"] === "lobby") {
+  if (message.includes("AUTO!") && generalTs.commonData["gameID"] === "Lobby") {
     event.cancel = true;
 
     mc.system.run(() => {
@@ -188,7 +182,10 @@ mc.world.beforeEvents.chatSend.subscribe((event) => {
 
 // entity attack
 mc.world.afterEvents.entityHurt.subscribe(({ hurtEntity, damageSource }) => {
-  if (generalTs.commonData["gameID"] === "normalFistReduce" || generalTs.commonData["gameID"] === "limitlessFistReduce")
+  if (
+    generalTs.commonData["gameID"] === "Fist_Reduce$Normal" ||
+    generalTs.commonData["gameID"] === "Fist_Reduce$LIMITLESS"
+  )
     fistReduce.fistReduceAttackEvt(hurtEntity, damageSource);
 });
 
@@ -197,7 +194,8 @@ mc.world.beforeEvents.playerInteractWithEntity.subscribe((e) => {
   if (e.target.typeId !== "auto:customnpc") return;
   e.cancel = true;
 
-  mc.system.run(async () => await statsForm(e.player, generalTs.commonData["gameID"]));
+  const parentGameID = <BundlableGameID>util.getCurrentParentCategory();
+  mc.system.run(async () => await statsForm(e.player, parentGameID));
 });
 
 // gamemode change
@@ -210,31 +208,31 @@ mc.world.beforeEvents.playerInteractWithEntity.subscribe((e) => {
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
-const listenerMap: { [key: string]: () => void } = {
-  straightBridger: bridger.listener,
-  inclinedBridger: bridger.listener,
-  clutcher: clutcher.listener,
-  wallRun: wallRun.listener,
-  bedwarsRush: bedwarsRush.listener,
-  parkour1_1: parkour.listener,
-  parkour1_2: parkour.listener,
-  parkour1_3: parkour.listener,
+const listenerMap: Record<ParentGameID, () => void> = {
+  Lobby: undefined,
+  Bridger: bridger.listener,
+  Clutcher: clutcher.listener,
+  Wall_Run: wallRun.listener,
+  Bedwars_Rush: bedwarsRush.listener,
+  Fist_Reduce: undefined,
+  Parkour: parkour.listener,
 };
 mc.system.runInterval((): void => {
-  const listener = listenerMap[generalTs.commonData["gameID"]];
+  const parentGameID = util.getCurrentParentCategory();
+  const listener = listenerMap[parentGameID];
   if (listener) listener();
 });
 
 // every 10 tick
 mc.system.runInterval((): void => {
   switch (generalTs.commonData["gameID"]) {
-    case "clutcher":
+    case "Clutcher":
       clutcher.slowListener();
       break;
-    case "normalFistReduce":
+    case "Fist_Reduce$Normal":
       fistReduce.slowListener("normal");
       break;
-    case "limitlessFistReduce":
+    case "Fist_Reduce$LIMITLESS":
       fistReduce.slowListener("limitless");
       break;
   }

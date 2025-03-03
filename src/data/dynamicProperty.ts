@@ -1,14 +1,9 @@
 import { world, Vector3 } from "@minecraft/server";
-import {
-  DynamicPropertyID,
-  BridgerTypesID,
-  GameDataID,
-  ParkourChapterID,
-  BundlableGameModeID,
-  BundleData,
-} from "../models/DynamicProperty";
-import { generalTs, bridgerTs, parkourTs } from "../data/tempStorage";
+import { generalTs } from "../data/tempStorage";
+import { BundlableGameID, BundleData, SubCategory } from "../models/GameID";
 
+/////////////////////////////////////////////////////////////////
+type DefaultData = Record<BundlableGameID, Record<string, BundleData>>;
 /////////////////////////////////////////////////////////////////
 export class DynamicProperty {
   protected static dynamicData = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
@@ -24,75 +19,83 @@ export class DynamicProperty {
   }
 
   public static resetDynamicData(): void {
-    const defaultData = {
-      [DynamicPropertyID.GameDatas]: {
-        [GameDataID.straightDistance]: 16,
-        [GameDataID.straightTellyPractice]: "None",
-        [GameDataID.inclinedDistance]: 16,
+    const defaultData: DefaultData = {
+      Bridger: {
+        Straight_16_blocks: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Straight_21_blocks: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Straight_50_blocks: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Inclined_16_blocks: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Inclined_21_blocks: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Inclined_50_blocks: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
       },
 
-      [DynamicPropertyID.Bridger_PB]: {
-        [BridgerTypesID.straight16blocks]: -1,
-        [BridgerTypesID.straight21blocks]: -1,
-        [BridgerTypesID.straight50blocks]: -1,
-        [BridgerTypesID.inclined16blocks]: -1,
-        [BridgerTypesID.inclined21blocks]: -1,
-        [BridgerTypesID.inclined50blocks]: -1,
-      },
-      [DynamicPropertyID.Bridger_Attempts]: {
-        [BridgerTypesID.straight16blocks]: 0,
-        [BridgerTypesID.straight21blocks]: 0,
-        [BridgerTypesID.straight50blocks]: 0,
-        [BridgerTypesID.inclined16blocks]: 0,
-        [BridgerTypesID.inclined21blocks]: 0,
-        [BridgerTypesID.inclined50blocks]: 0,
-      },
-      [DynamicPropertyID.Bridger_SuccessAttempts]: {
-        [BridgerTypesID.straight16blocks]: 0,
-        [BridgerTypesID.straight21blocks]: 0,
-        [BridgerTypesID.straight50blocks]: 0,
-        [BridgerTypesID.inclined16blocks]: 0,
-        [BridgerTypesID.inclined21blocks]: 0,
-        [BridgerTypesID.inclined50blocks]: 0,
-      },
-      [DynamicPropertyID.Bridger_AverageTime]: {
-        [BridgerTypesID.straight16blocks]: -1,
-        [BridgerTypesID.straight21blocks]: -1,
-        [BridgerTypesID.straight50blocks]: -1,
-        [BridgerTypesID.inclined16blocks]: -1,
-        [BridgerTypesID.inclined21blocks]: -1,
-        [BridgerTypesID.inclined50blocks]: -1,
+      Wall_Run: {
+        Ancient: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
       },
 
-      [DynamicPropertyID.WallRunner_PB]: -1,
-      [DynamicPropertyID.WallRunner_Attempts]: 0,
-      [DynamicPropertyID.WallRunner_SuccessAttempts]: 0,
-      [DynamicPropertyID.WallRunner_AverageTime]: -1,
+      Bedwars_Rush: {
+        Custom_Map: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+      },
 
-      [DynamicPropertyID.BedwarsRush_PB]: -1,
-      [DynamicPropertyID.BedwarsRush_Attempts]: 0,
-      [DynamicPropertyID.BedwarsRush_SuccessAttempts]: 0,
-      [DynamicPropertyID.BedwarsRush_AverageTime]: -1,
-
-      [DynamicPropertyID.Parkour_PB]: {
-        [ParkourChapterID.chapter1_1]: -1,
-        [ParkourChapterID.chapter1_2]: -1,
-        [ParkourChapterID.chapter1_3]: -1,
-      },
-      [DynamicPropertyID.Parkour_Attempts]: {
-        [ParkourChapterID.chapter1_1]: 0,
-        [ParkourChapterID.chapter1_2]: 0,
-        [ParkourChapterID.chapter1_3]: 0,
-      },
-      [DynamicPropertyID.Parkour_SuccessAttempts]: {
-        [ParkourChapterID.chapter1_1]: 0,
-        [ParkourChapterID.chapter1_2]: 0,
-        [ParkourChapterID.chapter1_3]: 0,
-      },
-      [DynamicPropertyID.Parkour_AverageTime]: {
-        [ParkourChapterID.chapter1_1]: -1,
-        [ParkourChapterID.chapter1_2]: -1,
-        [ParkourChapterID.chapter1_3]: -1,
+      Parkour: {
+        "Chapter_1.1": {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        "Chapter_1.2": {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        "Chapter_1.3": {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
       },
     };
     this.dynamicData = defaultData;
@@ -100,94 +103,34 @@ export class DynamicProperty {
   }
 }
 
-export abstract class BaseGameData extends DynamicProperty {
-  public static getData(id: DynamicPropertyID): number {
-    return this.dynamicData[id];
+export class BaseGameData extends DynamicProperty {
+  public static getData<T extends BundlableGameID, K extends keyof BundleData>(
+    parent: T,
+    subCategory: SubCategory<T>,
+    dataType: K
+  ): BundleData[K] {
+    return this.dynamicData[parent][subCategory][dataType];
   }
 
-  public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id] = data;
+  public static setData<T extends BundlableGameID, K extends keyof BundleData>(
+    parent: T,
+    subCategory: SubCategory<T>,
+    dataType: K,
+    data: number
+  ): void {
+    this.dynamicData[parent][subCategory][dataType] = data;
   }
 
-  public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id]++;
+  public static addData<T extends BundlableGameID, K extends keyof BundleData>(
+    parent: T,
+    subCategory: SubCategory<T>,
+    dataType: K
+  ): void {
+    this.dynamicData[parent][subCategory][dataType]++;
   }
 
-  /**
-   * returns an object containing pb, avgTime, attempts, and success attempts
-   */
-  public static getBundledData(gameId: BundlableGameModeID): BundleData {
-    let bundledData = {
-      pbTicks: -1,
-      avgTicks: -1,
-      attempts: 0,
-      successAttempts: 0,
-    };
-
-    Object.keys(this.dynamicData).forEach((dynamicPropertyID) => {
-      if (!dynamicPropertyID.startsWith(gameId)) return;
-
-      switch (dynamicPropertyID) {
-        case `${gameId}_PB`:
-          bundledData.pbTicks = this.getData(<DynamicPropertyID>`${gameId}_PB`);
-          break;
-        case `${gameId}_AverageTime`:
-          bundledData.avgTicks = this.getData(<DynamicPropertyID>`${gameId}_AverageTime`);
-          break;
-        case `${gameId}_Attempts`:
-          bundledData.attempts = this.getData(<DynamicPropertyID>`${gameId}_Attempts`);
-          break;
-        case `${gameId}_SuccessAttempts`:
-          bundledData.successAttempts = this.getData(<DynamicPropertyID>`${gameId}_SuccessAttempts`);
-          break;
-      }
-    });
-
-    return bundledData;
-  }
-}
-
-export class GameData extends DynamicProperty {
-  public static getData(gameDataType: "Distance" | "TellyPractice", argDistance?: "straight" | "inclined") {
-    const direction = argDistance ?? bridgerTs.tempData["bridgerDirection"];
-    return this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`];
-  }
-
-  public static setData(gameDataType: "Distance" | "TellyPractice", data: boolean | number | string): void {
-    const direction = bridgerTs.tempData["bridgerDirection"];
-    this.dynamicData[DynamicPropertyID.GameDatas][`${direction}${gameDataType}`] = data;
-  }
-}
-
-export class BridgerData extends BaseGameData {
-  public static getData(id: DynamicPropertyID): number {
-    return this.dynamicData[id][bridgerTs.tempData["bridgerMode"]];
-  }
-
-  public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]] = data;
-  }
-
-  public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id][bridgerTs.tempData["bridgerMode"]]++;
-  }
-}
-
-export class WallRunData extends BaseGameData {}
-
-export class BedwarsRushData extends BaseGameData {}
-
-export class ParkourData extends BaseGameData {
-  public static getData(id: DynamicPropertyID): number {
-    return this.dynamicData[id][parkourTs.tempData["chapter"]];
-  }
-
-  public static setData(id: DynamicPropertyID, data: number): void {
-    this.dynamicData[id][parkourTs.tempData["chapter"]] = data;
-  }
-
-  public static addData(id: DynamicPropertyID): void {
-    this.dynamicData[id][parkourTs.tempData["chapter"]]++;
+  public static getBundledData<T extends BundlableGameID>(parent: T, subCategory: SubCategory<T>): BundleData {
+    return this.dynamicData[parent][subCategory] ?? undefined;
   }
 }
 

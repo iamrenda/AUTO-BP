@@ -28,9 +28,9 @@ const clutcherTpLocation: TeleportationLocation[] = [
 /**
  * teleport player to counter clockwise location
  */
-const teleportToCounterClockwise = function () {
+const teleportToCounterClockwise = function (player: mc.Player) {
   const location = clutcherTpLocation[clutcherTs.tempData["teleportationIndex"]];
-  util.teleportation(location);
+  player.teleport(location.position, { facingLocation: location.facing });
   clutcherTs.tempData["teleportationIndex"] =
     clutcherTs.tempData["teleportationIndex"] === 3 ? 0 : clutcherTs.tempData["teleportationIndex"] + 1;
 };
@@ -76,7 +76,7 @@ const resetClutcher = function () {
 /**
  * when player fails
  */
-const playerFall = function () {
+const playerFall = function (player: mc.Player) {
   // if fail during countdown
   if (!clutcherTs.tempData["hitTimer"] && clutcherTs.tempData["countDown"]) {
     util.sendMessage("§8Count down canceled", "note.guitar");
@@ -88,8 +88,8 @@ const playerFall = function () {
 
   resetClutcher();
 
-  teleportToCounterClockwise();
-  util.giveItems("clutcher");
+  teleportToCounterClockwise(player);
+  util.giveItems("Clutcher");
 };
 
 /**
@@ -217,7 +217,8 @@ export const placingBlockEvt = function ({ location }: { location: mc.Vector3 })
 };
 
 export const listener = function () {
-  if (clutcherTs.commonData["player"].location.y <= 88) playerFall();
+  const { player } = clutcherTs.commonData;
+  if (player.location.y <= 88) playerFall(player);
 };
 
 export const slowListener = function () {
@@ -225,5 +226,5 @@ export const slowListener = function () {
     clutcherTs.tempData["startLocation"],
     clutcherTs.tempData["endLocation"]
   );
-  util.displayScoreboard("clutcher");
+  util.displayScoreboard("Clutcher");
 };

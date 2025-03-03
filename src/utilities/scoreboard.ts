@@ -1,17 +1,7 @@
 import * as util from "./utilities";
 import { VERSION } from "../data/staticData";
-import { BridgerData, ParkourData, WallRunData } from "../data/dynamicProperty";
-import { DynamicPropertyID } from "../models/DynamicProperty";
-import {
-  generalTs,
-  bridgerTs,
-  wallRunTs,
-  clutcherTs,
-  fistReduceTs,
-  parkourTs,
-  bedwarsRushTs,
-} from "../data/tempStorage";
-import { BedwarsRushData } from "../data/dynamicProperty";
+import { generalTs, bridgerTs, clutcherTs } from "../data/tempStorage";
+import { BaseGameData } from "../data/dynamicProperty";
 
 export const lobbyScoreboard = function (): string {
   const nameTag = generalTs.commonData["player"].nameTag;
@@ -35,11 +25,13 @@ export const lobbyScoreboard = function (): string {
 };
 
 export const bridgerScoreboard = function (): string {
-  const pb = BridgerData.getData(DynamicPropertyID.Bridger_PB);
+  const subCategory = util.getCurrentSubCategory();
+  const pbTicks = BaseGameData.getData("Bridger", subCategory, "pbTicks");
+
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r
-   ${util.tickToSec(pb)}
+   ${util.tickToSec(pbTicks)}
     
  §7- §6Time:§r
    ${util.tickToSec(bridgerTs.commonData["ticks"])}
@@ -51,28 +43,31 @@ export const bridgerScoreboard = function (): string {
 };
 
 export const clutcherScoreboard = function (): string {
+  const { distance, clutchHits, hitIndex } = clutcherTs.tempData;
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Distance:§r
-   ${clutcherTs.tempData["distance"]} blocks
+   ${distance} blocks
     
  §7- §6Hits:§r
-   ${clutcherTs.tempData["hitIndex"]}/${clutcherTs.tempData["clutchHits"].length}
+   ${hitIndex}/${clutchHits.length}
 §7-------------------§r
  §8§oVersion ${VERSION} | ${util.today}`;
 };
 
 export const wallRunScoreboard = function (): string {
-  const player = wallRunTs.commonData["player"];
+  const { player, ticks } = generalTs.commonData;
   const progress = Math.max(0, +(((player.location.z - 30016) / 105) * 100).toFixed(0));
-  const pb = WallRunData.getData(DynamicPropertyID.WallRunner_PB);
+  const subCategory = util.getCurrentSubCategory();
+  const pbTicks = BaseGameData.getData("Bridger", subCategory, "pbTicks");
+
   return `     §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r
-   §f${util.tickToSec(pb)}
+   §f${util.tickToSec(pbTicks)}
 
  §7- §6Time:§r
-   §f${util.tickToSec(wallRunTs.commonData["ticks"])}
+   §f${util.tickToSec(ticks)}
 
  §7- §6Progress:§r
    §f${progress}%
@@ -81,23 +76,26 @@ export const wallRunScoreboard = function (): string {
 };
 
 export const bedwarsRushScoreboard = function (): string {
-  const pb = BedwarsRushData.getData(DynamicPropertyID.BedwarsRush_PB);
+  const { ticks, blocks } = generalTs.commonData;
+  const subCategory = util.getCurrentSubCategory();
+  const pbTicks = BaseGameData.getData("Bridger", subCategory, "pbTicks");
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Personal Best:§r
-   ${util.tickToSec(pb)}
+   ${util.tickToSec(pbTicks)}
     
  §7- §6Time:§r
-   ${util.tickToSec(bridgerTs.commonData["ticks"])}
+   ${util.tickToSec(ticks)}
     
  §7- §6Blocks:§r
-   ${bedwarsRushTs.commonData["blocks"]}
+   ${blocks}
 §7-------------------§r
  §8§oVersion ${VERSION} | ${util.today}`;
 };
 
 export const fistReduceScoreboard = function (): string {
-  const mode = fistReduceTs.commonData["gameID"] === "normalFistReduce" ? "Normal Reduce" : "LIMITLESS";
+  const subCategory = util.getCurrentSubCategory();
+  const mode = util.nameGenerator(subCategory);
 
   return `      §b§lAUTO World§r
 §7-------------------§r
@@ -111,19 +109,21 @@ export const fistReduceScoreboard = function (): string {
 };
 
 export const parkourScoreboard = function (): string {
-  const pb = ParkourData.getData(DynamicPropertyID.Parkour_PB);
-  const chapter = parkourTs.tempData["chapter"];
+  const { ticks } = generalTs.commonData;
+  const subCategory = util.getCurrentSubCategory();
+  const pbTicks = BaseGameData.getData("Parkour", subCategory, "pbTicks");
+  const chapterName = util.nameGenerator(subCategory);
 
   return `      §b§lAUTO World§r
 §7-------------------§r
  §7- §6Chapter:§r
-   ${chapter.substring(7).split("_").join(".")}
+   ${chapterName}
 
  §7- §6Personal Best:§r
-   ${util.tickToSec(pb)}
+   ${util.tickToSec(pbTicks)}
     
  §7- §6Time:§r
-   ${util.tickToSec(parkourTs.commonData["ticks"])}
+   ${util.tickToSec(ticks)}
 §7-------------------§r
  §8§oVersion ${VERSION} | ${util.today}`;
 };
