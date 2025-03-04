@@ -1,10 +1,10 @@
-import { world, Vector3 } from "@minecraft/server";
+import { world } from "@minecraft/server";
 import { generalTs } from "../data/tempStorage";
 import { BundlableGameID, BundleData, SubCategory } from "../models/GameID";
+import { retryClearBlocks } from "../utilities/utilities";
 
-/////////////////////////////////////////////////////////////////
 type DefaultData = Record<BundlableGameID, Record<string, BundleData>>;
-/////////////////////////////////////////////////////////////////
+
 export class DynamicProperty {
   protected static dynamicData = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
 
@@ -138,16 +138,15 @@ export class StoredBlocksClass {
   public static clearBlocks(): void {
     const jsonArray = JSON.parse(`${world.getDynamicProperty("auto:storedBlocks")}`);
 
-    jsonArray.map((location: Vector3) => world.getDimension("overworld").setBlockType(location, "minecraft:air"));
-    world.setDynamicProperty("auto:storedBlocksGameID", "undefined");
+    retryClearBlocks(new Set(jsonArray));
+    world.setDynamicProperty("auto:storedBlocksGameID", "null");
     world.setDynamicProperty("auto:storedBlocks", "[]");
-    generalTs.commonData["storedLocationsGameID"] = undefined;
   }
 
   public static storeBlocks(): void {
-    const json = JSON.stringify([...generalTs.commonData["storedLocations"]]);
-    const gameId = generalTs.commonData["gameID"];
+    const { gameID, storedLocations } = generalTs.commonData;
+    const json = JSON.stringify([...storedLocations]);
     world.setDynamicProperty("auto:storedBlocks", json);
-    world.setDynamicProperty("auto:storedBlocksGameID", gameId);
+    world.setDynamicProperty("auto:storedBlocksGameID", gameID);
   }
 }

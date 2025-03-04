@@ -3,16 +3,16 @@ import * as util from "../utilities/utilities";
 import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
+import { StoredBlocksClass } from "../data/dynamicProperty";
 
 /**
  * handling navigation for lobby
  */
-const handleNavigation = (player: mc.Player, gameID: GameID) => {
-  generalTs.clearBlocks();
+const handleNavigation = (gameID: GameID) => {
+  util.teleportation(gameID);
   generalTs.commonData["gameID"] = gameID;
   util.giveItems(util.getCurrentParentCategory());
-  util.teleportation(gameID);
-  util.warnUnclearedBlocks(player);
+  StoredBlocksClass.clearBlocks();
 };
 
 export const nagivatorFormHandler = async function (player: mc.Player) {
@@ -27,10 +27,10 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     bridgerTs.tempData["bridgerDistance"] = 16;
     if (bridgerDirSelection === 11) {
       bridgerTs.tempData["bridgerDirection"] = "Straight";
-      handleNavigation(player, "Bridger$Straight_16_blocks");
+      handleNavigation("Bridger$Straight_16_blocks");
     } else if (bridgerDirSelection === 15) {
       bridgerTs.tempData["bridgerDirection"] = "Inclined";
-      handleNavigation(player, "Bridger$Inclined_16_blocks");
+      handleNavigation("Bridger$Inclined_16_blocks");
     }
   }
 
@@ -40,15 +40,15 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     player.setGameMode(mc.GameMode.creative);
     player.setGameMode(9);
     generalTs.commonData["byPass"] = false;
-    handleNavigation(player, "Clutcher");
+    handleNavigation("Clutcher");
     util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "note.bell");
   }
 
   // wall run
-  if (selection === 15) handleNavigation(player, "Wall_Run$Ancient");
+  if (selection === 15) handleNavigation("Wall_Run$Ancient");
 
   // bedwars rush
-  if (selection === 21) handleNavigation(player, "Bedwars_Rush$Custom_Map");
+  if (selection === 21) handleNavigation("Bedwars_Rush$Custom_Map");
 
   // fist reduce
   if (selection === 23) {
@@ -57,9 +57,9 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
 
     util.displayScoreboard("Fist_Reduce");
     if (bridgerDirSelection === 11) {
-      handleNavigation(player, "Fist_Reduce$Normal");
+      handleNavigation("Fist_Reduce$Normal");
     } else if (bridgerDirSelection === 15) {
-      handleNavigation(player, "Fist_Reduce$LIMITLESS");
+      handleNavigation("Fist_Reduce$LIMITLESS");
     }
   }
 
@@ -69,11 +69,11 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     if (canceled) return;
 
     if (bridgerDirSelection === 11) {
-      handleNavigation(player, "Parkour$Chapter_1.1");
+      handleNavigation("Parkour$Chapter_1.1");
     } else if (bridgerDirSelection === 13) {
-      handleNavigation(player, "Parkour$Chapter_1.2");
+      handleNavigation("Parkour$Chapter_1.2");
     } else if (bridgerDirSelection === 15) {
-      handleNavigation(player, "Parkour$Chapter_1.3");
+      handleNavigation("Parkour$Chapter_1.3");
     }
   }
 };

@@ -29,10 +29,8 @@ const eatGhead = (player: mc.Player): void => {
 
 // right-click an item
 mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
-  // ghead
   if (item.typeId === "auto:ghead") return eatGhead(player);
 
-  const parentGameID = util.getCurrentParentCategory();
   switch (item.typeId) {
     case "minecraft:stick":
       lobby.launchingStickHandler(player);
@@ -43,6 +41,7 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
       break;
 
     case "minecraft:book":
+      const parentGameID = util.getCurrentParentCategory();
       bookHandlers(player, parentGameID);
       break;
 
@@ -54,24 +53,17 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
 });
 
 // book right-click handler
-const bookHandlers = (player: mc.Player, parentGameID: ParentGameID) => {
-  const gameID = generalTs.commonData["gameID"];
-  const storedGameID = generalTs.commonData["storedLocationsGameID"];
-
-  if (storedGameID === gameID) {
-    util.clearBlocks(player);
-  } else {
-    const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
-      Lobby: lobby.creditFormHandler,
-      Bridger: bridger.bridgerFormHandler,
-      Clutcher: clutcher.clutcherFormHandler,
-      Wall_Run: wallRun.wallRunFormHandler,
-      Bedwars_Rush: bedwarsRush.bedWarsRushFormHandler,
-      Fist_Reduce: fistReduce.fistReduceFormHandler,
-      Parkour: parkour.parkourFormHandler,
-    };
-    formHandlers[parentGameID](player);
-  }
+const bookHandlers = function (player: mc.Player, parentGameID: ParentGameID) {
+  const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
+    Lobby: lobby.creditFormHandler,
+    Bridger: bridger.bridgerFormHandler,
+    Clutcher: clutcher.clutcherFormHandler,
+    Wall_Run: wallRun.wallRunFormHandler,
+    Bedwars_Rush: bedwarsRush.bedWarsRushFormHandler,
+    Fist_Reduce: fistReduce.fistReduceFormHandler,
+    Parkour: parkour.parkourFormHandler,
+  };
+  formHandlers[parentGameID](player);
 };
 
 // placing a block
@@ -151,7 +143,6 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
   generalTs.commonData["storedLocationsGameID"] = <GameID>mc.world.getDynamicProperty("auto:storedBlocksGameID");
   DynamicProperty.fetchData();
   util.backToLobbyKit(player, generalTs);
-  util.warnUnclearedBlocks(player);
 });
 
 // leaving the world

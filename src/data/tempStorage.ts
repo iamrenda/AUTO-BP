@@ -1,6 +1,6 @@
 import * as mc from "@minecraft/server";
 import * as type from "../models/TempStorage";
-import { sendMessage } from "../utilities/utilities";
+import { retryClearBlocks } from "../utilities/utilities";
 
 const commonDataInstance: type.CommonData = {
   player: mc.world.getAllPlayers()[0],
@@ -29,29 +29,7 @@ export class TempStorage<T = any> {
   }
 
   public clearBlocks(): void {
-    const retryClear = () => {
-      if (!this.commonData["storedLocations"].size) return; // Stop if there are no blocks left
-
-      let failedLocations = new Set<mc.Vector3>();
-
-      [...this.commonData["storedLocations"]].forEach((location) => {
-        try {
-          mc.world.getDimension("overworld").setBlockType(location, "minecraft:air");
-        } catch (err) {
-          failedLocations.add(location);
-        }
-      });
-
-      if (failedLocations.size > 0) {
-        sendMessage("§cUnable to clear some blocks. Trying again.", "random.anvil_land");
-        this.commonData["storedLocations"] = failedLocations;
-        mc.system.runTimeout(retryClear, 60);
-      } else {
-        this.commonData["storedLocations"] = new Set();
-      }
-    };
-
-    retryClear();
+    retryClearBlocks(this.commonData["storedLocations"]);
   }
 
   public startTimer(): void {

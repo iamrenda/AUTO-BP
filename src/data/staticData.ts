@@ -20,7 +20,6 @@ type ClutchStrengthIF = {
 export const InventoryData: Record<ParentGameID, ItemInfo[]> = {
   Lobby: [
     { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
-    { item: "minecraft:white_wool", quantity: 63, slot: 1 },
     { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
     { item: "minecraft:book", quantity: 1, slot: 7, name: "§dCredits" },
     { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },

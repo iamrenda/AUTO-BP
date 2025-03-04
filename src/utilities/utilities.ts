@@ -4,8 +4,8 @@ import GameID, { BundlableGameID, ParentGameID, SubCategory } from "../models/Ga
 import { generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "./scoreboard";
 import * as goalMessage from "./goalMessage";
-import { clearBlocksForm, confirmationForm } from "../forms/utility";
-import { BaseGameData, DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
+import { confirmationForm } from "../forms/utility";
+import { BaseGameData, DynamicProperty } from "../data/dynamicProperty";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
@@ -45,7 +45,7 @@ export const teleportation = function (gameID: GameID): void {
 /**
  * confirmMessage: show message with sound
  */
-export const sendMessage = function (message: string = "", sound: string = ""): void {
+export const sendMessage = function (message: string, sound: string = ""): void {
   const player = generalTs.commonData["player"];
   if (message) player.sendMessage(message);
   if (sound) player.playSound(sound);
@@ -157,18 +157,6 @@ export const shootFireworks = function (location: mc.Vector3): void {
 };
 
 /**
- * attempts to show clearing blocks if there is uncleared blocks
- * @return boolean whether the form is shown or not
- */
-export const clearBlocks = async function (player: mc.Player) {
-  const { selection } = await clearBlocksForm(player);
-  if (selection !== 13) return;
-
-  StoredBlocksClass.clearBlocks();
-  sendMessage("§aWe have cleared the blocks!", "random.orb");
-};
-
-/**
  * shows title bar (optional: subtitle)
  */
 export const showTitleBar = function (
@@ -276,15 +264,6 @@ export const resetPB = async function <T extends BundlableGameID>(player: mc.Pla
 };
 
 /**
- * if uncleared block detected, it shows the warning
- */
-export const warnUnclearedBlocks = function (player: mc.Player): void {
-  if (generalTs.commonData["storedLocationsGameID"] !== generalTs.commonData["gameID"]) return;
-  sendMessage(`§a§lWe have detected uncleared blocks. Right-click on the book to clear them!!`);
-  showTitleBar(player, "§cUncleared blocks Detected");
-};
-
-/**
  * gets the parent category based on the gameID (If there's a `$`, return everything after it. If there's no `$`, return the original string.)
  */
 export const getCurrentSubCategory = function (): SubCategory<BundlableGameID> {
@@ -307,4 +286,32 @@ export const getCurrentParentCategory = function (): ParentGameID {
  */
 export const nameGenerator = function (input: string): string {
   return input.replace(/_/g, " ");
+};
+
+/**
+ * attempts to clear blocks from storedLocations util success
+ */
+export const retryClearBlocks = function (storedlocations: Set<mc.Vector3>, isFirstAttempt: boolean = true) {
+  if (!storedlocations.size) return;
+  let failedLocations = new Set<mc.Vector3>();
+
+  [...storedlocations].forEach((location) => {
+    try {
+      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air");
+    } catch (err) {
+      failedLocations.add(location);
+    }
+  });
+
+  if (failedLocations.size > 0) {
+    if (isFirstAttempt) {
+      sendMessage("§cUnable to clear some blocks. Trying again...");
+    }
+    mc.system.runTimeout(() => retryClearBlocks(failedLocations, false), 20);
+  } else {
+    if (!isFirstAttempt) {
+      sendMessage("§aSuccess.");
+    }
+    generalTs.commonData["storedLocations"] = new Set();
+  }
 };
