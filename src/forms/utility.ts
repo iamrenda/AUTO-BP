@@ -30,6 +30,7 @@ export const statsForm = async function <T extends BundlableGameID>(
 ): Promise<ActionFormResponse> {
   const subCategory = util.getCurrentSubCategory();
   const { pbTicks, avgTicks, attempts, successAttempts } = BaseGameData.getBundledData(bundlableGameID, subCategory);
+  const successPercentage = (successAttempts / attempts) * 100;
 
   const form = new ActionFormData()
     .title("Stats")
@@ -39,13 +40,13 @@ export const statsForm = async function <T extends BundlableGameID>(
  §bIgn: §f${player.nameTag}
  §bGamemode: §f${util.nameGenerator(bundlableGameID)}
 
-   §7- §6Personal Best: §f${util.tickToSec(pbTicks)}
-   §7- §6Average Time: §f${util.tickToSec(avgTicks)}
-   §7- §6Attempts: §f${attempts}
-   §7- §6Successful Attempts: §f${successAttempts}
+  §7- §6Personal Best: §f${util.tickToSec(pbTicks)}
+  §7- §6Average Time: §f${util.tickToSec(avgTicks)}
 
-
-    `
+  §7- §6Attempts: §f${attempts}
+  §7- §6Successful Attempts: §f${successAttempts}
+  §7- §6Successful Run Percentage: §f${successPercentage.toFixed(1)}
+  `
     )
     .button("Close");
 

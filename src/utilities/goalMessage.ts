@@ -5,8 +5,8 @@ import { BaseGameData } from "../data/dynamicProperty";
 
 export const bridgerMessage = function (isPB: boolean, time: number, prevPB: number): string {
   const distance = bridgerTs.tempData["bridgerDistance"];
-  const subCategory = util.getCurrentSubCategory();
-  const pb = BaseGameData.getData("Bridger", subCategory, "pbTicks");
+  const pb = BaseGameData.getData("Bridger", util.getCurrentSubCategory(), "pbTicks");
+
   const difference =
     pb !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";
 
@@ -41,7 +41,7 @@ export const wallRunMessage = function (isPB: boolean, time: number, prevPB: num
 
 export const bedwarsRushMessage = function (isPB: boolean, time: number, prevPB: number): string {
   const subCategory = util.getCurrentSubCategory();
-  const pb = BaseGameData.getData("Wall_Run", subCategory, "pbTicks");
+  const pb = BaseGameData.getData("Bedwars_Rush", subCategory, "pbTicks");
   const difference =
     pb !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";
 
@@ -58,7 +58,7 @@ export const bedwarsRushMessage = function (isPB: boolean, time: number, prevPB:
 
 export const parkourMessage = function (isPB: boolean, time: number, prevPB: number): string {
   const subCategory = util.getCurrentSubCategory();
-  const pb = BaseGameData.getData("Wall_Run", subCategory, "pbTicks");
+  const pb = BaseGameData.getData("Parkour", subCategory, "pbTicks");
 
   const difference =
     prevPB !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";

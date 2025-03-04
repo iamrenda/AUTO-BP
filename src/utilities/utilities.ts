@@ -129,20 +129,20 @@ export const differenceMs = function (ms1: number, ms2: number): string {
 /**
  * shows the result of a run
  */
+const messages: Record<BundlableGameID, (isPB: boolean, time: number, prevPB: number) => string> = {
+  Bridger: (isPB, time, prevPB) => goalMessage.bridgerMessage(isPB, time, prevPB),
+  Wall_Run: (isPB, time, prevPB) => goalMessage.wallRunMessage(isPB, time, prevPB),
+  Bedwars_Rush: (isPB, time, prevPB) => goalMessage.bedwarsRushMessage(isPB, time, prevPB),
+  Parkour: (isPB, time, prevPB) => goalMessage.parkourMessage(isPB, time, prevPB),
+};
+
 export const showMessage = function (
   bundlableGameID: BundlableGameID,
   isPB: boolean,
   time: number,
   prevPB: number
 ): void {
-  const messages: Record<BundlableGameID, string> = {
-    Bridger: goalMessage.bridgerMessage(isPB, time, prevPB),
-    Wall_Run: goalMessage.wallRunMessage(isPB, time, prevPB),
-    Bedwars_Rush: goalMessage.bedwarsRushMessage(isPB, time, prevPB),
-    Parkour: goalMessage.parkourMessage(isPB, time, prevPB),
-  };
-
-  sendMessage(messages[bundlableGameID]);
+  sendMessage(messages[bundlableGameID](isPB, time, prevPB));
 };
 
 /**

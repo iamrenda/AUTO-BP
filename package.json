@@ -6,6 +6,7 @@
   "license": "ISC",
   "description": "",
   "scripts": {
+    "run": "npx tsc",
     "build": "npx webpack",
     "watch": "npx webpack --watch"
   },
