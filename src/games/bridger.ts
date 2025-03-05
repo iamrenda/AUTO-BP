@@ -42,9 +42,22 @@ const TELLYBUILDER_NUMBER: Record<Exclude<TellyMode, "None">, Record<IslandDista
 };
 
 // structure names
-const structures: Record<IslandDireciton, string> = {
+const mcStructureName: Record<IslandDireciton, string> = {
   Straight: "straightDefault",
   Inclined: "inclinedDefault",
+};
+
+const mcStructureSizes: Record<IslandDireciton, mc.Vector3> = {
+  Straight: {
+    x: 10,
+    y: 18,
+    z: 11,
+  },
+  Inclined: {
+    x: 7,
+    y: 16,
+    z: 7,
+  },
 };
 /////////////////////////////////////////////////////////
 /**
@@ -164,15 +177,14 @@ const fillAndPlace = function (direction: IslandDireciton, distance1: IslandDist
   if (distance1 === 21) fillAirLocation.start = getLocation(direction, 21);
   if (distance1 === 50) fillAirLocation.start = getLocation(direction, 50);
 
-  // CHECK optimization??
   if (direction === "Straight") {
-    fillAirLocation.end.x = fillAirLocation.start.x + 10;
-    fillAirLocation.end.y = fillAirLocation.start.y + 18;
-    fillAirLocation.end.z = fillAirLocation.start.z + 11;
+    fillAirLocation.end.x = fillAirLocation.start.x + mcStructureSizes.Straight.x;
+    fillAirLocation.end.y = fillAirLocation.start.y + mcStructureSizes.Straight.y;
+    fillAirLocation.end.z = fillAirLocation.start.z + mcStructureSizes.Straight.z;
   } else {
-    fillAirLocation.end.x = fillAirLocation.start.x + 7;
-    fillAirLocation.end.y = fillAirLocation.start.y + 16;
-    fillAirLocation.end.z = fillAirLocation.start.z + 7;
+    fillAirLocation.end.x = fillAirLocation.start.x + mcStructureSizes.Inclined.x;
+    fillAirLocation.end.y = fillAirLocation.start.y + mcStructureSizes.Inclined.y;
+    fillAirLocation.end.z = fillAirLocation.start.z + mcStructureSizes.Inclined.z;
   }
 
   dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
@@ -188,7 +200,7 @@ const fillAndPlace = function (direction: IslandDireciton, distance1: IslandDist
   if (distance2 === 50) structurePlaceLocation = getLocation(direction, 50);
 
   // structure name
-  const structure = structures[direction];
+  const structure = mcStructureName[direction];
 
   mc.world.structureManager.place(structure, dimension, structurePlaceLocation);
 };
