@@ -1,7 +1,7 @@
 import * as mc from "@minecraft/server";
 import GameID from "./GameID";
 import minecraftID from "./minecraftID";
-import { IslandDireciton, IslandDistance, TellyMode } from "./Bridger";
+import { IslandDireciton } from "./Bridger";
 
 export type CommonData = {
   player: mc.Player;
@@ -18,8 +18,6 @@ export type CommonData = {
 export type BridgerTempStorage = {
   blockBridger: minecraftID.MinecraftBlockIdIF;
   bridgerDirection: IslandDireciton;
-  bridgerDistance: IslandDistance;
-  tellyMode: TellyMode;
   isPlateDisabled: boolean;
 };
 

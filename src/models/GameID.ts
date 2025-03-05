@@ -1,3 +1,5 @@
+import { IslandDistance, TellyMode } from "./Bridger";
+
 type GameID =
   | "Lobby"
   | "Bridger$Straight_16_blocks"
@@ -39,5 +41,11 @@ type subCategoryGameID = {
 };
 
 export type SubCategory<T extends BundlableGameID> = subCategoryGameID[T];
+
+export type GameData = {
+  BridgerStraightDistance: IslandDistance;
+  BridgerInclinedDistance: IslandDistance;
+  BridgerStraightTellyMode: TellyMode;
+};
 
 export default GameID;

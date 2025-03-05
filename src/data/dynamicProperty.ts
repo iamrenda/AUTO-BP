@@ -1,6 +1,6 @@
 import { world } from "@minecraft/server";
 import { generalTs } from "../data/tempStorage";
-import { BundlableGameID, BundleData, SubCategory } from "../models/GameID";
+import { BundlableGameID, BundleData, GameData, SubCategory } from "../models/GameID";
 import { retryClearBlocks } from "../utilities/utilities";
 
 type DefaultData = Record<BundlableGameID, Record<string, BundleData>>;
@@ -131,6 +131,38 @@ export class BaseGameData extends DynamicProperty {
 
   public static getBundledData<T extends BundlableGameID>(parent: T, subCategory: SubCategory<T>): BundleData {
     return this.dynamicData[parent][subCategory] ?? undefined;
+  }
+}
+
+export class gameData {
+  protected static dynamicData = JSON.parse(String(world.getDynamicProperty("auto:gameData")));
+
+  public static postData(): void {
+    const json = JSON.stringify(gameData.dynamicData);
+    world.setDynamicProperty("auto:gameData", json);
+  }
+
+  public static fetchData(): void {
+    const json = world.getDynamicProperty("auto:gameData");
+    gameData.dynamicData = JSON.parse(String(json));
+  }
+
+  public static getData<T extends keyof GameData>(dataType: T): GameData[T] {
+    return this.dynamicData[dataType];
+  }
+
+  public static setData<T extends keyof GameData>(data: T, value: GameData[T]): void {
+    this.dynamicData[data] = value;
+  }
+
+  public static resetDynamicData(): void {
+    const defaultData: GameData = {
+      BridgerStraightDistance: 16,
+      BridgerInclinedDistance: 16,
+      BridgerStraightTellyMode: "None",
+    };
+    this.dynamicData = defaultData;
+    world.setDynamicProperty("auto:gameData", JSON.stringify(defaultData));
   }
 }
 

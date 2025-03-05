@@ -5,7 +5,7 @@ import * as form from "../forms/bridger";
 import { bridgerTs, generalTs } from "../data/tempStorage";
 import minecraftID from "../models/minecraftID";
 import { IslandDireciton, TellyMode, IslandDistance } from "../models/Bridger";
-import { BaseGameData } from "../data/dynamicProperty";
+import { BaseGameData, gameData } from "../data/dynamicProperty";
 
 // the location to start placing the structure blocks
 const BASE_LOCATION: Record<IslandDireciton, mc.Vector3> = {
@@ -22,9 +22,9 @@ const HEIGHT_DIFF: Record<number, number> = {
 
 //where to start building telly practice
 const TELLYSTARTBASELOCATION: mc.Vector3 = {
-  x: 10000,
-  y: 99,
-  z: 10004,
+  x: 10002,
+  y: 101,
+  z: 10003,
 };
 
 // the number of telly set to build for each mode
@@ -86,7 +86,9 @@ const handleTellyPractice = function (
   prevDistanceArg?: IslandDistance,
   newDistanceArg?: IslandDistance
 ) {
-  const { tellyMode, bridgerDistance } = bridgerTs.tempData;
+  const { bridgerDirection } = bridgerTs.tempData;
+  const tellyMode = gameData.getData("BridgerStraightTellyMode");
+  const bridgerDistance = gameData.getData(`Bridger${bridgerDirection}Distance`);
 
   const prevTellyMode = tellyMode;
   const prevDistance = prevDistanceArg ?? bridgerDistance;
@@ -125,7 +127,7 @@ const handleTellyPractice = function (
 
   if (prevDistanceArg || newDistanceArg) return;
 
-  bridgerTs.tempData["tellyMode"] = newTellyMode;
+  gameData.setData("BridgerStraightTellyMode", newTellyMode);
   if (newTellyMode === "None") util.sendMessage(`§aTelly practice mode has now been §cDisabled!`, "random.orb");
   else if (prevTellyMode === "None") util.sendMessage(`§aTelly practice mode has now been Enabled!`, "random.orb");
   else util.sendMessage(`§aThe change has now been made!`, "random.orb");
@@ -176,7 +178,7 @@ const fillAndPlace = function (direction: IslandDireciton, distance1: IslandDist
   dimension.fillBlocks(new mc.BlockVolume(fillAirLocation.start, fillAirLocation.end), "minecraft:air");
 
   // telly (if enabled)
-  const currentTellyMode = bridgerTs.tempData["tellyMode"];
+  const currentTellyMode = gameData.getData("BridgerStraightTellyMode");
   if (currentTellyMode === "Telly") handleTellyPractice("Telly", distance1, distance2);
   if (currentTellyMode === "Speed_Telly") handleTellyPractice("Speed_Telly", distance1, distance2);
 
@@ -195,7 +197,8 @@ const fillAndPlace = function (direction: IslandDireciton, distance1: IslandDist
  * replace island based on distance and save in dynamic property
  */
 const handleDistanceChange = function (newDistance: IslandDistance): void {
-  const { bridgerDistance: prevDistance, bridgerDirection: prevDirection } = bridgerTs.tempData;
+  const { bridgerDirection: prevDirection } = bridgerTs.tempData;
+  const prevDistance = gameData.getData(`Bridger${prevDirection}Distance`);
 
   // check whether player clicked on the same distance
   if (prevDistance === newDistance)
@@ -204,7 +207,7 @@ const handleDistanceChange = function (newDistance: IslandDistance): void {
   fillAndPlace(prevDirection, prevDistance, newDistance);
 
   // set distance as dynamic property, set bridger mode for temp data
-  bridgerTs.tempData["bridgerDistance"] = newDistance;
+  gameData.setData(`Bridger${prevDirection}Distance`, newDistance);
 
   util.sendMessage(`§aThe distance is now§r §6${newDistance} blocks§r§a!`, "random.orb");
 };
@@ -252,7 +255,8 @@ export const placingBlockEvt = function (block: mc.Block) {
 };
 
 export const pressurePlatePushEvt = function (player: mc.Player) {
-  const { isPlateDisabled, tellyMode, bridgerDirection } = bridgerTs.tempData;
+  const { isPlateDisabled, bridgerDirection } = bridgerTs.tempData;
+  const tellyMode = gameData.getData("BridgerStraightTellyMode");
 
   if (isPlateDisabled) return;
   bridgerTs.tempData["isPlateDisabled"] = true;
@@ -277,7 +281,8 @@ export const listener = function () {
 
   if (!(bridgerTs.commonData["player"].location.y <= 96) || bridgerTs.tempData["isPlateDisabled"]) return;
 
-  const { tellyMode, bridgerDirection } = bridgerTs.tempData;
+  const { bridgerDirection } = bridgerTs.tempData;
+  const tellyMode = gameData.getData("BridgerStraightTellyMode");
 
   // fail run
   if (tellyMode !== "None" && bridgerDirection !== "Inclined") util.onRunnerFail("Bridger", false);

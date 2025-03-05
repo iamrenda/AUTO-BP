@@ -9,7 +9,7 @@ import * as fistReduce from "../games/fistReduce";
 import * as parkour from "../games/parkour";
 import GameID, { BundlableGameID, ParentGameID } from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
-import { DynamicProperty, StoredBlocksClass } from "../data/dynamicProperty";
+import { DynamicProperty, gameData, StoredBlocksClass } from "../data/dynamicProperty";
 import { statsForm } from "../forms/utility";
 
 const eatGhead = (player: mc.Player): void => {
@@ -53,16 +53,17 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
 });
 
 // book right-click handler
+const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
+  Lobby: lobby.creditFormHandler,
+  Bridger: bridger.bridgerFormHandler,
+  Clutcher: clutcher.clutcherFormHandler,
+  Wall_Run: wallRun.wallRunFormHandler,
+  Bedwars_Rush: bedwarsRush.bedWarsRushFormHandler,
+  Fist_Reduce: fistReduce.fistReduceFormHandler,
+  Parkour: parkour.parkourFormHandler,
+};
+
 const bookHandlers = function (player: mc.Player, parentGameID: ParentGameID) {
-  const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
-    Lobby: lobby.creditFormHandler,
-    Bridger: bridger.bridgerFormHandler,
-    Clutcher: clutcher.clutcherFormHandler,
-    Wall_Run: wallRun.wallRunFormHandler,
-    Bedwars_Rush: bedwarsRush.bedWarsRushFormHandler,
-    Fist_Reduce: fistReduce.fistReduceFormHandler,
-    Parkour: parkour.parkourFormHandler,
-  };
   formHandlers[parentGameID](player);
 };
 
@@ -148,6 +149,7 @@ mc.world.afterEvents.playerSpawn.subscribe(({ player }): void => {
 // leaving the world
 mc.world.beforeEvents.playerLeave.subscribe(() => {
   DynamicProperty.postData();
+  gameData.postData();
   if (generalTs.commonData["storedLocations"].size) {
     StoredBlocksClass.storeBlocks();
     generalTs.commonData["storedLocationsGameID"] = generalTs.commonData["gameID"];

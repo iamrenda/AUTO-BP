@@ -3,6 +3,7 @@ import { bridgerTs } from "../data/tempStorage";
 import { Player } from "@minecraft/server";
 import { ActionFormResponse } from "@minecraft/server-ui";
 import { bridgerBlocks } from "../data/staticData";
+import { gameData } from "../data/dynamicProperty";
 
 export const bridgerForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ChestFormData("27")
@@ -27,9 +28,9 @@ export const bridgerBlockForm = async function (player: Player): Promise<ActionF
 };
 
 export const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
-  const distance = bridgerTs.tempData["bridgerDistance"];
-  const tellyPractice = bridgerTs.tempData["tellyMode"];
   const direction = bridgerTs.tempData["bridgerDirection"];
+  const distance = gameData.getData(`Bridger${direction}Distance`);
+  const tellyPractice = gameData.getData("BridgerStraightTellyMode");
 
   const form =
     direction === "Straight"

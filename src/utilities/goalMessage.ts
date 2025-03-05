@@ -1,10 +1,11 @@
 import * as util from "./utilities";
 import { VERSION } from "../data/staticData";
 import { bridgerTs } from "../data/tempStorage";
-import { BaseGameData } from "../data/dynamicProperty";
+import { BaseGameData, gameData } from "../data/dynamicProperty";
 
 export const bridgerMessage = function (isPB: boolean, time: number, prevPB: number): string {
-  const distance = bridgerTs.tempData["bridgerDistance"];
+  const direction = bridgerTs.tempData["bridgerDirection"];
+  const distance = gameData.getData(`Bridger${direction}Distance`);
   const pb = BaseGameData.getData("Bridger", util.getCurrentSubCategory(), "pbTicks");
 
   const difference =

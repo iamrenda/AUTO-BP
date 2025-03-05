@@ -3,7 +3,7 @@ import * as util from "../utilities/utilities";
 import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
-import { StoredBlocksClass } from "../data/dynamicProperty";
+import { gameData, StoredBlocksClass } from "../data/dynamicProperty";
 
 /**
  * handling navigation for lobby
@@ -24,13 +24,14 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
 
     if (canceled) return;
 
-    bridgerTs.tempData["bridgerDistance"] = 16;
     if (bridgerDirSelection === 11) {
+      const distance = gameData.getData("BridgerStraightDistance");
       bridgerTs.tempData["bridgerDirection"] = "Straight";
-      handleNavigation("Bridger$Straight_16_blocks");
+      handleNavigation(`Bridger$Straight_${distance}_blocks`);
     } else if (bridgerDirSelection === 15) {
+      const distance = gameData.getData("BridgerInclinedDistance");
       bridgerTs.tempData["bridgerDirection"] = "Inclined";
-      handleNavigation("Bridger$Inclined_16_blocks");
+      handleNavigation(`Bridger$Inclined_${distance}_blocks`);
     }
   }
 
