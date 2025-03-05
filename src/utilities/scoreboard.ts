@@ -95,7 +95,7 @@ export const bedwarsRushScoreboard = function (): string {
 
 export const fistReduceScoreboard = function (): string {
   const subCategory = util.getCurrentSubCategory();
-  const mode = util.nameGenerator(subCategory);
+  const mode = util.toProperName(subCategory);
 
   return `      §b§lAUTO World§r
 §7-------------------§r
@@ -112,7 +112,7 @@ export const parkourScoreboard = function (): string {
   const { ticks } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
   const pbTicks = BaseGameData.getData("Parkour", subCategory, "pbTicks");
-  const chapterName = util.nameGenerator(subCategory);
+  const chapterName = util.toProperName(subCategory);
 
   return `      §b§lAUTO World§r
 §7-------------------§r

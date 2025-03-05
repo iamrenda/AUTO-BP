@@ -63,7 +63,7 @@ export const parkourMessage = function (isPB: boolean, time: number, prevPB: num
 
   const difference =
     prevPB !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";
-  const chapterName = util.nameGenerator(subCategory);
+  const chapterName = util.toProperName(subCategory);
 
   const baseMessage = `
 §7----------------------------§r 

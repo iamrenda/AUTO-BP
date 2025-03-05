@@ -94,7 +94,7 @@ const handleTellyPractice = function (
   const prevDistance = prevDistanceArg ?? bridgerDistance;
   const newDistance = newDistanceArg ?? bridgerDistance;
 
-  if (prevTellyMode === newTellyMode || !newDistance)
+  if (prevTellyMode === newTellyMode && !newDistance)
     return util.sendMessage("§4The telly practice has already been changed!", "random.anvil_land");
 
   // clearing previous mode
@@ -206,8 +206,8 @@ const handleDistanceChange = function (newDistance: IslandDistance): void {
 
   fillAndPlace(prevDirection, prevDistance, newDistance);
 
-  // set distance as dynamic property, set bridger mode for temp data
   gameData.setData(`Bridger${prevDirection}Distance`, newDistance);
+  bridgerTs.commonData["gameID"] = `Bridger$${prevDirection}_${newDistance}_blocks`;
 
   util.sendMessage(`§aThe distance is now§r §6${newDistance} blocks§r§a!`, "random.orb");
 };

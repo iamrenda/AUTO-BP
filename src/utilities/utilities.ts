@@ -255,7 +255,7 @@ export const onRunnerFail = function <T extends BundlableGameID>(bundlableGameID
  * reset pb
  */
 export const resetPB = async function <T extends BundlableGameID>(player: mc.Player, bundlableGameID: T) {
-  const { selection: confirmationSelection } = await confirmationForm(player, nameGenerator(bundlableGameID));
+  const { selection: confirmationSelection } = await confirmationForm(player, toProperName(bundlableGameID));
   const subCategory = getCurrentSubCategory();
   if (confirmationSelection !== 15) return;
 
@@ -284,7 +284,7 @@ export const getCurrentParentCategory = function (): ParentGameID {
 /**
  * _ to " "
  */
-export const nameGenerator = function (input: string): string {
+export const toProperName = function (input: string): string {
   return input.replace(/_/g, " ");
 };
 

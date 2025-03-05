@@ -38,7 +38,8 @@ export const statsForm = async function <T extends BundlableGameID>(
       `§3§lAUTO World§r §8- Version ${VERSION}§r
 
  §bIgn: §f${player.nameTag}
- §bGamemode: §f${util.nameGenerator(bundlableGameID)}
+ §bGamemode: §f${util.toProperName(bundlableGameID)}
+ §bCategory: §f${util.toProperName(subCategory)}
 
   §7- §6Personal Best: §f${util.tickToSec(pbTicks)}
   §7- §6Average Time: §f${util.tickToSec(avgTicks)}
