@@ -5,14 +5,22 @@ import GameID from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
 import { gameData, StoredBlocksClass } from "../data/dynamicProperty";
 
-/**
- * handling navigation for lobby
- */
+// handling navigation for lobby
 const handleNavigation = (gameID: GameID) => {
   util.teleportation(gameID);
   generalTs.commonData["gameID"] = gameID;
   util.giveItems(util.getCurrentParentCategory());
   StoredBlocksClass.clearBlocks();
+};
+
+// handling wool parkour
+const woolParkours: Record<number, GameID> = {
+  11: "Wool_Parkour$Oak_1",
+  13: "Wool_Parkour$Oak_2",
+  15: "Wool_Parkour$Oak_3",
+  20: "Wool_Parkour$Prismarine_1",
+  22: "Wool_Parkour$Prismarine_2",
+  24: "Wool_Parkour$Prismarine_3",
 };
 
 export const nagivatorFormHandler = async function (player: mc.Player) {
@@ -65,7 +73,7 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
   }
 
   // parkour
-  if (selection === 31) {
+  if (selection === 29) {
     const { selection: bridgerDirSelection, canceled } = await form.parkourChapterForm(player);
     if (canceled) return;
 
@@ -77,20 +85,14 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
       handleNavigation("Parkour$Chapter_1.3");
     }
   }
-};
 
-export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
-  const i = new mc.ItemStack("minecraft:white_wool", 1);
-  i.lockMode = mc.ItemLockMode.inventory;
-  generalTs.commonData["player"].getComponent("inventory").container.addItem(i);
-  bridgerTs.commonData["storedLocations"].add(location);
+  // wool parkour
+  if (selection === 31) {
+    const { selection: woolParkourSelection, canceled } = await form.woolParkourSelectorForm(player);
+    if (canceled) return;
 
-  mc.system.runTimeout(() => {
-    try {
-      mc.world.getDimension("overworld").setBlockType(location, "auto:custom_redstoneBlock");
-      generalTs.commonData["storedLocations"].delete(location);
-    } catch (e) {}
-  }, 40);
+    handleNavigation(woolParkours[woolParkourSelection]);
+  }
 };
 
 export const launchingStickHandler = function (player: mc.Player) {

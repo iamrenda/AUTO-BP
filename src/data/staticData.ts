@@ -49,6 +49,10 @@ export const InventoryData: Record<ParentGameID, ItemInfo[]> = {
     { item: "minecraft:book", quantity: 1, slot: 8 },
   ],
   Parkour: [{ item: "minecraft:book", quantity: 1, slot: 8 }],
+  Wool_Parkour: [
+    { item: "minecraft:white_wool", quantity: 64 },
+    { item: "minecraft:book", quantity: 1, slot: 8 },
+  ],
 };
 
 export const locationData: Record<GameID, TeleportationLocation> = {
@@ -162,6 +166,78 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       x: 60075.5,
       y: 80,
       z: 60058.5,
+    },
+  },
+  Wool_Parkour$Oak_1: {
+    position: {
+      x: 70001.5,
+      y: 101,
+      z: 70001.5,
+    },
+    facing: {
+      x: 70002,
+      y: 101,
+      z: 70001.5,
+    },
+  },
+  Wool_Parkour$Oak_2: {
+    position: {
+      x: 70001.5,
+      y: 100,
+      z: 70018.5,
+    },
+    facing: {
+      x: 70002,
+      y: 100,
+      z: 70018.5,
+    },
+  },
+  Wool_Parkour$Oak_3: {
+    position: {
+      x: 70002.5,
+      y: 98,
+      z: 70036.5,
+    },
+    facing: {
+      x: 70003,
+      y: 98,
+      z: 70036.5,
+    },
+  },
+  Wool_Parkour$Prismarine_1: {
+    position: {
+      x: 70002.5,
+      y: 99,
+      z: 70058.5,
+    },
+    facing: {
+      x: 70003,
+      y: 99,
+      z: 70058.5,
+    },
+  },
+  Wool_Parkour$Prismarine_2: {
+    position: {
+      x: 70002.5,
+      y: 99,
+      z: 70078.5,
+    },
+    facing: {
+      x: 70003,
+      y: 99,
+      z: 70078.5,
+    },
+  },
+  Wool_Parkour$Prismarine_3: {
+    position: {
+      x: 70002.5,
+      y: 97,
+      z: 70098.5,
+    },
+    facing: {
+      x: 70003,
+      y: 97,
+      z: 70098.5,
     },
   },
 };

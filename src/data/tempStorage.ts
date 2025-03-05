@@ -154,6 +154,19 @@ class Parkour extends TempStorage<type.ParkourTempStorage> {
   }
 }
 
+class WoolParkour extends TempStorage<type.WoolParkourTempStorage> {
+  constructor(commonData: type.CommonData) {
+    super("WoolParkour", commonData);
+    this.tempData = this.setDefaultTempData();
+  }
+
+  public setDefaultTempData(): type.WoolParkourTempStorage {
+    return {
+      isPlateDisabled: false,
+    };
+  }
+}
+
 export const generalTs = new TempStorage("general", commonDataInstance);
 export const bridgerTs = new Bridger(commonDataInstance);
 export const clutcherTs = new Clutcher(commonDataInstance);
@@ -161,3 +174,4 @@ export const wallRunTs = new WallRun(commonDataInstance);
 export const bedwarsRushTs = new BedwarsRush(commonDataInstance);
 export const fistReduceTs = new FistReduce(commonDataInstance);
 export const parkourTs = new Parkour(commonDataInstance);
+export const woolParkourTs = new WoolParkour(commonDataInstance);

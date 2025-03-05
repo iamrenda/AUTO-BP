@@ -62,3 +62,7 @@ export type ParkourTempStorage = {
   };
   autoReq: number;
 };
+
+export type WoolParkourTempStorage = {
+  isPlateDisabled: boolean;
+};

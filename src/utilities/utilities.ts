@@ -88,6 +88,7 @@ const scoreboards: Record<ParentGameID, () => string> = {
   Bedwars_Rush: scoreboard.bedwarsRushScoreboard,
   Fist_Reduce: scoreboard.fistReduceScoreboard,
   Parkour: scoreboard.parkourScoreboard,
+  Wool_Parkour: scoreboard.woolParkourScoreboard,
 };
 export const displayScoreboard = function (parentGameID: ParentGameID): void {
   const display = scoreboards[parentGameID];
@@ -130,10 +131,11 @@ export const differenceMs = function (ms1: number, ms2: number): string {
  * shows the result of a run
  */
 const messages: Record<BundlableGameID, (isPB: boolean, time: number, prevPB: number) => string> = {
-  Bridger: (isPB, time, prevPB) => goalMessage.bridgerMessage(isPB, time, prevPB),
-  Wall_Run: (isPB, time, prevPB) => goalMessage.wallRunMessage(isPB, time, prevPB),
-  Bedwars_Rush: (isPB, time, prevPB) => goalMessage.bedwarsRushMessage(isPB, time, prevPB),
-  Parkour: (isPB, time, prevPB) => goalMessage.parkourMessage(isPB, time, prevPB),
+  Bridger: goalMessage.bridgerMessage,
+  Wall_Run: goalMessage.wallRunMessage,
+  Bedwars_Rush: goalMessage.bedwarsRushMessage,
+  Parkour: goalMessage.parkourMessage,
+  Wool_Parkour: goalMessage.parkourMessage,
 };
 
 export const showMessage = function (

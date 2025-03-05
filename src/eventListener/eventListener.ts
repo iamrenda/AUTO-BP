@@ -3,10 +3,12 @@ import * as util from "../utilities/utilities";
 import * as lobby from "../games/lobby";
 import * as bridger from "../games/bridger";
 import * as clutcher from "../games/clutcher";
-import * as wallRun from "../games/wallrun";
+import * as wallRun from "../games/wallRun";
 import * as bedwarsRush from "../games/bedwarsRush";
 import * as fistReduce from "../games/fistReduce";
 import * as parkour from "../games/parkour";
+import * as woolParkour from "../games/woolParkour";
+
 import GameID, { BundlableGameID, ParentGameID } from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
 import { DynamicProperty, gameData, StoredBlocksClass } from "../data/dynamicProperty";
@@ -61,6 +63,7 @@ const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
   Bedwars_Rush: bedwarsRush.bedWarsRushFormHandler,
   Fist_Reduce: fistReduce.fistReduceFormHandler,
   Parkour: parkour.parkourFormHandler,
+  Wool_Parkour: woolParkour.parkourFormHandler,
 };
 
 const bookHandlers = function (player: mc.Player, parentGameID: ParentGameID) {
@@ -69,15 +72,17 @@ const bookHandlers = function (player: mc.Player, parentGameID: ParentGameID) {
 
 // placing a block
 const eventMap: Record<ParentGameID, (block: mc.Block) => void> = {
-  Lobby: lobby.placingBlockEvt,
+  Lobby: undefined,
   Bridger: bridger.placingBlockEvt,
   Clutcher: clutcher.placingBlockEvt,
   Wall_Run: wallRun.placingBlockEvt,
   Bedwars_Rush: bedwarsRush.placingBlockEvt,
   Fist_Reduce: fistReduce.placingBlockEvt,
   Parkour: undefined,
+  Wool_Parkour: woolParkour.placingBlockEvt,
 };
 
+// placing block
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   const parentGameID = util.getCurrentParentCategory();
   const eventHandler = eventMap[parentGameID];
@@ -108,7 +113,7 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
       break;
 
     default:
-      e.cancel = true;
+    //   e.cancel = true;
   }
 });
 
@@ -125,6 +130,9 @@ mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): vo
       break;
     case "Parkour":
       parkour.pressurePlatePushEvt(block);
+      break;
+    case "Wool_Parkour":
+      woolParkour.pressurePlatePushEvt(block);
       break;
   }
 });
@@ -209,6 +217,7 @@ const listenerMap: Record<ParentGameID, () => void> = {
   Bedwars_Rush: bedwarsRush.listener,
   Fist_Reduce: undefined,
   Parkour: parkour.listener,
+  Wool_Parkour: woolParkour.listener,
 };
 mc.system.runInterval((): void => {
   const parentGameID = util.getCurrentParentCategory();

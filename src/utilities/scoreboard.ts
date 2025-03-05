@@ -17,6 +17,7 @@ export const lobbyScoreboard = function (): string {
    Bedwars Rush
    Fist Reduce
    Parkour
+   Wool Parkour
              
  §7- §6Discord:§r
    .gg/4NRYhCYykk
@@ -118,6 +119,25 @@ export const parkourScoreboard = function (): string {
 §7-------------------§r
  §7- §6Chapter:§r
    ${chapterName}
+
+ §7- §6Personal Best:§r
+   ${util.tickToSec(pbTicks)}
+    
+ §7- §6Time:§r
+   ${util.tickToSec(ticks)}
+§7-------------------§r
+ §8§oVersion ${VERSION} | ${util.today}`;
+};
+
+export const woolParkourScoreboard = function (): string {
+  const { ticks } = generalTs.commonData;
+  const subCategory = util.getCurrentSubCategory();
+  const pbTicks = BaseGameData.getData("Wool_Parkour", subCategory, "pbTicks");
+
+  return `      §b§lAUTO World§r
+§7-------------------§r
+ §7- §6Course:§r
+   ${util.toProperName(subCategory)}
 
  §7- §6Personal Best:§r
    ${util.tickToSec(pbTicks)}

@@ -1,6 +1,6 @@
 import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
-import * as form from "../forms/wallrun";
+import * as form from "../forms/wallRun";
 import { wallRunTs } from "../data/tempStorage";
 
 /**

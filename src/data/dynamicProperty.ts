@@ -3,7 +3,9 @@ import { generalTs } from "../data/tempStorage";
 import { BundlableGameID, BundleData, GameData, SubCategory } from "../models/GameID";
 import { retryClearBlocks } from "../utilities/utilities";
 
-type DefaultData = Record<BundlableGameID, Record<string, BundleData>>;
+type DefaultData<T extends BundlableGameID> = {
+  [K in T]: Record<SubCategory<K>, BundleData>;
+};
 
 export class DynamicProperty {
   protected static dynamicData = JSON.parse(String(world.getDynamicProperty("auto:dynamicData")));
@@ -19,7 +21,7 @@ export class DynamicProperty {
   }
 
   public static resetDynamicData(): void {
-    const defaultData: DefaultData = {
+    const defaultData: DefaultData<BundlableGameID> = {
       Bridger: {
         Straight_16_blocks: {
           pbTicks: -1,
@@ -91,6 +93,45 @@ export class DynamicProperty {
           successAttempts: 0,
         },
         "Chapter_1.3": {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+      },
+
+      Wool_Parkour: {
+        Oak_1: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Oak_2: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Oak_3: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Prismarine_1: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Prismarine_2: {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        Prismarine_3: {
           pbTicks: -1,
           avgTicks: -1,
           attempts: 0,

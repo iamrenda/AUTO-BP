@@ -53,7 +53,7 @@ export const lobbyForm = async function (player: Player): Promise<ActionFormResp
       false
     )
     .button(
-      31,
+      29,
       "§6§lParkour",
       [
         "§7Navigate through complex courses",
@@ -63,6 +63,14 @@ export const lobbyForm = async function (player: Player): Promise<ActionFormResp
         "§eClick to Play!",
       ],
       "minecraft:pufferfish",
+      1,
+      false
+    )
+    .button(
+      31,
+      "§6§lWool Parkour",
+      ["§7Play Minecraft Parkour but now", "§7using white wool!", "", "§eClick to Play!"],
+      "minecraft:white_wool",
       1,
       false
     );
@@ -98,6 +106,19 @@ export const parkourChapterForm = async function (player: Player): Promise<Actio
   return await form.show(player);
 };
 
+export const woolParkourSelectorForm = async function (player: Player): Promise<ActionFormResponse> {
+  const form = new ChestFormData("36")
+    .title("Parkour Chapter Selector")
+    .button(11, "§6Oak 1", [], "minecraft:oak_log", 1, false)
+    .button(13, "§6Oak 2", [], "minecraft:oak_log", 1, false)
+    .button(15, "§6Oak 3", [], "minecraft:oak_log", 1, false)
+    .button(20, "§6Prismarine 1", [], "minecraft:prismarine", 1, false)
+    .button(22, "§6Prismarine 2", [], "minecraft:prismarine", 1, false)
+    .button(24, "§6Prismarine 3", [], "minecraft:prismarine", 1, false);
+
+  return await form.show(player);
+};
+
 export const lobbyCreditForm = async function (player: Player): Promise<ActionFormResponse> {
   const form = new ActionFormData()
     .title("Credits")
@@ -107,7 +128,7 @@ export const lobbyCreditForm = async function (player: Player): Promise<ActionFo
  §b§oContributors:§r
    §7- §6Developer: §fTheMinerCat
    §7- §6Builder: §fqwertyguy
-   §7- §6Helper: §fbartnielot
+   §7- §6Builder/Helper: §fbartnielot
    
  §b§oPersonal thank you to:§r
    §7- §6Chest UI: §fHerobrine643928

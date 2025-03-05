@@ -15,10 +15,27 @@ type GameID =
   | "Fist_Reduce$LIMITLESS"
   | "Parkour$Chapter_1.1"
   | "Parkour$Chapter_1.2"
-  | "Parkour$Chapter_1.3";
+  | "Parkour$Chapter_1.3"
+  | "Wool_Parkour$Oak_1"
+  | "Wool_Parkour$Oak_2"
+  | "Wool_Parkour$Oak_3"
+  | "Wool_Parkour$Prismarine_1"
+  | "Wool_Parkour$Prismarine_2"
+  | "Wool_Parkour$Prismarine_3";
 
-export type ParentGameID = "Lobby" | "Bridger" | "Clutcher" | "Wall_Run" | "Bedwars_Rush" | "Fist_Reduce" | "Parkour";
-export type BundlableGameID = Extract<ParentGameID, "Bridger" | "Wall_Run" | "Bedwars_Rush" | "Parkour">;
+export type ParentGameID =
+  | "Lobby"
+  | "Bridger"
+  | "Clutcher"
+  | "Wall_Run"
+  | "Bedwars_Rush"
+  | "Fist_Reduce"
+  | "Parkour"
+  | "Wool_Parkour";
+export type BundlableGameID = Extract<
+  ParentGameID,
+  "Bridger" | "Wall_Run" | "Bedwars_Rush" | "Parkour" | "Wool_Parkour"
+>;
 
 export type BundleData = {
   pbTicks: number;
@@ -38,6 +55,7 @@ type subCategoryGameID = {
   Wall_Run: "Ancient";
   Bedwars_Rush: "Custom_Map";
   Parkour: "Chapter_1.1" | "Chapter_1.2" | "Chapter_1.3";
+  Wool_Parkour: "Oak_1" | "Oak_2" | "Oak_3" | "Prismarine_1" | "Prismarine_2" | "Prismarine_3";
 };
 
 export type SubCategory<T extends BundlableGameID> = subCategoryGameID[T];
