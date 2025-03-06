@@ -57,6 +57,5 @@ export const listener = function () {
 
   if (!(woolParkourTs.commonData["player"].location.y < 95)) return;
 
-  // on fail
   util.onRunnerFail("Wool_Parkour", enablePlate);
 };

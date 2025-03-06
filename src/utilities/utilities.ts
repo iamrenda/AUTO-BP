@@ -135,7 +135,7 @@ const messages: Record<BundlableGameID, (isPB: boolean, time: number, prevPB: nu
   Wall_Run: goalMessage.wallRunMessage,
   Bedwars_Rush: goalMessage.bedwarsRushMessage,
   Parkour: goalMessage.parkourMessage,
-  Wool_Parkour: goalMessage.parkourMessage,
+  Wool_Parkour: goalMessage.woolparkourMessage,
 };
 
 export const showMessage = function (
@@ -250,10 +250,13 @@ export const onRunnerFail = function <T extends BundlableGameID>(
     BaseGameData.addData(bundlableGameID, subCategory, "attempts");
   }
 
+  if (enablePlate) {
+    enablePlate();
+  }
+
   generalTs.stopTimer();
   generalTs.clearBlocks();
   generalTs.commonData["blocks"] = 0;
-  enablePlate();
   giveItems(bundlableGameID);
   teleportation(gameID);
 };

@@ -75,3 +75,22 @@ export const parkourMessage = function (isPB: boolean, time: number, prevPB: num
   const pbMessage = isPB ? `    §d§lNEW PERSONAL BEST!!§r\n` : "";
   return `${baseMessage}\n${pbMessage}§7----------------------------`;
 };
+
+export const woolparkourMessage = function (isPB: boolean, time: number, prevPB: number): string {
+  const subCategory = util.getCurrentSubCategory();
+  const pb = BaseGameData.getData("Wool_Parkour", subCategory, "pbTicks");
+
+  const difference =
+    prevPB !== -1 ? "§f(" + (isPB ? util.differenceMs(prevPB, time) : util.differenceMs(pb, time)) + "§f)" : "";
+  const courseName = util.toProperName(subCategory);
+
+  const baseMessage = `
+§7----------------------------§r 
+    §bParkour ${courseName}§r §8§o- Version ${VERSION}§r
+  
+    §6${isPB ? "Your Previous Best" : "Your Personal Best"}:§r §f${util.tickToSec(isPB ? prevPB : pb)}§f
+    §6Time Recorded:§r §f${util.tickToSec(time)}§r ${difference}§r`;
+
+  const pbMessage = isPB ? `    §d§lNEW PERSONAL BEST!!§r\n` : "";
+  return `${baseMessage}\n${pbMessage}§7----------------------------`;
+};
