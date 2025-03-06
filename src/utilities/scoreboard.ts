@@ -1,141 +1,139 @@
 import * as util from "./utilities";
 import { VERSION } from "../data/staticData";
-import { generalTs, bridgerTs, clutcherTs } from "../data/tempStorage";
+import { generalTs, clutcherTs } from "../data/tempStorage";
 import { BaseGameData } from "../data/dynamicProperty";
 
 export const lobbyScoreboard = function (): string {
-  const nameTag = generalTs.commonData["player"].nameTag;
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Username:§r
-   ${nameTag}
+  const { player } = generalTs.commonData;
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
     
- §7- §6Game Available:§r
-   Bridger
-   Clutcher
-   Wallrun
-   Bedwars Rush
-   Fist Reduce
-   Parkour
-   Wool Parkour
-             
- §7- §6Discord:§r
-   .gg/4NRYhCYykk
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+  §6Ign: §f${player.nameTag}
+  §6Gamemodes:
+    §fBridger
+    §fClutcher
+    §fWallrun
+    §fBedwars Rush
+    §fFist Reduce
+    §fParkour
+    §fWool Parkour
+
+§eautoworldmc.netlify.app`;
 };
 
 export const bridgerScoreboard = function (): string {
+  const { player, ticks, blocks } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
   const pbTicks = BaseGameData.getData("Bridger", subCategory, "pbTicks");
 
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Personal Best:§r
-   ${util.tickToSec(pbTicks)}
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
     
- §7- §6Time:§r
-   ${util.tickToSec(bridgerTs.commonData["ticks"])}
+  §6Ign: §f${player.nameTag}
+  §6Mode: §f${util.toProperName(subCategory)}
     
- §7- §6Blocks:§r
-   ${bridgerTs.commonData["blocks"]}
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+  §6Personal Best: §f${util.tickToSec(pbTicks)}
+  §6Current Time: §f${util.tickToSec(ticks)}
+    
+  §6Blocks: §f${blocks}
+  
+§eautoworldmc.netlify.app`;
 };
 
 export const clutcherScoreboard = function (): string {
+  const { player } = generalTs.commonData;
   const { distance, clutchHits, hitIndex } = clutcherTs.tempData;
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Distance:§r
-   ${distance} blocks
-    
- §7- §6Hits:§r
-   ${hitIndex}/${clutchHits.length}
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
+  
+  §6Ign: §f${player.nameTag}
+  §6Hits: §f${clutchHits.length}
+  
+  §6Distance: §f${distance}
+  §6Current Hit: §f${hitIndex}/${clutchHits.length}
+  
+§eautoworldmc.netlify.app`;
 };
 
 export const wallRunScoreboard = function (): string {
-  const { player, ticks } = generalTs.commonData;
+  const { player, ticks, blocks } = generalTs.commonData;
   const progress = Math.max(0, +(((player.location.z - 30016) / 105) * 100).toFixed(0));
   const subCategory = util.getCurrentSubCategory();
-  const pbTicks = BaseGameData.getData("Bridger", subCategory, "pbTicks");
+  const pbTicks = BaseGameData.getData("Wall_Run", subCategory, "pbTicks");
 
-  return `     §b§lAUTO World§r
-§7-------------------§r
- §7- §6Personal Best:§r
-   §f${util.tickToSec(pbTicks)}
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
+  
+  §6Ign: §f${player.nameTag}
+  §6Map: §f${util.toProperName(subCategory)}
+  
+  §6Personal Best: §f${util.tickToSec(pbTicks)}
+  §6Current Time: §f${util.tickToSec(ticks)}
+  
+  §6Blocks: §f${blocks}
+  §6Progress: §f${progress}%
 
- §7- §6Time:§r
-   §f${util.tickToSec(ticks)}
-
- §7- §6Progress:§r
-   §f${progress}%
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+§eautoworldmc.netlify.app`;
 };
 
 export const bedwarsRushScoreboard = function (): string {
-  const { ticks, blocks } = generalTs.commonData;
+  const { ticks, blocks, player } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
-  const pbTicks = BaseGameData.getData("Bridger", subCategory, "pbTicks");
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Personal Best:§r
-   ${util.tickToSec(pbTicks)}
-    
- §7- §6Time:§r
-   ${util.tickToSec(ticks)}
-    
- §7- §6Blocks:§r
-   ${blocks}
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+  const pbTicks = BaseGameData.getData("Bedwars_Rush", subCategory, "pbTicks");
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
+  
+  §6Ign: §f${player.nameTag}
+  §6Map: §f${util.toProperName(subCategory)}
+  
+  §6Personal Best: §f${util.tickToSec(pbTicks)}
+  §6Current Time: §f${util.tickToSec(ticks)}
+  
+  §6Blocks: §f${blocks}
+  
+§eautoworldmc.netlify.app`;
 };
 
 export const fistReduceScoreboard = function (): string {
+  const { player } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
   const mode = util.toProperName(subCategory);
 
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Reduce Mode:§r
-   ${mode}
-             
- §7- §6Discord§r
-   .gg/4NRYhCYykk
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
+  
+  §6Ign: §f${player.nameTag}
+  §6Reduce Mode: §f${mode}
+  
+§eautoworldmc.netlify.app`;
 };
 
 export const parkourScoreboard = function (): string {
-  const { ticks } = generalTs.commonData;
+  const { ticks, player } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
   const pbTicks = BaseGameData.getData("Parkour", subCategory, "pbTicks");
   const chapterName = util.toProperName(subCategory);
 
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Chapter:§r
-   ${chapterName}
-
- §7- §6Personal Best:§r
-   ${util.tickToSec(pbTicks)}
-    
- §7- §6Time:§r
-   ${util.tickToSec(ticks)}
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
+  
+  §6Ign: §f${player.nameTag}
+  §6Chapter: §f${chapterName}
+  
+  §6Personal Best: §f${util.tickToSec(pbTicks)}
+  §6Current Time: §f${util.tickToSec(ticks)}
+  
+§eautoworldmc.netlify.app`;
 };
 
 export const woolParkourScoreboard = function (): string {
-  const { ticks, player } = generalTs.commonData;
+  const { ticks, player, blocks } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
   const pbTicks = BaseGameData.getData("Wool_Parkour", subCategory, "pbTicks");
 
-  return `      §a§lAUTO World§r
-§7${util.today}§r §8Version ${VERSION}§r
+  return `       §a§lAUTO World       §r
+ §7${util.today}§r §8Version ${VERSION}§r
   
   §6Ign: §f${player.nameTag}
   §6Course: §f${util.toProperName(subCategory)}
@@ -143,5 +141,7 @@ export const woolParkourScoreboard = function (): string {
   §6Personal Best: §f${util.tickToSec(pbTicks)}
   §6Current Time: §f${util.tickToSec(ticks)}
   
+  §6Current Time: §f${blocks}
+
 §eautoworldmc.netlify.app`;
 };

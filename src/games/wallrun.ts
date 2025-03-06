@@ -81,6 +81,7 @@ export const wallRunFormHandler = async function (player: mc.Player) {
 
 export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
   wallRunTs.commonData["storedLocations"].add(location);
+  wallRunTs.commonData["blocks"]++;
 };
 
 export const listener = function () {

@@ -64,12 +64,12 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
     const { selection: bridgerDirSelection, canceled } = await form.fistReduceModeForm(player);
     if (canceled) return;
 
-    util.displayScoreboard("Fist_Reduce");
     if (bridgerDirSelection === 11) {
       handleNavigation("Fist_Reduce$Normal");
     } else if (bridgerDirSelection === 15) {
       handleNavigation("Fist_Reduce$LIMITLESS");
     }
+    util.displayScoreboard("Fist_Reduce");
   }
 
   // parkour
