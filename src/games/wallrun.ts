@@ -99,7 +99,6 @@ export const listener = function () {
     util.giveItems("Wall_Run");
     wallRunTs.clearBlocks();
   } else {
-    enablePlate();
-    util.onRunnerFail("Wall_Run");
+    util.onRunnerFail("Wall_Run", enablePlate);
   }
 };

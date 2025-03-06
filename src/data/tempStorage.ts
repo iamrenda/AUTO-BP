@@ -162,7 +162,10 @@ class WoolParkour extends TempStorage<type.WoolParkourTempStorage> {
 
   public setDefaultTempData(): type.WoolParkourTempStorage {
     return {
-      isPlateDisabled: false,
+      isPlateDisabled: {
+        Start: false,
+        End: false,
+      },
     };
   }
 }

@@ -36,5 +36,5 @@ export const listener = function () {
   if (!(bedwarsRushTs.commonData["player"].location.y < 97)) return;
 
   // on fail
-  util.onRunnerFail("Bedwars_Rush");
+  util.onRunnerFail("Bedwars_Rush", undefined);
 };

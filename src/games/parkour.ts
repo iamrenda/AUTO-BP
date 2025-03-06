@@ -97,7 +97,6 @@ export const listener = function () {
     !parkourTs.tempData["autoReq"] &&
     blockUnder.isSolid
   ) {
-    util.onRunnerFail("Parkour");
-    enablePlate();
+    util.onRunnerFail("Parkour", enablePlate);
   }
 };

@@ -64,5 +64,5 @@ export type ParkourTempStorage = {
 };
 
 export type WoolParkourTempStorage = {
-  isPlateDisabled: boolean;
+  isPlateDisabled: Record<"Start" | "End", boolean>;
 };

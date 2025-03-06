@@ -238,7 +238,11 @@ export const onRunnerSuccess = function (
 /**
  * when the player gets a fail run
  */
-export const onRunnerFail = function <T extends BundlableGameID>(bundlableGameID: T, addAttempt = true) {
+export const onRunnerFail = function <T extends BundlableGameID>(
+  bundlableGameID: T,
+  enablePlate: () => void,
+  addAttempt = true
+) {
   const gameID = generalTs.commonData["gameID"];
   const subCategory = getCurrentSubCategory();
 
@@ -249,6 +253,7 @@ export const onRunnerFail = function <T extends BundlableGameID>(bundlableGameID
   generalTs.stopTimer();
   generalTs.clearBlocks();
   generalTs.commonData["blocks"] = 0;
+  enablePlate();
   giveItems(bundlableGameID);
   teleportation(gameID);
 };

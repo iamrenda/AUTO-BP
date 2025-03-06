@@ -137,6 +137,16 @@ mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): vo
   }
 });
 
+// pressureplate pop
+mc.world.afterEvents.pressurePlatePop.subscribe(({ block }) => {
+  const parentGameID = util.getCurrentParentCategory();
+
+  switch (parentGameID) {
+    case "Wool_Parkour":
+      woolParkour.pressurePlatePopEvt(block);
+  }
+});
+
 // world init
 mc.world.beforeEvents.worldInitialize.subscribe(({ blockComponentRegistry }): void => {
   blockComponentRegistry.registerCustomComponent("auto:clear", {

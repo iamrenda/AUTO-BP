@@ -297,6 +297,6 @@ export const listener = function () {
   const tellyMode = gameData.getData("BridgerStraightTellyMode");
 
   // fail run
-  if (tellyMode !== "None" && bridgerDirection !== "Inclined") util.onRunnerFail("Bridger", false);
-  else util.onRunnerFail("Bridger", true);
+  if (tellyMode !== "None" && bridgerDirection !== "Inclined") util.onRunnerFail("Bridger", undefined, false);
+  else util.onRunnerFail("Bridger", undefined, true);
 };
