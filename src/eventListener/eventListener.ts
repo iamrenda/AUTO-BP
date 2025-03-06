@@ -210,7 +210,9 @@ mc.world.beforeEvents.playerInteractWithEntity.subscribe((e) => {
 });
 
 // block interaction
-mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.player.isSneaking));
+mc.world.beforeEvents.playerInteractWithBlock.subscribe(
+  (e) => (e.cancel = !e.player.isSneaking && e.block.hasTag("one_way_collidable"))
+);
 
 // gamemode change
 // mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {

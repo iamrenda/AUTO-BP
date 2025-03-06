@@ -130,20 +130,18 @@ export const parkourScoreboard = function (): string {
 };
 
 export const woolParkourScoreboard = function (): string {
-  const { ticks } = generalTs.commonData;
+  const { ticks, player } = generalTs.commonData;
   const subCategory = util.getCurrentSubCategory();
   const pbTicks = BaseGameData.getData("Wool_Parkour", subCategory, "pbTicks");
 
-  return `      §b§lAUTO World§r
-§7-------------------§r
- §7- §6Course:§r
-   ${util.toProperName(subCategory)}
-
- §7- §6Personal Best:§r
-   ${util.tickToSec(pbTicks)}
-    
- §7- §6Time:§r
-   ${util.tickToSec(ticks)}
-§7-------------------§r
- §8§oVersion ${VERSION} | ${util.today}`;
+  return `      §a§lAUTO World§r
+§7${util.today}§r §8Version ${VERSION}§r
+  
+  §6Ign: §f${player.nameTag}
+  §6Course: §f${util.toProperName(subCategory)}
+  
+  §6Personal Best: §f${util.tickToSec(pbTicks)}
+  §6Current Time: §f${util.tickToSec(ticks)}
+  
+§eautoworldmc.netlify.app`;
 };
