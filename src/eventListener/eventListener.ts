@@ -209,6 +209,9 @@ mc.world.beforeEvents.playerInteractWithEntity.subscribe((e) => {
   mc.system.run(async () => await statsForm(e.player, parentGameID));
 });
 
+// block interaction
+mc.world.beforeEvents.playerInteractWithBlock.subscribe((e) => (e.cancel = !e.player.isSneaking));
+
 // gamemode change
 // mc.world.afterEvents.playerGameModeChange.subscribe(({ toGameMode, player }) => {
 //   if (!generalTs.commonData["byPass"] && toGameMode === mc.GameMode.creative) {
