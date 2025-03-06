@@ -86,7 +86,7 @@ export const woolparkourMessage = function (isPB: boolean, time: number, prevPB:
 
   const baseMessage = `
 §7----------------------------§r 
-    §bParkour ${courseName}§r §8§o- Version ${VERSION}§r
+    §bWool Parkour ${courseName}§r §8§o- Version ${VERSION}§r
   
     §6${isPB ? "Your Previous Best" : "Your Personal Best"}:§r §f${util.tickToSec(isPB ? prevPB : pb)}§f
     §6Time Recorded:§r §f${util.tickToSec(time)}§r ${difference}§r`;

@@ -49,13 +49,14 @@ export const pressurePlatePopEvt = function (block: mc.Block) {
 
 export const placingBlockEvt = function ({ location }: { location: mc.Vector3 }) {
   woolParkourTs.commonData["storedLocations"].add(location);
+  woolParkourTs.commonData["blocks"]++;
 };
 
 export const listener = function () {
   const parentGameID = util.getCurrentParentCategory();
   util.displayScoreboard(parentGameID);
 
-  if (!(woolParkourTs.commonData["player"].location.y < 95)) return;
+  if (!(woolParkourTs.commonData["player"].location.y < 95) || woolParkourTs.tempData["isPlateDisabled"]["End"]) return;
 
   util.onRunnerFail("Wool_Parkour", enablePlate);
 };

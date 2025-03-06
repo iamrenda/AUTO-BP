@@ -141,7 +141,7 @@ export const woolParkourScoreboard = function (): string {
   §6Personal Best: §f${util.tickToSec(pbTicks)}
   §6Current Time: §f${util.tickToSec(ticks)}
   
-  §6Current Time: §f${blocks}
+  §6Blocks: §f${blocks}
 
 §eautoworldmc.netlify.app`;
 };
