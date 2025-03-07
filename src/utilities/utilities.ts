@@ -1,7 +1,7 @@
 import * as mc from "@minecraft/server";
 import { InventoryData, locationData } from "../data/staticData";
 import GameID, { BundlableGameID, ParentGameID, SubCategory } from "../models/GameID";
-import { generalTs, TempStorage } from "../data/tempStorage";
+import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "./scoreboard";
 import * as goalMessage from "./goalMessage";
 import { confirmationForm } from "../forms/utility";
@@ -299,19 +299,51 @@ export const toProperName = function (input: string): string {
 };
 
 /**
- * attempts to clear blocks from storedLocations util success
+ * attempts to clear blocks from storedLocations until success
  */
 export const retryClearBlocks = function (storedlocations: Set<mc.Vector3>, isFirstAttempt: boolean = true) {
   if (!storedlocations.size) return;
   let failedLocations = new Set<mc.Vector3>();
+  const breakingAnimation = bridgerTs.tempData["breakingAnimation"];
+  const dimension = mc.world.getDimension("overworld");
 
-  [...storedlocations].forEach((location) => {
-    try {
-      mc.world.getDimension("overworld").setBlockType(location, "minecraft:air");
-    } catch (err) {
-      failedLocations.add(location);
-    }
-  });
+  if (breakingAnimation === "Domino") {
+    const locationsArray = [...storedlocations];
+    let currentIndex = 0;
+
+    const dominoAnimationTimer = mc.system.runInterval(() => {
+      if (currentIndex >= locationsArray.length) {
+        mc.system.clearRun(dominoAnimationTimer);
+        return;
+      }
+
+      const location = locationsArray[currentIndex];
+      try {
+        dimension.setBlockType(location, "minecraft:air");
+      } catch (err) {
+        failedLocations.add(location);
+      }
+
+      currentIndex++;
+    }, 1);
+  } else if (breakingAnimation === "Falling") {
+    [...storedlocations].forEach((location) => {
+      try {
+        dimension.setBlockType(location, "minecraft:air");
+        dimension.spawnEntity("auto:custom_sand", { x: location.x + 0.5, y: location.y, z: location.z });
+      } catch (err) {
+        failedLocations.add(location);
+      }
+    });
+  } else {
+    [...storedlocations].forEach((location) => {
+      try {
+        dimension.setBlockType(location, "minecraft:air");
+      } catch (err) {
+        failedLocations.add(location);
+      }
+    });
+  }
 
   if (failedLocations.size > 0) {
     if (isFirstAttempt) {

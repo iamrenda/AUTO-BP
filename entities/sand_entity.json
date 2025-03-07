@@ -1,0 +1,77 @@
+{
+  "format_version": "1.21.0",
+  "minecraft:entity": {
+    "description": {
+      "identifier": "auto:custom_sand",
+      "is_summonable": true,
+      "is_spawnable": false,
+      "is_experimental": false
+    },
+    "component_groups": {
+      "auto:despawn": {
+        "minecraft:instant_despawn": {}
+      }
+    },
+    "components": {
+      "minecraft:collision_box": {
+        "width": 0.0,
+        "height": 1.0
+      },
+      "minecraft:is_stackable": {},
+      "minecraft:pushable": {
+        "is_pushable": false,
+        "is_pushable_by_piston": true
+      },
+      "minecraft:physics": {
+        "has_collision": true,
+        "has_gravity": true
+      },
+      "minecraft:damage_sensor": {
+        "triggers": [
+          {
+            "cause": "all",
+            "deals_damage": false
+          }
+        ]
+      },
+      "minecraft:health": {
+        "value": 1,
+        "max": 1
+      },
+      "minecraft:persistent": {},
+      "minecraft:sound_volume": {
+        "value": 0.0
+      },
+      "minecraft:environment_sensor": {
+        "triggers": [
+          {
+            "filters": {
+              "any_of": [
+                {
+                  "test": "on_ground",
+                  "value": true
+                }
+              ]
+            },
+            "event": "auto:kill"
+          }
+        ]
+      },
+      "minecraft:timer": {
+        "time": 1,
+        "looping": false,
+        "time_down_event": {
+          "event": "auto:kill",
+          "target": "self"
+        }
+      }
+    },
+    "events": {
+      "auto:kill": {
+        "add": {
+          "component_groups": ["auto:despawn"]
+        }
+      }
+    }
+  }
+}

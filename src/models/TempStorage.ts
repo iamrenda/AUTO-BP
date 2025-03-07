@@ -2,6 +2,7 @@ import * as mc from "@minecraft/server";
 import GameID from "./GameID";
 import minecraftID from "./minecraftID";
 import { IslandDireciton } from "./Bridger";
+import { BreakingAnimation } from "./general";
 
 export type CommonData = {
   player: mc.Player;
@@ -19,6 +20,7 @@ export type BridgerTempStorage = {
   blockBridger: minecraftID.MinecraftBlockIdIF;
   bridgerDirection: IslandDireciton;
   isPlateDisabled: boolean;
+  breakingAnimation: BreakingAnimation;
 };
 
 export type ClutcherTempStorage = {

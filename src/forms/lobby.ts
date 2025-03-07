@@ -8,8 +8,8 @@ export const lobbyForm = async function (player: Player): Promise<ActionFormResp
     .title("Lobby Selector")
     .button(
       11,
-      "§6§lBridger",
-      ["§7Practice bridging across the", "§7other island as fast as you can!", "", "§eClick to Play!"],
+      "§6§lBridger §dREVAMPED!",
+      ["§7Practice bridging across the", "§7other island as fast as you can!", "", , "§eClick to Play!"],
       "minecraft:sandstone",
       1,
       false
@@ -68,7 +68,7 @@ export const lobbyForm = async function (player: Player): Promise<ActionFormResp
     )
     .button(
       31,
-      "§6§lWool Parkour",
+      "§6§lWool Parkour §dNEW!",
       ["§7Play Minecraft Parkour but now", "§7using white wool!", "", "§eClick to Play!"],
       "minecraft:white_wool",
       1,

@@ -1,8 +1,7 @@
 import MinecraftID from "../models/minecraftID";
-import ItemInfo from "../models/ItemInfo";
 import GameID, { ParentGameID } from "../models/GameID";
 import { bridgerTs } from "./tempStorage";
-import TeleportationLocation from "../models/TeleportationLocation";
+import { ItemInfo, TeleportationLocation } from "../models/general";
 
 ////////////////////
 // INTERFACE

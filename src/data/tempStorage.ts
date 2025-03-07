@@ -55,6 +55,7 @@ class Bridger extends TempStorage<type.BridgerTempStorage> {
       blockBridger: "minecraft:sandstone",
       bridgerDirection: "Straight",
       isPlateDisabled: false,
+      breakingAnimation: "None",
     };
   }
 }

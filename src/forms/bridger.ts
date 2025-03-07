@@ -28,25 +28,21 @@ export const bridgerBlockForm = async function (player: Player): Promise<ActionF
 };
 
 export const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
-  const direction = bridgerTs.tempData["bridgerDirection"];
-  const distance = gameData.getData(`Bridger${direction}Distance`);
+  const { bridgerDirection, breakingAnimation } = bridgerTs.tempData;
+  const distance = gameData.getData(`Bridger${bridgerDirection}Distance`);
   const tellyPractice = gameData.getData("BridgerStraightTellyMode");
 
-  const form =
-    direction === "Straight"
-      ? new ChestFormData("45")
-          .title("Island Customization")
-          .button(10, "§616 Blocks", [], "minecraft:sandstone", 16, distance === 16)
-          .button(19, "§621 Blocks", [], "minecraft:sandstone", 21, distance === 21)
-          .button(28, "§650 Blocks", [], "minecraft:sandstone", 50, distance === 50)
-          .button(12, "§6Telly Practice", [], "minecraft:ender_eye", 1, tellyPractice === "Telly")
-          .button(21, "§6Speed Telly Practice", [], "minecraft:ender_pearl", 1, tellyPractice === "Speed_Telly")
-          .button(30, "§6No Telly Practice", [], "minecraft:slime_ball", 1, tellyPractice === "None")
-      : new ChestFormData("45")
-          .title("Island Customization")
-          .button(10, "§616 Blocks", [], "minecraft:sandstone", 16, distance === 16)
-          .button(19, "§621 Blocks", [], "minecraft:sandstone", 21, distance === 21)
-          .button(28, "§650 Blocks", [], "minecraft:sandstone", 50, distance === 50);
+  const form = new ChestFormData("45")
+    .title("Island Customization")
+    .button(10, "§616 Blocks", [], "minecraft:sandstone", 16, distance === 16)
+    .button(19, "§621 Blocks", [], "minecraft:sandstone", 21, distance === 21)
+    .button(28, "§650 Blocks", [], "minecraft:sandstone", 50, distance === 50)
+    .button(12, "§6Telly Practice", [], "minecraft:ender_eye", 1, tellyPractice === "Telly")
+    .button(21, "§6Speed Telly Practice", [], "minecraft:ender_pearl", 1, tellyPractice === "Speed_Telly")
+    .button(30, "§6No Telly Practice", [], "minecraft:slime_ball", 1, tellyPractice === "None")
+    .button(14, "§6Sand Falling Animation", [], "minecraft:sand", 1, breakingAnimation === "Falling")
+    .button(23, "§6Domino Breaking Animation", [], "minecraft:piston", 1, breakingAnimation === "Domino")
+    .button(32, "§6No Animation", [], "minecraft:gray_concrete", 1, breakingAnimation === "None");
 
   return await form.show(player);
 };

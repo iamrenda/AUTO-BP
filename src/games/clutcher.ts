@@ -3,7 +3,7 @@ import * as form from "../forms/clutcher";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import { clutcherTs } from "../data/tempStorage";
-import TeleportationLocation from "../models/TeleportationLocation";
+import { TeleportationLocation } from "../models/general";
 
 /////////////////////////////////////////////////////////
 const clutcherTpLocation: TeleportationLocation[] = [

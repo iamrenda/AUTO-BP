@@ -6,6 +6,7 @@ import { bridgerTs, generalTs } from "../data/tempStorage";
 import minecraftID from "../models/minecraftID";
 import { IslandDireciton, TellyMode, IslandDistance } from "../models/Bridger";
 import { BaseGameData, gameData } from "../data/dynamicProperty";
+import { BreakingAnimation } from "../models/general";
 
 // the location to start placing the structure blocks
 const BASE_LOCATION: Record<IslandDireciton, mc.Vector3> = {
@@ -221,7 +222,14 @@ const handleDistanceChange = function (newDistance: IslandDistance): void {
   gameData.setData(`Bridger${prevDirection}Distance`, newDistance);
   bridgerTs.commonData["gameID"] = `Bridger$${prevDirection}_${newDistance}_blocks`;
 
-  util.sendMessage(`§aThe distance is now§r §6${newDistance} blocks§r§a!`, "random.orb");
+  util.sendMessage(`§aThe distance is now§r §6${newDistance} blocks§a!`, "random.orb");
+};
+
+const handleBreakingAnimation = function (animation: BreakingAnimation) {
+  if (bridgerTs.tempData["breakingAnimation"] === animation)
+    util.sendMessage("§4The animation has already been changed!", "random.anvil_land");
+  bridgerTs.tempData["breakingAnimation"] = animation;
+  util.sendMessage(`§aThe animation is now§r §6${animation}§a!`, "random.orb");
 };
 
 /////////////////////////////////////////////////////////
@@ -238,6 +246,9 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     if (islandSelection === 12) handleTellyPractice("Telly");
     if (islandSelection === 21) handleTellyPractice("Speed_Telly");
     if (islandSelection === 30) handleTellyPractice("None");
+    if (islandSelection === 14) handleBreakingAnimation("Falling");
+    if (islandSelection === 23) handleBreakingAnimation("Domino");
+    if (islandSelection === 32) handleBreakingAnimation("None");
   }
 
   // block
