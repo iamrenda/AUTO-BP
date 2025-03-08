@@ -1,9 +1,8 @@
 import * as mc from "@minecraft/server";
-import { InventoryData, locationData } from "../data/staticData";
+import { InventoryData, locationData, VERSION } from "../data/staticData";
 import GameID, { BundlableGameID, ParentGameID, SubCategory } from "../models/GameID";
 import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
 import * as scoreboard from "./scoreboard";
-import * as goalMessage from "./goalMessage";
 import { confirmationForm } from "../forms/utility";
 import { BaseGameData, DynamicProperty } from "../data/dynamicProperty";
 
@@ -128,23 +127,38 @@ export const differenceMs = function (ms1: number, ms2: number): string {
 };
 
 /**
- * shows the result of a run
+ * goal messsage handling
  */
-const messages: Record<BundlableGameID, (isPB: boolean, time: number, prevPB: number) => string> = {
-  Bridger: goalMessage.bridgerMessage,
-  Wall_Run: goalMessage.wallRunMessage,
-  Bedwars_Rush: goalMessage.bedwarsRushMessage,
-  Parkour: goalMessage.parkourMessage,
-  Wool_Parkour: goalMessage.woolparkourMessage,
+// goal message subcategory name
+const subCategoryText: Record<BundlableGameID, string> = {
+  Bridger: "Distance",
+  Bedwars_Rush: "Map",
+  Parkour: "Map",
+  Wall_Run: "Map",
+  Wool_Parkour: "Map",
 };
 
-export const showMessage = function (
+export const showGoalMessage = function (
   bundlableGameID: BundlableGameID,
   isPB: boolean,
-  time: number,
-  prevPB: number
+  timeTicks: number,
+  prevPBTicks: number
 ): void {
-  sendMessage(messages[bundlableGameID](isPB, time, prevPB));
+  const subCategory = getCurrentSubCategory();
+  const pb = BaseGameData.getData(bundlableGameID, subCategory, "pbTicks");
+  const differenceText =
+    pb !== -1 ? "§f(" + (isPB ? differenceMs(prevPBTicks, timeTicks) : differenceMs(pb, timeTicks)) + "§f)" : "";
+
+  const baseMessage = `§7----------------------------§r 
+    §b${toProperName(bundlableGameID)}§r §8§o- Version ${VERSION}§r
+      
+    §6${subCategoryText[bundlableGameID]}: §f${toProperName(subCategory)}
+    §6${isPB ? "Your Previous Best" : "Your Personal Best"}:§r §f${tickToSec(isPB ? prevPBTicks : pb)}§f
+    §6Time Recorded:§r §f${tickToSec(timeTicks)}§r ${differenceText}§r`;
+
+  const pbMessage = isPB ? `    §d§lNEW PERSONAL BEST!!§r\n` : "";
+
+  sendMessage(`${baseMessage}\n${pbMessage}§7----------------------------`);
 };
 
 /**
@@ -214,13 +228,13 @@ export const onRunnerSuccess = function (
 
   // set pb
   if (isPB(prevPB, ticks)) {
-    showMessage(bundlableGameID, true, ticks, prevPB);
+    showGoalMessage(bundlableGameID, true, ticks, prevPB);
     BaseGameData.setData(bundlableGameID, subCategory, "pbTicks", ticks);
     showTitleBar(player, `§6Time§7: §f${tickToSec(ticks)}§r`, { subtitle: "§dNEW RECORD!!!" });
     player.playSound("random.levelup");
   } else {
     showTitleBar(player, `§6Time§7: §f${tickToSec(ticks)}§r`);
-    showMessage(bundlableGameID, false, ticks, prevPB);
+    showGoalMessage(bundlableGameID, false, ticks, prevPB);
   }
 
   // set avg time
@@ -306,43 +320,67 @@ export const retryClearBlocks = function (storedlocations: Set<mc.Vector3>, isFi
   let failedLocations = new Set<mc.Vector3>();
   const breakingAnimation = bridgerTs.tempData["breakingAnimation"];
   const dimension = mc.world.getDimension("overworld");
+  const locationsArray = [...storedlocations];
+  let currentIndex = 0;
+  let dominoAnimationTimer: number;
 
-  if (breakingAnimation === "Domino") {
-    const locationsArray = [...storedlocations];
-    let currentIndex = 0;
+  switch (breakingAnimation) {
+    case "Falling Domino":
+      dominoAnimationTimer = mc.system.runInterval(() => {
+        if (currentIndex >= locationsArray.length) {
+          mc.system.clearRun(dominoAnimationTimer);
+          return;
+        }
 
-    const dominoAnimationTimer = mc.system.runInterval(() => {
-      if (currentIndex >= locationsArray.length) {
-        mc.system.clearRun(dominoAnimationTimer);
-        return;
-      }
+        const location = locationsArray[currentIndex];
+        try {
+          dimension.setBlockType(location, "minecraft:air");
+          dimension.spawnEntity("auto:custom_sand", { x: location.x + 0.5, y: location.y, z: location.z });
+        } catch (err) {
+          failedLocations.add(location);
+        }
 
-      const location = locationsArray[currentIndex];
-      try {
-        dimension.setBlockType(location, "minecraft:air");
-      } catch (err) {
-        failedLocations.add(location);
-      }
+        currentIndex++;
+      }, 1);
+      break;
 
-      currentIndex++;
-    }, 1);
-  } else if (breakingAnimation === "Falling") {
-    [...storedlocations].forEach((location) => {
-      try {
-        dimension.setBlockType(location, "minecraft:air");
-        dimension.spawnEntity("auto:custom_sand", { x: location.x + 0.5, y: location.y, z: location.z });
-      } catch (err) {
-        failedLocations.add(location);
-      }
-    });
-  } else {
-    [...storedlocations].forEach((location) => {
-      try {
-        dimension.setBlockType(location, "minecraft:air");
-      } catch (err) {
-        failedLocations.add(location);
-      }
-    });
+    case "Domino":
+      dominoAnimationTimer = mc.system.runInterval(() => {
+        if (currentIndex >= locationsArray.length) {
+          mc.system.clearRun(dominoAnimationTimer);
+          return;
+        }
+
+        const location = locationsArray[currentIndex];
+        try {
+          dimension.setBlockType(location, "minecraft:air");
+        } catch (err) {
+          failedLocations.add(location);
+        }
+
+        currentIndex++;
+      }, 1);
+      break;
+
+    case "Falling":
+      locationsArray.forEach((location) => {
+        try {
+          dimension.setBlockType(location, "minecraft:air");
+          dimension.spawnEntity("auto:custom_sand", { x: location.x + 0.5, y: location.y, z: location.z });
+        } catch (err) {
+          failedLocations.add(location);
+        }
+      });
+      break;
+
+    default:
+      locationsArray.forEach((location) => {
+        try {
+          dimension.setBlockType(location, "minecraft:air");
+        } catch (err) {
+          failedLocations.add(location);
+        }
+      });
   }
 
   if (failedLocations.size > 0) {

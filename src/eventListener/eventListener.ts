@@ -14,6 +14,7 @@ import { generalTs, bridgerTs } from "../data/tempStorage";
 import { DynamicProperty, gameData, StoredBlocksClass } from "../data/dynamicProperty";
 import { statsForm } from "../forms/utility";
 
+//////////////////////////////////////////////////////////////////////
 const eatGhead = (player: mc.Player): void => {
   player.addEffect("minecraft:regeneration", 100, { amplifier: 4 });
   player.addEffect("minecraft:absorption", 2400, { amplifier: 1 });
@@ -29,32 +30,12 @@ const eatGhead = (player: mc.Player): void => {
   container.setItem(slot, undefined);
 };
 
-// right-click an item
-mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void => {
-  if (item.typeId === "auto:ghead") return eatGhead(player);
+const hasCoordinates = function (loc: mc.Vector3) {
+  return [...bridgerTs.commonData["storedLocations"]].some(
+    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
+  );
+};
 
-  switch (item.typeId) {
-    case "minecraft:stick":
-      lobby.launchingStickHandler(player);
-      break;
-
-    case "minecraft:compass":
-      lobby.nagivatorFormHandler(player);
-      break;
-
-    case "minecraft:book":
-      const parentGameID = util.getCurrentParentCategory();
-      bookHandlers(player, parentGameID);
-      break;
-
-    case "minecraft:flint":
-      util.teleportation("Lobby");
-      mc.system.run(() => util.sendMessage("", "mob.endermen.portal"));
-      break;
-  }
-});
-
-// book right-click handler
 const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
   Lobby: lobby.creditFormHandler,
   Bridger: bridger.bridgerFormHandler,
@@ -66,12 +47,7 @@ const formHandlers: Record<ParentGameID, (player: mc.Player) => void> = {
   Wool_Parkour: woolParkour.parkourFormHandler,
 };
 
-const bookHandlers = function (player: mc.Player, parentGameID: ParentGameID) {
-  formHandlers[parentGameID](player);
-};
-
-// placing a block
-const eventMap: Record<ParentGameID, (block: mc.Block) => void> = {
+const blockPlaceEvts: Record<ParentGameID, (block: mc.Block) => void> = {
   Lobby: undefined,
   Bridger: bridger.placingBlockEvt,
   Clutcher: clutcher.placingBlockEvt,
@@ -82,20 +58,60 @@ const eventMap: Record<ParentGameID, (block: mc.Block) => void> = {
   Wool_Parkour: woolParkour.placingBlockEvt,
 };
 
-// placing block
+const pressurePlatePushes: Record<ParentGameID, (e: mc.PressurePlatePushAfterEvent) => void> = {
+  Lobby: undefined,
+  Bridger: bridger.pressurePlatePushEvt,
+  Clutcher: undefined,
+  Wall_Run: wallRun.pressurePlatePushEvt,
+  Bedwars_Rush: undefined,
+  Fist_Reduce: undefined,
+  Parkour: parkour.pressurePlatePushEvt,
+  Wool_Parkour: woolParkour.pressurePlatePushEvt,
+};
+
+const listeners: Record<ParentGameID, () => void> = {
+  Lobby: undefined,
+  Bridger: bridger.listener,
+  Clutcher: clutcher.listener,
+  Wall_Run: wallRun.listener,
+  Bedwars_Rush: bedwarsRush.listener,
+  Fist_Reduce: undefined,
+  Parkour: parkour.listener,
+  Wool_Parkour: woolParkour.listener,
+};
+
+//////////////////////////////////////////////////////////////////////
+
+// right-click an item
+mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): void | Promise<void> => {
+  if (item.typeId === "auto:ghead") return eatGhead(player);
+
+  switch (item.typeId) {
+    case "minecraft:stick":
+      return lobby.launchingStickHandler(player);
+
+    case "minecraft:compass":
+      return lobby.nagivatorFormHandler(player);
+
+    case "minecraft:book":
+      const parentGameID = util.getCurrentParentCategory();
+      return formHandlers[parentGameID](player);
+
+    case "minecraft:flint":
+      util.teleportation("Lobby");
+      mc.system.run(() => player.playSound("mob.endermen.portal"));
+      break;
+  }
+});
+
+// place blocks
 mc.world.afterEvents.playerPlaceBlock.subscribe(({ block }): void => {
   const parentGameID = util.getCurrentParentCategory();
-  const eventHandler = eventMap[parentGameID];
+  const eventHandler = blockPlaceEvts[parentGameID];
   if (eventHandler) {
     eventHandler(block);
   }
 });
-
-const hasCoordinates = function (loc: mc.Vector3) {
-  return [...bridgerTs.commonData["storedLocations"]].some(
-    (item) => item.x === loc.x && item.y === loc.y && item.z === loc.z
-  );
-};
 
 // breaking a block (before event)
 mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
@@ -118,22 +134,10 @@ mc.world.beforeEvents.playerBreakBlock.subscribe((e) => {
 });
 
 // pushed a pressureplate
-mc.world.afterEvents.pressurePlatePush.subscribe(({ source: player, block }): void => {
+mc.world.afterEvents.pressurePlatePush.subscribe((e): void => {
   const parentGameID = util.getCurrentParentCategory();
-
-  switch (parentGameID) {
-    case "Bridger":
-      bridger.pressurePlatePushEvt(<mc.Player>player);
-      break;
-    case "Wall_Run":
-      wallRun.pressurePlatePushEvt(block);
-      break;
-    case "Parkour":
-      parkour.pressurePlatePushEvt(block);
-      break;
-    case "Wool_Parkour":
-      woolParkour.pressurePlatePushEvt(block);
-      break;
+  if (pressurePlatePushes[parentGameID]) {
+    pressurePlatePushes[parentGameID](e);
   }
 });
 
@@ -224,19 +228,9 @@ mc.world.beforeEvents.playerInteractWithBlock.subscribe(
 
 /////////////////////////////////////////////////////////////////////////////////
 // every tick
-const listenerMap: Record<ParentGameID, () => void> = {
-  Lobby: undefined,
-  Bridger: bridger.listener,
-  Clutcher: clutcher.listener,
-  Wall_Run: wallRun.listener,
-  Bedwars_Rush: bedwarsRush.listener,
-  Fist_Reduce: undefined,
-  Parkour: parkour.listener,
-  Wool_Parkour: woolParkour.listener,
-};
 mc.system.runInterval((): void => {
   const parentGameID = util.getCurrentParentCategory();
-  const listener = listenerMap[parentGameID];
+  const listener = listeners[parentGameID];
   if (listener) listener();
 });
 

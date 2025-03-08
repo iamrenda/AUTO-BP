@@ -13,4 +13,4 @@ export type TeleportationLocation = {
   facing: Vector3;
 };
 
-export type BreakingAnimation = "Falling" | "Domino" | "None";
+export type BreakingAnimation = "Falling Domino" | "Falling" | "Domino" | "None";

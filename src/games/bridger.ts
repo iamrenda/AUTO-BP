@@ -2,8 +2,8 @@ import * as mc from "@minecraft/server";
 import * as util from "../utilities/utilities";
 import * as data from "../data/staticData";
 import * as form from "../forms/bridger";
-import { bridgerTs, generalTs } from "../data/tempStorage";
 import minecraftID from "../models/minecraftID";
+import { bridgerTs, generalTs } from "../data/tempStorage";
 import { IslandDireciton, TellyMode, IslandDistance } from "../models/Bridger";
 import { BaseGameData, gameData } from "../data/dynamicProperty";
 import { BreakingAnimation } from "../models/general";
@@ -232,23 +232,31 @@ const handleBreakingAnimation = function (animation: BreakingAnimation) {
   util.sendMessage(`§aThe animation is now§r §6${animation}§a!`, "random.orb");
 };
 
+const generalFormSelections: Record<number, any> = {
+  10: handleDistanceChange(16),
+  19: handleDistanceChange(16),
+  28: handleDistanceChange(16),
+
+  12: handleTellyPractice("Telly"),
+  21: handleTellyPractice("Telly"),
+  30: handleTellyPractice("Telly"),
+
+  14: handleBreakingAnimation("Falling"),
+  23: handleBreakingAnimation("Domino"),
+  32: handleBreakingAnimation("None"),
+};
+
 /////////////////////////////////////////////////////////
 export const bridgerFormHandler = async function (player: mc.Player) {
-  const { selection: bridgerSelection } = await form.bridgerForm(player);
+  const { selection: bridgerSelection, canceled } = await form.bridgerForm(player);
+  if (canceled) return;
 
   // general
   if (bridgerSelection === 10) {
-    const { selection: islandSelection } = await form.bridgerIslandForm(player);
+    const { selection: generalSelection, canceled } = await form.bridgerGeneralForm(player);
+    if (canceled) return;
 
-    if (islandSelection === 10) handleDistanceChange(16);
-    if (islandSelection === 19) handleDistanceChange(21);
-    if (islandSelection === 28) handleDistanceChange(50);
-    if (islandSelection === 12) handleTellyPractice("Telly");
-    if (islandSelection === 21) handleTellyPractice("Speed_Telly");
-    if (islandSelection === 30) handleTellyPractice("None");
-    if (islandSelection === 14) handleBreakingAnimation("Falling");
-    if (islandSelection === 23) handleBreakingAnimation("Domino");
-    if (islandSelection === 32) handleBreakingAnimation("None");
+    generalFormSelections[generalSelection];
   }
 
   // block
@@ -277,7 +285,7 @@ export const placingBlockEvt = function (block: mc.Block) {
   bridgerTs.commonData["storedLocations"].add(block.location);
 };
 
-export const pressurePlatePushEvt = function (player: mc.Player) {
+export const pressurePlatePushEvt = function ({ source: player }: { source: mc.Player }) {
   const { isPlateDisabled, bridgerDirection } = bridgerTs.tempData;
   const tellyMode = gameData.getData("BridgerStraightTellyMode");
 
@@ -291,7 +299,12 @@ export const pressurePlatePushEvt = function (player: mc.Player) {
     player.playSound("random.orb");
     generalTs.stopTimer();
     util.showTitleBar(player, `§6Time§7: §f${util.tickToSec(time)}§r`);
-    util.showMessage("Bridger", false, time, BaseGameData.getData("Bridger", util.getCurrentSubCategory(), "pbTicks"));
+    util.showGoalMessage(
+      "Bridger",
+      false,
+      time,
+      BaseGameData.getData("Bridger", util.getCurrentSubCategory(), "pbTicks")
+    );
     mc.system.runTimeout(util.afterReq.bind(null, "Bridger", enablePlate), 80);
     return;
   }

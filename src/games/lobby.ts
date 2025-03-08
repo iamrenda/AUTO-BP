@@ -23,75 +23,84 @@ const woolParkours: Record<number, GameID> = {
   24: "Wool_Parkour$Prismarine_3",
 };
 
+const parkours: Record<number, GameID> = {
+  11: "Parkour$Chapter_1.1",
+  13: "Parkour$Chapter_1.2",
+  15: "Parkour$Chapter_1.3",
+};
+
+const reduceModes: Record<number, GameID> = {
+  11: "Fist_Reduce$Normal",
+  15: "Fist_Reduce$LIMITLESS",
+};
+
 export const nagivatorFormHandler = async function (player: mc.Player) {
   const { selection } = await form.lobbyForm(player);
 
-  // bridger
-  if (selection === 11) {
-    const { selection: bridgerDirSelection, canceled } = await form.formBridgerDirForm(player);
+  switch (selection) {
+    // bridger
+    case 11:
+      const { selection: bridgerDirSelection, canceled: bridgerIsCanceled } = await form.formBridgerDirForm(player);
 
-    if (canceled) return;
+      if (bridgerIsCanceled) return;
 
-    if (bridgerDirSelection === 11) {
-      const distance = gameData.getData("BridgerStraightDistance");
-      bridgerTs.tempData["bridgerDirection"] = "Straight";
-      handleNavigation(`Bridger$Straight_${distance}_blocks`);
-    } else if (bridgerDirSelection === 15) {
-      const distance = gameData.getData("BridgerInclinedDistance");
-      bridgerTs.tempData["bridgerDirection"] = "Inclined";
-      handleNavigation(`Bridger$Inclined_${distance}_blocks`);
-    }
-  }
+      if (bridgerDirSelection === 11) {
+        const distance = gameData.getData("BridgerStraightDistance");
+        bridgerTs.tempData["bridgerDirection"] = "Straight";
+        handleNavigation(`Bridger$Straight_${distance}_blocks`);
+      } else if (bridgerDirSelection === 15) {
+        const distance = gameData.getData("BridgerInclinedDistance");
+        bridgerTs.tempData["bridgerDirection"] = "Inclined";
+        handleNavigation(`Bridger$Inclined_${distance}_blocks`);
+      }
+      break;
 
-  // clutcher
-  if (selection === 13) {
-    generalTs.commonData["byPass"] = true;
-    player.setGameMode(mc.GameMode.creative);
-    player.setGameMode(9);
-    generalTs.commonData["byPass"] = false;
-    handleNavigation("Clutcher");
-    util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "note.bell");
-  }
+    // clutcher
+    case 13:
+      generalTs.commonData["byPass"] = true;
+      player.setGameMode(mc.GameMode.creative);
+      player.setGameMode(9);
+      generalTs.commonData["byPass"] = false;
+      handleNavigation("Clutcher");
+      util.sendMessage("§aYou are able to fly in survival mode, but this is an intended phenomenon.", "note.bell");
+      break;
 
-  // wall run
-  if (selection === 15) handleNavigation("Wall_Run$Ancient");
+    // wall run
+    case 15:
+      handleNavigation("Wall_Run$Ancient");
+      break;
 
-  // bedwars rush
-  if (selection === 21) handleNavigation("Bedwars_Rush$Custom_Map");
+    // bedwars rush
+    case 21:
+      handleNavigation("Bedwars_Rush$Custom_Map");
+      break;
 
-  // fist reduce
-  if (selection === 23) {
-    const { selection: bridgerDirSelection, canceled } = await form.fistReduceModeForm(player);
-    if (canceled) return;
+    // fist reduce
+    case 23:
+      const { selection: fistReduceSelection, canceled: fistReduceIsCanceled } = await form.fistReduceModeForm(player);
+      if (fistReduceIsCanceled) return;
 
-    if (bridgerDirSelection === 11) {
-      handleNavigation("Fist_Reduce$Normal");
-    } else if (bridgerDirSelection === 15) {
-      handleNavigation("Fist_Reduce$LIMITLESS");
-    }
-    util.displayScoreboard("Fist_Reduce");
-  }
+      util.displayScoreboard("Fist_Reduce");
+      handleNavigation(reduceModes[fistReduceSelection]);
+      break;
 
-  // parkour
-  if (selection === 29) {
-    const { selection: bridgerDirSelection, canceled } = await form.parkourChapterForm(player);
-    if (canceled) return;
+    // parkour
+    case 29:
+      const { selection: parkourMapSelection, canceled: parkourIsCanceled } = await form.parkourChapterForm(player);
+      if (parkourIsCanceled) return;
 
-    if (bridgerDirSelection === 11) {
-      handleNavigation("Parkour$Chapter_1.1");
-    } else if (bridgerDirSelection === 13) {
-      handleNavigation("Parkour$Chapter_1.2");
-    } else if (bridgerDirSelection === 15) {
-      handleNavigation("Parkour$Chapter_1.3");
-    }
-  }
+      handleNavigation(parkours[parkourMapSelection]);
+      break;
 
-  // wool parkour
-  if (selection === 31) {
-    const { selection: woolParkourSelection, canceled } = await form.woolParkourSelectorForm(player);
-    if (canceled) return;
+    // wool parkour
+    case 31:
+      const { selection: woolParkourSelection, canceled: woolParkourIsCanceled } = await form.woolParkourSelectorForm(
+        player
+      );
+      if (woolParkourIsCanceled) return;
 
-    handleNavigation(woolParkours[woolParkourSelection]);
+      handleNavigation(woolParkours[woolParkourSelection]);
+      break;
   }
 };
 

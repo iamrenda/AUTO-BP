@@ -27,7 +27,7 @@ export const bridgerBlockForm = async function (player: Player): Promise<ActionF
   return await form.show(player);
 };
 
-export const bridgerIslandForm = async function (player: Player): Promise<ActionFormResponse> {
+export const bridgerGeneralForm = async function (player: Player): Promise<ActionFormResponse> {
   const { bridgerDirection, breakingAnimation } = bridgerTs.tempData;
   const distance = gameData.getData(`Bridger${bridgerDirection}Distance`);
   const tellyPractice = gameData.getData("BridgerStraightTellyMode");
