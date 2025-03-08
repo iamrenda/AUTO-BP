@@ -23,8 +23,9 @@ const enablePlate = function (): void {
   );
 };
 /////////////////////////////////////////////////////////////////////////
-export const pressurePlatePushEvt = function ({ location }: { location: mc.Vector3 }) {
+export const pressurePlatePushEvt = function ({ block }: { block: mc.Block }) {
   const player = wallRunTs.commonData["player"];
+  const { location } = block;
 
   switch (location.z) {
     // start

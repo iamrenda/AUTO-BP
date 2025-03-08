@@ -66,7 +66,7 @@ export const parkourFormHandler = async function (player: mc.Player) {
   }
 };
 
-export const pressurePlatePushEvt = function (block: mc.Block) {
+export const pressurePlatePushEvt = function ({ block }: { block: mc.Block }) {
   const player = parkourTs.commonData["player"];
 
   switch (block.typeId) {

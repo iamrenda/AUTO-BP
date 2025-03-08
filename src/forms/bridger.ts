@@ -32,7 +32,7 @@ export const bridgerGeneralForm = async function (player: Player): Promise<Actio
   const distance = gameData.getData(`Bridger${bridgerDirection}Distance`);
   const tellyPractice = gameData.getData("BridgerStraightTellyMode");
 
-  const form = new ChestFormData("45")
+  const form = new ChestFormData("54")
     .title("Island Customization")
     .button(10, "§616 Blocks", [], "minecraft:sandstone", 16, distance === 16)
     .button(19, "§621 Blocks", [], "minecraft:sandstone", 21, distance === 21)
@@ -40,9 +40,10 @@ export const bridgerGeneralForm = async function (player: Player): Promise<Actio
     .button(12, "§6Telly Practice", [], "minecraft:ender_eye", 1, tellyPractice === "Telly")
     .button(21, "§6Speed Telly Practice", [], "minecraft:ender_pearl", 1, tellyPractice === "Speed_Telly")
     .button(30, "§6No Telly Practice", [], "minecraft:slime_ball", 1, tellyPractice === "None")
-    .button(14, "§6Sand Falling Animation", [], "minecraft:sand", 1, breakingAnimation === "Falling")
-    .button(23, "§6Domino Breaking Animation", [], "minecraft:piston", 1, breakingAnimation === "Domino")
-    .button(32, "§6No Animation", [], "minecraft:gray_concrete", 1, breakingAnimation === "None");
+    .button(14, "§6Domino Falling Animation", [], "minecraft:ice", 1, breakingAnimation === "Falling Domino")
+    .button(23, "§6Falling Animation", [], "minecraft:sand", 1, breakingAnimation === "Falling")
+    .button(32, "§6Domino Animation", [], "minecraft:piston", 1, breakingAnimation === "Domino")
+    .button(41, "§6None", [], "minecraft:gray_concrete", 1, breakingAnimation === "None");
 
   return await form.show(player);
 };

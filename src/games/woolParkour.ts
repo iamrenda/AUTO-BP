@@ -31,7 +31,7 @@ export const parkourFormHandler = async function (player: mc.Player) {
   }
 };
 
-export const pressurePlatePushEvt = function (block: mc.Block) {
+export const pressurePlatePushEvt = function ({ block }: { block: mc.Block }) {
   if (block.typeId !== "minecraft:light_weighted_pressure_plate") return;
   if (isPlateDisabled("End")) return;
 

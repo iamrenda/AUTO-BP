@@ -232,18 +232,19 @@ const handleBreakingAnimation = function (animation: BreakingAnimation) {
   util.sendMessage(`§aThe animation is now§r §6${animation}§a!`, "random.orb");
 };
 
-const generalFormSelections: Record<number, any> = {
-  10: handleDistanceChange(16),
-  19: handleDistanceChange(16),
-  28: handleDistanceChange(16),
+const generalFormSelections: Record<number, [Function, any]> = {
+  10: [handleDistanceChange, 16],
+  19: [handleDistanceChange, 16],
+  28: [handleDistanceChange, 16],
 
-  12: handleTellyPractice("Telly"),
-  21: handleTellyPractice("Telly"),
-  30: handleTellyPractice("Telly"),
+  12: [handleTellyPractice, "Telly"],
+  21: [handleTellyPractice, "Telly"],
+  30: [handleTellyPractice, "Telly"],
 
-  14: handleBreakingAnimation("Falling"),
-  23: handleBreakingAnimation("Domino"),
-  32: handleBreakingAnimation("None"),
+  14: [handleBreakingAnimation, "Falling Domino"],
+  23: [handleBreakingAnimation, "Falling"],
+  32: [handleBreakingAnimation, "Domino"],
+  41: [handleBreakingAnimation, "None"],
 };
 
 /////////////////////////////////////////////////////////
@@ -256,7 +257,8 @@ export const bridgerFormHandler = async function (player: mc.Player) {
     const { selection: generalSelection, canceled } = await form.bridgerGeneralForm(player);
     if (canceled) return;
 
-    generalFormSelections[generalSelection];
+    const [func, arg] = generalFormSelections[generalSelection];
+    func(arg);
   }
 
   // block
@@ -285,7 +287,9 @@ export const placingBlockEvt = function (block: mc.Block) {
   bridgerTs.commonData["storedLocations"].add(block.location);
 };
 
-export const pressurePlatePushEvt = function ({ source: player }: { source: mc.Player }) {
+export const pressurePlatePushEvt = function ({ source: player }: { source: mc.Entity }) {
+  if (!(player instanceof mc.Player)) return;
+
   const { isPlateDisabled, bridgerDirection } = bridgerTs.tempData;
   const tellyMode = gameData.getData("BridgerStraightTellyMode");
 
