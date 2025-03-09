@@ -8,15 +8,15 @@ export const fistReduceForm = async function (player: Player): Promise<ActionFor
     .title("Settings")
     .button(
       10,
-      fistReduceTs.tempData["gameModeStatus"] === "Starting"
+      fistReduceTs.tempData["reduceBotStatus"] === "Starting"
         ? "§2Start"
-        : fistReduceTs.tempData["gameModeStatus"] === "Running"
+        : fistReduceTs.tempData["reduceBotStatus"] === "Running"
         ? "§cPause"
         : "§6Continue",
       [],
-      fistReduceTs.tempData["gameModeStatus"] === "Starting"
+      fistReduceTs.tempData["reduceBotStatus"] === "Starting"
         ? "minecraft:emerald_block"
-        : fistReduceTs.tempData["gameModeStatus"] === "Running"
+        : fistReduceTs.tempData["reduceBotStatus"] === "Running"
         ? "minecraft:redstone_block"
         : "minecraft:gold_block",
       1,
@@ -24,15 +24,15 @@ export const fistReduceForm = async function (player: Player): Promise<ActionFor
     )
     .button(
       13,
-      fistReduceTs.tempData["numHits"] === "Single"
+      fistReduceTs.tempData["reduceBotHits"] === "Single"
         ? "§aSingle Hit"
-        : fistReduceTs.tempData["numHits"] === "Double"
+        : fistReduceTs.tempData["reduceBotHits"] === "Double"
         ? "§6Double Hit"
         : "§cTriple Hit",
       [],
-      fistReduceTs.tempData["numHits"] === "Single"
+      fistReduceTs.tempData["reduceBotHits"] === "Single"
         ? "minecraft:apple"
-        : fistReduceTs.tempData["numHits"] === "Double"
+        : fistReduceTs.tempData["reduceBotHits"] === "Double"
         ? "minecraft:golden_apple"
         : "minecraft:enchanted_golden_apple",
       1,

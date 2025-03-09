@@ -14,3 +14,7 @@ export type TeleportationLocation = {
 };
 
 export type BreakingAnimation = "Falling Domino" | "Falling" | "Domino" | "None";
+
+export type ReduceBotStatus = "Starting" | "Running" | "Paused";
+
+export type ReduceBotHits = "Single" | "Double" | "Triple";

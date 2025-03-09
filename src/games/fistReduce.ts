@@ -2,10 +2,17 @@ import * as mc from "@minecraft/server";
 import { fistReduceForm } from "../forms/fistReduce";
 import * as util from "../utilities/utilities";
 import { fistReduceTs } from "../data/tempStorage";
+import { ReduceBotHits, ReduceBotStatus } from "../models/general";
 
-/**
- * applying knockback to player from knockback
- */
+const GAME_STATUS: Record<string, ReduceBotStatus> = {
+  STARTING: "Starting",
+  RUNNING: "Running",
+  PAUSED: "Paused",
+};
+
+const HIT_TYPES: ReduceBotHits[] = ["Single", "Double", "Triple"];
+
+// applying knockback to player from knockback
 const applyKnockback = function (
   player: mc.Player,
   { viewX, viewZ }: { viewX: number; viewZ: number },
@@ -17,9 +24,7 @@ const applyKnockback = function (
   player.playSound("game.player.hurt");
 };
 
-/**
- * teleports the bot
- */
+// teleports the bot
 const teleportBot = function (mode: "normal" | "limitless") {
   const bot = ReducerBot.bot;
   mode === "normal"
@@ -27,9 +32,36 @@ const teleportBot = function (mode: "normal" | "limitless") {
     : bot.teleport({ x: 50008.5, y: 320, z: 50052.5 }, { facingLocation: { x: 50008.5, y: 320, z: 50052 } });
 };
 
-/**
- * reducer bot class
- */
+const handleGameModeStatus = function () {
+  switch (fistReduceTs.tempData["reduceBotStatus"]) {
+    case GAME_STATUS.STARTING:
+      ReducerBot.defineBot();
+      teleportBot(fistReduceTs.commonData["gameID"] === "Fist_Reduce$Normal" ? "normal" : "limitless");
+      ReducerBot.bot.triggerEvent("auto:reduce");
+      fistReduceTs.tempData["reduceBotStatus"] = GAME_STATUS.RUNNING;
+      break;
+
+    case GAME_STATUS.RUNNING:
+      fistReduceTs.tempData["reduceBotStatus"] = GAME_STATUS.PAUSED;
+      ReducerBot.bot.triggerEvent("auto:pause");
+      util.sendMessage("§6Bot is now paused!", "random.glass");
+      break;
+
+    case GAME_STATUS.PAUSED:
+      fistReduceTs.tempData["reduceBotStatus"] = GAME_STATUS.RUNNING;
+      ReducerBot.bot.triggerEvent("auto:reduce");
+      util.sendMessage("§2Bot is now resumed!", "random.glass");
+      break;
+  }
+};
+
+const cycleNumHits = function () {
+  const currentHits = fistReduceTs.tempData["reduceBotHits"];
+  const nextHits = HIT_TYPES[(HIT_TYPES.indexOf(currentHits) + 1) % HIT_TYPES.length];
+  fistReduceTs.tempData["reduceBotHits"] = nextHits;
+};
+
+// reducer bot class
 class ReducerBot {
   static bot: mc.Entity;
 
@@ -43,52 +75,23 @@ class ReducerBot {
 export const fistReduceFormHandler = async function (player: mc.Player) {
   const { selection } = await fistReduceForm(player);
 
-  // gamemode status
-  if (selection === 10) {
-    switch (fistReduceTs.tempData["gameModeStatus"]) {
-      // about to start
-      case "Starting":
-        ReducerBot.defineBot();
-        fistReduceTs.commonData["gameID"] === "Fist_Reduce$Normal" ? teleportBot("normal") : teleportBot("limitless");
-        ReducerBot.bot.triggerEvent("auto:reduce");
-        fistReduceTs.tempData["gameModeStatus"] = "Running";
-        break;
+  switch (selection) {
+    // gamemode status
+    case 10:
+      return handleGameModeStatus();
 
-      // about to pause
-      case "Running":
-        fistReduceTs.tempData["gameModeStatus"] = "Paused";
-        ReducerBot.bot.triggerEvent("auto:pause");
-        util.sendMessage("§6Bot is now paused!", "random.glass");
-        break;
+    // num hits
+    case 13:
+      cycleNumHits();
+      player.playSound("random.orb");
+      break;
 
-      // about to continue
-      case "Paused":
-        fistReduceTs.tempData["gameModeStatus"] = "Running";
-        ReducerBot.bot.triggerEvent("auto:reduce");
-        util.sendMessage("§2Bot is now resumed!", "random.glass");
-        break;
-    }
-  }
-
-  // num hits
-  if (selection === 13) {
-    if (fistReduceTs.tempData["numHits"] === "Single") {
-      fistReduceTs.tempData["numHits"] = "Double";
-    } else if (fistReduceTs.tempData["numHits"] === "Double") {
-      fistReduceTs.tempData["numHits"] = "Triple";
-    } else if (fistReduceTs.tempData["numHits"] === "Triple") {
-      fistReduceTs.tempData["numHits"] = "Single";
-    }
-    fistReduceFormHandler(player);
-
-    util.sendMessage("", "random.orb");
-  }
-
-  // back to lobby
-  if (selection === 16) {
-    fistReduceTs.clearBlocks();
-    ReducerBot.bot.triggerEvent("auto:pause");
-    util.backToLobbyKit(player, fistReduceTs);
+    //back to lobby
+    case 16:
+      fistReduceTs.clearBlocks();
+      ReducerBot.bot.triggerEvent("auto:pause");
+      util.backToLobbyKit(player, fistReduceTs);
+      break;
   }
 };
 
@@ -105,7 +108,7 @@ export const fistReduceAttackEvt = function (hurtEntity: mc.Entity, damageSource
   // when player hits bot
   if (hurtEntity.typeId !== "minecraft:player") {
     const player = fistReduceTs.commonData["player"];
-    const { numHits } = fistReduceTs.tempData;
+    const { reduceBotHits: numHits } = fistReduceTs.tempData;
 
     fistReduceTs.tempData["hitCount"]++;
 

@@ -165,37 +165,41 @@ export const clutcherFormHandler = async function (player: mc.Player) {
 
   const { selection } = await form.clutcherForm(player);
 
-  // clutch start
-  if (selection === 10) readyForClutch(player);
+  switch (selection) {
+    // clutch start
+    case 10:
+      return readyForClutch(player);
 
-  // clutch settings
-  if (selection === 12) {
-    const { selection: clutchNum } = await form.clutchNumForm(player);
-    const numHit = clutchNum - 8;
+    // clutch settings
+    case 12:
+      const { selection: clutchNum, canceled } = await form.clutchNumForm(player);
+      if (canceled) return;
+      const numHit = clutchNum - 8;
 
-    clutcherTs.tempData["clutchHits"] = new Array(numHit).fill(1);
-    updateKnockBackForm(player, numHit);
-  }
+      clutcherTs.tempData["clutchHits"] = new Array(numHit).fill(1);
+      updateKnockBackForm(player, numHit);
+      break;
 
-  // general settings
-  if (selection === 14) {
-    const { selection: generalSelection } = await form.clutchGeneralForm(player);
+    // general settings
+    case 14:
+      const { selection: generalSelection } = await form.clutchGeneralForm(player);
 
-    if (generalSelection === 10) {
-      clutcherTs.tempData["clutchShiftStart"] = !clutcherTs.tempData["clutchShiftStart"];
-      util.sendMessage(
-        `§a"Shift + Right Click" to start is now §6${
-          clutcherTs.tempData["clutchShiftStart"] ? "Enabled" : "Disabled"
-        }§a!`,
-        "random.orb"
-      );
-    }
-  }
+      if (generalSelection === 10) {
+        clutcherTs.tempData["clutchShiftStart"] = !clutcherTs.tempData["clutchShiftStart"];
+        util.sendMessage(
+          `§a"Shift + Right Click" to start is now §6${
+            clutcherTs.tempData["clutchShiftStart"] ? "Enabled" : "Disabled"
+          }§a!`,
+          "random.orb"
+        );
+      }
+      break;
 
-  // quit
-  if (selection === 16) {
-    clutcherTs.clearBlocks();
-    util.backToLobbyKit(player, clutcherTs);
+    // quit
+    case 16:
+      clutcherTs.clearBlocks();
+      util.backToLobbyKit(player, clutcherTs);
+      break;
   }
 };
 

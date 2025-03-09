@@ -2,7 +2,7 @@ import * as mc from "@minecraft/server";
 import GameID from "./GameID";
 import minecraftID from "./minecraftID";
 import { IslandDireciton } from "./Bridger";
-import { BreakingAnimation } from "./general";
+import { BreakingAnimation, ReduceBotHits, ReduceBotStatus } from "./general";
 
 export type CommonData = {
   player: mc.Player;
@@ -52,8 +52,8 @@ export type WallRunTempStorage = {
 };
 
 export type FistReduceTempStorage = {
-  gameModeStatus: "Starting" | "Running" | "Paused";
-  numHits: "Single" | "Double" | "Triple";
+  reduceBotStatus: ReduceBotStatus;
+  reduceBotHits: ReduceBotHits;
   hitCount: number;
 };
 

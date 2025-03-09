@@ -252,32 +252,36 @@ export const bridgerFormHandler = async function (player: mc.Player) {
   const { selection: bridgerSelection, canceled } = await form.bridgerForm(player);
   if (canceled) return;
 
-  // general
-  if (bridgerSelection === 10) {
-    const { selection: generalSelection, canceled } = await form.bridgerGeneralForm(player);
-    if (canceled) return;
+  switch (bridgerSelection) {
+    // general
+    case 10:
+      const { selection: generalSelection, canceled } = await form.bridgerGeneralForm(player);
+      if (canceled) return;
 
-    const [func, arg] = generalFormSelections[generalSelection];
-    func(arg);
+      const [func, arg] = generalFormSelections[generalSelection];
+      func(arg);
+      break;
+
+    // block
+    case 12:
+      const { selection: blockSelection } = await form.bridgerBlockForm(player);
+      const blockObj = data.bridgerBlocks[blockSelection - 9];
+
+      bridgerTs.tempData["blockBridger"] = blockObj.texture;
+      util.giveItems("Bridger");
+      util.sendMessage(`§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
+      break;
+
+    // reset pb
+    case 14:
+      util.resetPB(player, "Bridger");
+      break;
+
+    // quit bridger
+    case 16:
+      util.backToLobbyKit(player, bridgerTs);
+      break;
   }
-
-  // block
-  if (bridgerSelection === 12) {
-    const { selection: blockSelection } = await form.bridgerBlockForm(player);
-    const blockObj = data.bridgerBlocks[blockSelection - 9];
-
-    bridgerTs.tempData["blockBridger"] = blockObj.texture;
-    util.giveItems("Bridger");
-    util.sendMessage(`§aThe block has changed to§r §6${blockObj.blockName}§r§a!`, "random.orb");
-  }
-
-  // reset pb
-  if (bridgerSelection === 14) {
-    util.resetPB(player, "Bridger");
-  }
-
-  // quit bridger
-  if (bridgerSelection === 16) util.backToLobbyKit(player, bridgerTs);
 };
 
 export const placingBlockEvt = function (block: mc.Block) {

@@ -80,8 +80,8 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
       const { selection: fistReduceSelection, canceled: fistReduceIsCanceled } = await form.fistReduceModeForm(player);
       if (fistReduceIsCanceled) return;
 
-      util.displayScoreboard("Fist_Reduce");
       handleNavigation(reduceModes[fistReduceSelection]);
+      util.displayScoreboard("Fist_Reduce");
       break;
 
     // parkour

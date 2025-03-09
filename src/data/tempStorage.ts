@@ -131,9 +131,9 @@ class FistReduce extends TempStorage<type.FistReduceTempStorage> {
 
   public setDefaultTempData(): type.FistReduceTempStorage {
     return {
-      gameModeStatus: "Starting",
+      reduceBotStatus: "Starting",
       hitCount: 0,
-      numHits: "Single",
+      reduceBotHits: "Single",
     };
   }
 }
