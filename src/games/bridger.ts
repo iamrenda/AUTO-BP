@@ -234,12 +234,12 @@ const handleBreakingAnimation = function (animation: BreakingAnimation) {
 
 const generalFormSelections: Record<number, [Function, any]> = {
   10: [handleDistanceChange, 16],
-  19: [handleDistanceChange, 16],
-  28: [handleDistanceChange, 16],
+  19: [handleDistanceChange, 21],
+  28: [handleDistanceChange, 50],
 
   12: [handleTellyPractice, "Telly"],
-  21: [handleTellyPractice, "Telly"],
-  30: [handleTellyPractice, "Telly"],
+  21: [handleTellyPractice, "Speed_Telly"],
+  30: [handleTellyPractice, "None"],
 
   14: [handleBreakingAnimation, "Falling Domino"],
   23: [handleBreakingAnimation, "Falling"],
