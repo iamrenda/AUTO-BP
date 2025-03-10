@@ -73,6 +73,8 @@ export const pressurePlatePushEvt = function ({ block }: { block: mc.Block }) {
 export const listener = function () {
   util.displayScoreboard("Parkour");
 
+  if (!parkourTs.commonData["player"].isOnGround) return;
+
   const playerLocation = parkourTs.commonData["player"].location;
   const blockUnder = mc.world
     .getDimension("overworld")
