@@ -98,6 +98,18 @@ export class DynamicProperty {
           attempts: 0,
           successAttempts: 0,
         },
+        "Chapter_2.1": {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
+        "Chapter_2.2": {
+          pbTicks: -1,
+          avgTicks: -1,
+          attempts: 0,
+          successAttempts: 0,
+        },
       },
 
       Wool_Parkour: {

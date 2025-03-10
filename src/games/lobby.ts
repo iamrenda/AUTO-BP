@@ -4,29 +4,14 @@ import * as mc from "@minecraft/server";
 import GameID from "../models/GameID";
 import { generalTs, bridgerTs } from "../data/tempStorage";
 import { gameData, StoredBlocksClass } from "../data/dynamicProperty";
+import { mapSelectorForm } from "../forms/utility";
 
 // handling navigation for lobby
-const handleNavigation = (gameID: GameID) => {
+export const handleNavigation = (gameID: GameID) => {
   util.teleportation(gameID);
   generalTs.commonData["gameID"] = gameID;
   util.giveItems(util.getCurrentParentCategory());
   StoredBlocksClass.clearBlocks();
-};
-
-// handling wool parkour
-const woolParkours: Record<number, GameID> = {
-  11: "Wool_Parkour$Oak_1",
-  13: "Wool_Parkour$Oak_2",
-  15: "Wool_Parkour$Oak_3",
-  20: "Wool_Parkour$Prismarine_1",
-  22: "Wool_Parkour$Prismarine_2",
-  24: "Wool_Parkour$Prismarine_3",
-};
-
-const parkours: Record<number, GameID> = {
-  11: "Parkour$Chapter_1.1",
-  13: "Parkour$Chapter_1.2",
-  15: "Parkour$Chapter_1.3",
 };
 
 const reduceModes: Record<number, GameID> = {
@@ -67,13 +52,11 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
 
     // wall run
     case 15:
-      handleNavigation("Wall_Run$Ancient");
-      break;
+      return mapSelectorForm(player, "Wall_Run");
 
     // bedwars rush
     case 21:
-      handleNavigation("Bedwars_Rush$Custom_Map");
-      break;
+      return mapSelectorForm(player, "Bedwars_Rush");
 
     // fist reduce
     case 23:
@@ -86,21 +69,11 @@ export const nagivatorFormHandler = async function (player: mc.Player) {
 
     // parkour
     case 29:
-      const { selection: parkourMapSelection, canceled: parkourIsCanceled } = await form.parkourChapterForm(player);
-      if (parkourIsCanceled) return;
-
-      handleNavigation(parkours[parkourMapSelection]);
-      break;
+      return mapSelectorForm(player, "Parkour");
 
     // wool parkour
     case 31:
-      const { selection: woolParkourSelection, canceled: woolParkourIsCanceled } = await form.woolParkourSelectorForm(
-        player
-      );
-      if (woolParkourIsCanceled) return;
-
-      handleNavigation(woolParkours[woolParkourSelection]);
-      break;
+      return mapSelectorForm(player, "Wool_Parkour");
   }
 };
 

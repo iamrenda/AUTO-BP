@@ -16,6 +16,8 @@ type GameID =
   | "Parkour$Chapter_1.1"
   | "Parkour$Chapter_1.2"
   | "Parkour$Chapter_1.3"
+  | "Parkour$Chapter_2.1"
+  | "Parkour$Chapter_2.2"
   | "Wool_Parkour$Oak_1"
   | "Wool_Parkour$Oak_2"
   | "Wool_Parkour$Oak_3"
@@ -44,7 +46,7 @@ export type BundleData = {
   successAttempts: number;
 };
 
-type subCategoryGameID = {
+export type subCategoryGameID = {
   Bridger:
     | "Straight_16_blocks"
     | "Straight_21_blocks"
@@ -54,7 +56,7 @@ type subCategoryGameID = {
     | "Inclined_50_blocks";
   Wall_Run: "Ancient";
   Bedwars_Rush: "Custom_Map";
-  Parkour: "Chapter_1.1" | "Chapter_1.2" | "Chapter_1.3";
+  Parkour: "Chapter_1.1" | "Chapter_1.2" | "Chapter_1.3" | "Chapter_2.1" | "Chapter_2.2";
   Wool_Parkour: "Oak_1" | "Oak_2" | "Oak_3" | "Prismarine_1" | "Prismarine_2" | "Prismarine_3";
 };
 

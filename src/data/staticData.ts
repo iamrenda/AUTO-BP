@@ -167,6 +167,30 @@ export const locationData: Record<GameID, TeleportationLocation> = {
       z: 60058.5,
     },
   },
+  "Parkour$Chapter_2.1": {
+    position: {
+      x: 60150.5,
+      y: 83,
+      z: 60010.5,
+    },
+    facing: {
+      x: 60150,
+      y: 83,
+      z: 60011,
+    },
+  },
+  "Parkour$Chapter_2.2": {
+    position: {
+      x: 60213.5,
+      y: 92,
+      z: 60018.5,
+    },
+    facing: {
+      x: 60214,
+      y: 92,
+      z: 60019,
+    },
+  },
   Wool_Parkour$Oak_1: {
     position: {
       x: 70001.5,

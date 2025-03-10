@@ -3,35 +3,20 @@ import * as util from "../utilities/utilities";
 import { parkourForm } from "../forms/parkour";
 import { parkourTs } from "../data/tempStorage";
 import minecraftID from "../models/minecraftID";
-import GameID from "../models/GameID";
+import { SubCategory } from "../models/GameID";
 
-type ParkourGameID = Extract<GameID, "Parkour$Chapter_1.1" | "Parkour$Chapter_1.2" | "Parkour$Chapter_1.3">;
+const baseBlocks: Set<minecraftID.MinecraftBlockIdIF> = new Set([
+  "minecraft:air",
+  "minecraft:polished_blackstone_pressure_plate",
+  "minecraft:light_weighted_pressure_plate",
+]);
 
-type ExcludedBlocks = Record<ParkourGameID, Set<minecraftID.MinecraftBlockIdIF>>;
-
-const dimension = mc.world.getDimension("overworld");
-
-const excludedBlocks: ExcludedBlocks = {
-  "Parkour$Chapter_1.1": new Set([
-    "minecraft:air",
-    "minecraft:polished_blackstone_pressure_plate",
-    "minecraft:light_weighted_pressure_plate",
-    "minecraft:verdant_froglight",
-    "minecraft:slime",
-  ]),
-  "Parkour$Chapter_1.2": new Set([
-    "minecraft:air",
-    "minecraft:polished_blackstone_pressure_plate",
-    "minecraft:light_weighted_pressure_plate",
-    "minecraft:ochre_froglight",
-  ]),
-  "Parkour$Chapter_1.3": new Set([
-    "minecraft:air",
-    "minecraft:polished_blackstone_pressure_plate",
-    "minecraft:light_weighted_pressure_plate",
-    "minecraft:pearlescent_froglight",
-    "minecraft:slime",
-  ]),
+const allowedBlocks: Record<SubCategory<"Parkour">, Set<minecraftID.MinecraftBlockIdIF>> = {
+  "Chapter_1.1": new Set([...baseBlocks, "minecraft:verdant_froglight", "minecraft:slime"]),
+  "Chapter_1.2": new Set([...baseBlocks, "minecraft:ochre_froglight"]),
+  "Chapter_1.3": new Set([...baseBlocks, "minecraft:pearlescent_froglight", "minecraft:slime"]),
+  "Chapter_2.1": new Set([...baseBlocks, "minecraft:hay_block"]),
+  "Chapter_2.2": new Set([...baseBlocks, "minecraft:mud_bricks"]),
 };
 
 /**
@@ -89,11 +74,13 @@ export const listener = function () {
   util.displayScoreboard("Parkour");
 
   const playerLocation = parkourTs.commonData["player"].location;
-  const blockUnder = dimension.getBlock({ x: playerLocation.x, y: playerLocation.y - 1, z: playerLocation.z });
-  const parkourID = <ParkourGameID>parkourTs.commonData["gameID"];
+  const blockUnder = mc.world
+    .getDimension("overworld")
+    .getBlock({ x: playerLocation.x, y: playerLocation.y - 1, z: playerLocation.z });
+  const parkourID = <SubCategory<"Parkour">>util.getCurrentSubCategory();
 
   if (
-    !excludedBlocks[parkourID].has(<minecraftID.MinecraftBlockIdIF>blockUnder.typeId) &&
+    !allowedBlocks[parkourID].has(<minecraftID.MinecraftBlockIdIF>blockUnder.typeId) &&
     !parkourTs.tempData["autoReq"] &&
     blockUnder.isSolid
   ) {
