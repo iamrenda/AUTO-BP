@@ -16,42 +16,46 @@ type ClutchStrengthIF = {
 
 ////////////////////
 // EXPORTS
-export const InventoryData: Record<ParentGameID, ItemInfo[]> = {
-  Lobby: [
-    { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
-    { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
-    { item: "minecraft:book", quantity: 1, slot: 7, name: "§dCredits" },
-    { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },
-  ],
-  Bridger: [
-    { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
-    { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
-    { item: "minecraft:diamond_pickaxe", quantity: 1, name: "§3Miner's Pickaxe" },
-    { item: "minecraft:book", quantity: 1, slot: 8 },
-  ],
-  Clutcher: [
-    { item: "minecraft:sandstone", quantity: 64 },
-    { item: "minecraft:book", quantity: 1, slot: 8 },
-  ],
-  Wall_Run: [
-    { item: "minecraft:white_wool", quantity: 64 },
-    { item: "minecraft:book", quantity: 1, slot: 8 },
-  ],
-  Bedwars_Rush: [
-    { item: "minecraft:white_wool", quantity: 64 },
-    { item: "minecraft:white_wool", quantity: 64 },
-    { item: "minecraft:book", quantity: 1, slot: 8 },
-  ],
-  Fist_Reduce: [
-    { item: "minecraft:sandstone", quantity: 64 },
-    { item: "minecraft:sandstone", quantity: 64 },
-    { item: "minecraft:book", quantity: 1, slot: 8 },
-  ],
-  Parkour: [{ item: "minecraft:book", quantity: 1, slot: 8 }],
-  Wool_Parkour: [
-    { item: "minecraft:white_wool", quantity: 64 },
-    { item: "minecraft:book", quantity: 1, slot: 8 },
-  ],
+export const getInventoryData = function (parentGameID: ParentGameID): ItemInfo[] {
+  const data = {
+    Lobby: [
+      { item: "minecraft:stick", quantity: 1, slot: 0, name: "§9Launching Stick" },
+      { item: "minecraft:compass", quantity: 1, slot: 4, name: "§bNavigator" },
+      { item: "minecraft:book", quantity: 1, slot: 7, name: "§dCredits" },
+      { item: "minecraft:flint", quantity: 1, slot: 8, name: "§7Back to Lobby" },
+    ],
+    Bridger: [
+      { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
+      { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
+      { item: "minecraft:diamond_pickaxe", quantity: 1, name: "§3Miner's Pickaxe" },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ],
+    Clutcher: [
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ],
+    Wall_Run: [
+      { item: "minecraft:white_wool", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ],
+    Bedwars_Rush: [
+      { item: "minecraft:white_wool", quantity: 64 },
+      { item: "minecraft:white_wool", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ],
+    Fist_Reduce: [
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:sandstone", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ],
+    Parkour: [{ item: "minecraft:book", quantity: 1, slot: 8 }],
+    Wool_Parkour: [
+      { item: "minecraft:white_wool", quantity: 64 },
+      { item: "minecraft:book", quantity: 1, slot: 8 },
+    ],
+  };
+
+  return <ItemInfo[]>data[parentGameID];
 };
 
 export const locationData: Record<GameID, TeleportationLocation> = {

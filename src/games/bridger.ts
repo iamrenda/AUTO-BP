@@ -317,6 +317,8 @@ export const pressurePlatePushEvt = function ({ source: player }: { source: mc.E
     return;
   }
 
+  util.giveItems([{ item: "minecraft:book", quantity: 1, slot: 8 }]);
+
   util.onRunnerSuccess("Bridger", bridgerTs, enablePlate);
 };
 

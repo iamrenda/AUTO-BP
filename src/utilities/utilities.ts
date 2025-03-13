@@ -1,18 +1,19 @@
 import * as mc from "@minecraft/server";
-import { InventoryData, locationData, VERSION } from "../data/staticData";
+import * as scoreboard from "./scoreboard";
+import { getInventoryData, locationData, VERSION } from "../data/staticData";
 import GameID, { BundlableGameID, ParentGameID, SubCategory } from "../models/GameID";
 import { bridgerTs, generalTs, TempStorage } from "../data/tempStorage";
-import * as scoreboard from "./scoreboard";
 import { confirmationForm } from "../forms/utility";
 import { BaseGameData, DynamicProperty } from "../data/dynamicProperty";
+import { ItemInfo } from "../models/general";
 
 /**
  * giveItems: clears inventory and gives item with lockmode (optional: assigned slot)
  */
-export const giveItems = function (parentGameID: ParentGameID): void {
+export const giveItems = function (info: ParentGameID | ItemInfo[]): void {
   const player = generalTs.commonData["player"];
   const container = player.getComponent("inventory").container;
-  const itemArr = InventoryData[parentGameID];
+  const itemArr = Array.isArray(info) ? info : getInventoryData(info);
 
   container.clearAll();
 
