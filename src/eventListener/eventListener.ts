@@ -94,12 +94,17 @@ mc.world.afterEvents.itemUse.subscribe(({ itemStack: item, source: player }): vo
       return lobby.nagivatorFormHandler(player);
 
     case "minecraft:book":
-      const parentGameID = util.getCurrentParentCategory();
-      return formHandlers[parentGameID](player);
+      const parentGameIDa = util.getCurrentParentCategory();
+      return formHandlers[parentGameIDa](player);
 
     case "minecraft:flint":
       util.teleportation("Lobby");
       mc.system.run(() => player.playSound("mob.endermen.portal"));
+      break;
+
+    case "minecraft:paper":
+      const parentGameIDb = <BundlableGameID>util.getCurrentParentCategory();
+      statsForm(player, parentGameIDb);
       break;
   }
 });

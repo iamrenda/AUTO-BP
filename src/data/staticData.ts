@@ -28,7 +28,8 @@ export const getInventoryData = function (parentGameID: ParentGameID): ItemInfo[
       { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
       { item: bridgerTs.tempData["blockBridger"], quantity: 64 },
       { item: "minecraft:diamond_pickaxe", quantity: 1, name: "§3Miner's Pickaxe" },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
+      { item: "minecraft:paper", quantity: 1, slot: 7, name: "§aYour Stats" },
+      { item: "minecraft:book", quantity: 1, slot: 8, name: "§2Settings" },
     ],
     Clutcher: [
       { item: "minecraft:sandstone", quantity: 64 },
@@ -36,22 +37,28 @@ export const getInventoryData = function (parentGameID: ParentGameID): ItemInfo[
     ],
     Wall_Run: [
       { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
+      { item: "minecraft:paper", quantity: 1, slot: 7, name: "§aYour Stats" },
+      { item: "minecraft:book", quantity: 1, slot: 8, name: "§2Settings" },
     ],
     Bedwars_Rush: [
       { item: "minecraft:white_wool", quantity: 64 },
       { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
+      { item: "minecraft:paper", quantity: 1, slot: 7, name: "§aYour Stats" },
+      { item: "minecraft:book", quantity: 1, slot: 8, name: "§2Settings" },
     ],
     Fist_Reduce: [
       { item: "minecraft:sandstone", quantity: 64 },
       { item: "minecraft:sandstone", quantity: 64 },
       { item: "minecraft:book", quantity: 1, slot: 8 },
     ],
-    Parkour: [{ item: "minecraft:book", quantity: 1, slot: 8 }],
+    Parkour: [
+      { item: "minecraft:paper", quantity: 1, slot: 7, name: "§aYour Stats" },
+      { item: "minecraft:book", quantity: 1, slot: 8, name: "§2Settings" },
+    ],
     Wool_Parkour: [
       { item: "minecraft:white_wool", quantity: 64 },
-      { item: "minecraft:book", quantity: 1, slot: 8 },
+      { item: "minecraft:paper", quantity: 1, slot: 7, name: "§aYour Stats" },
+      { item: "minecraft:book", quantity: 1, slot: 8, name: "§2Settings" },
     ],
   };
 
